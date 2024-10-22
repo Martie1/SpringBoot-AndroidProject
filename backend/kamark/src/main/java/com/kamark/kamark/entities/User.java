@@ -20,6 +20,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Integer id;
 
+    @Column(unique = true, length = 255, nullable = false)
+    private String email;
     @Column(unique = true, length = 100, nullable = false)
     private String username;
 
@@ -47,14 +49,6 @@ public class User implements UserDetails {
         return List.of();
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
 
     @Override
     public boolean isAccountNonExpired() {
@@ -74,6 +68,49 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public User setEmail(String email1) {
+        this.email = email;
+        return this;
+    }
+    @Override
+    public String getUsername() {
+        return username;
+    }
+    public User setUsername(String username) {
+        this.username = username;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+
+    public User setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public Integer getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Integer admin) {
+        this.admin = admin;
+    }
+
+    public Set<Idea> getIdeas() {
+        return ideas;
+    }
+
+    public void setIdeas(Set<Idea> ideas) {
+        this.ideas = ideas;
     }
 
     // Getters and setters
