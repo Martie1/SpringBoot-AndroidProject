@@ -26,14 +26,11 @@ public class User implements UserDetails {
     @Column(unique = true, length = 100, nullable = false)
     private String username;
 
-    @Column(nullable = false,length = 30)
+    @Column(nullable = false,length = 255)
     private String password;
 
     @Column(length = 30)
     private String role;
-
-    @Column(nullable = false)
-    private Integer admin;
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")
@@ -74,48 +71,6 @@ public class User implements UserDetails {
         return true;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public User setEmail(String email1) {
-        this.email = email;
-        return this;
-    }
-    @Override
-    public String getUsername() {
-        return username;
-    }
-    public User setUsername(String username) {
-        this.username = username;
-        return this;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-
-    public User setPassword(String password) {
-        this.password = password;
-        return this;
-    }
-
-    public Integer getAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(Integer admin) {
-        this.admin = admin;
-    }
-
-    public Set<Idea> getIdeas() {
-        return ideas;
-    }
-
-    public void setIdeas(Set<Idea> ideas) {
-        this.ideas = ideas;
-    }
 
     // Getters and setters
 }
