@@ -18,27 +18,30 @@ import java.util.function.Function;
 public class JWTUtils {
 
     private SecretKey Key;
-    private  static  final long EXPIRATION_TIME = 86400000; //24hours or 86400000 milisecs
+    private static final long TOKEN_EXPIRATION_TIME = 86400000; // 24 hours in milliseconds
+    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 604800000; // 7 days in milliseconds
     public JWTUtils(){
         String secreteString = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
         byte[] keyBytes = Base64.getDecoder().decode(secreteString.getBytes(StandardCharsets.UTF_8));
         this.Key = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    public String generateToken(UserDetails userDetails){
+    public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
                 .signWith(Key)
                 .compact();
     }
     public String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails){
+        HashMap<String, Object> refreshClaims = new HashMap<>();  //oznaczenie jako refreshtoken
+        refreshClaims.put("isRefreshToken", true);
         return Jwts.builder()
-                .claims(claims)
+                .claims(refreshClaims)
                 .subject(userDetails.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
                 .signWith(Key)
                 .compact();
     }

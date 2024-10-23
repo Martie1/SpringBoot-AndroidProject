@@ -30,5 +30,5 @@ public class Room {
 
     // one room has many ideas
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Idea> ideas; // many ideas
+    private List<Post> posts; // many ideas
 }
