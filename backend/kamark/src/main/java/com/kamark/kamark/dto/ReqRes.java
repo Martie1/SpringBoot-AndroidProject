@@ -3,6 +3,7 @@ package com.kamark.kamark.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.kamark.kamark.entity.Room;
 import com.kamark.kamark.entity.User;
 import lombok.Data;
 
@@ -23,6 +24,6 @@ public class ReqRes {
     private String email;
     private String role;
     private String password;
-  //  private List<Product> products;
+    private List<Room> rooms;
     private User user;
 }

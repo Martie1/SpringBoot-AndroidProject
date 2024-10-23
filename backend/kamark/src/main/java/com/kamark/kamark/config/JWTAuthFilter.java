@@ -34,7 +34,15 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         final  String jwtToken;
         final String userEmail;
         String path = request.getServletPath();
-        if (path.equals("/auth/signup") || path.equals("/auth/signin")) {
+
+        String requestPath = request.getRequestURI();
+        if (requestPath.startsWith("/rooms")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        //pomiń te trasy
+        if (path.equals("/auth/signup") || path.equals("/auth/signin") || path.equals("/rooms")) {
             filterChain.doFilter(request, response);
             return;
         }

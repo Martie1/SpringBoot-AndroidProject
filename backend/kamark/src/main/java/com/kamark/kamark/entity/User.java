@@ -42,7 +42,7 @@ public class User implements UserDetails {
 
     //relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Idea> ideas;
+    private Set<Post> posts;
 
 
     @Override
