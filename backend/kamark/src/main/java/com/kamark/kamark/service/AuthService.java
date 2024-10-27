@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 @Service
@@ -30,15 +31,13 @@ public class AuthService {
             ourUsers.setEmail(registrationRequest.getEmail());
             ourUsers.setUsername(registrationRequest.getUsername());
             ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-            ourUsers.setRole(registrationRequest.getRole());
+            ourUsers.setRole("USER");
 
-            // Zapisujemy użytkownika w bazie danych
             User ourUserResult = ourUserRepo.save(ourUsers);
             if (ourUserResult != null && ourUserResult.getId() > 0) {
-                // Jeśli zapis się powiódł, generujemy token
                 String jwt = jwtUtils.generateToken(ourUserResult);
 
-                // Tworzymy AuthResponse z tokenem
+
                 AuthResponse response = new AuthResponse();
                 response.setToken(jwt);
                 response.setExpirationTime("24Hr");
@@ -59,7 +58,9 @@ public class AuthService {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
-            User user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow();
+            User user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
+            );
             String jwt = jwtUtils.generateToken(user);
             AuthResponse response = new AuthResponse();
             response.setStatusCode(200);
@@ -67,7 +68,7 @@ public class AuthService {
             response.setExpirationTime("24Hr");
             response.setMessage("Successfully Signed In");
 
-            return ResponseEntity.ok(response); // Zwracamy AuthResponse przy sukcesie
+            return ResponseEntity.ok(response);
 
         } catch (Exception e) {
             return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during sign-in: Bad credentials"));

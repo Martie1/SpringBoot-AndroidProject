@@ -5,12 +5,10 @@ import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Data
 @Entity
@@ -20,6 +18,10 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY) //do not use GenerationType.AUTO
     @Column(nullable = false)
     private Integer id;
+
+    public String getEmail() {
+        return email;
+    }
 
     @Column(unique = true, length = 255, nullable = false)
     private String email;
@@ -47,7 +49,7 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
 
