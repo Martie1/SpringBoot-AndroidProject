@@ -30,7 +30,7 @@ public class User implements UserDetails {
     private String password;
 
     @Column(length = 30)
-    private String role;
+    private String role; // "USER" "ADMIN"
 
     @CreationTimestamp
     @Column(updatable = false, name = "created_at")

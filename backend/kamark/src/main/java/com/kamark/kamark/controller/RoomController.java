@@ -22,7 +22,7 @@ public class RoomController {
 
     @GetMapping
     public ResponseEntity<List<Room>> getAllRooms(Authentication authentication) {
-        List<Room> rooms = roomService.getAllRooms();  // Pobieramy bezpośrednio encje Room
+        List<Room> rooms = roomService.getAllRooms();
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 }

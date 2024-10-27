@@ -41,8 +41,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        //pomiń te trasy
-        if (path.equals("/auth/signup") || path.equals("/auth/signin") || path.equals("/rooms")) {
+        //pomiń te trasy od filtra jwt
+        if (path.equals("/auth/register") || path.equals("/auth/login") || path.equals("/rooms")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -50,7 +50,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
             return;
         }
-        jwtToken = authHeader.substring(7);
+        jwtToken = authHeader.substring(7); //after Bearer
         userEmail = jwtUtils.extractUsername(jwtToken);
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = ourUserDetailsService.loadUserByUsername(userEmail);

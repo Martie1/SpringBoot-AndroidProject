@@ -1,5 +1,6 @@
 package com.kamark.kamark.service;
 
+import com.kamark.kamark.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,29 +20,19 @@ public class JWTUtils {
 
     private SecretKey Key;
     private static final long TOKEN_EXPIRATION_TIME = 86400000; // 24 hours in milliseconds
-    private static final long REFRESH_TOKEN_EXPIRATION_TIME = 604800000; // 7 days in milliseconds
     public JWTUtils(){
-        String secreteString = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
-        byte[] keyBytes = Base64.getDecoder().decode(secreteString.getBytes(StandardCharsets.UTF_8));
+        String secretString = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
+        byte[] keyBytes = Base64.getDecoder().decode(secretString.getBytes(StandardCharsets.UTF_8));
         this.Key = new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
+
         return Jwts.builder()
-                .subject(userDetails.getUsername())
+                .subject(user.getUsername())
+                .claim("role", user.getRole())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
-                .signWith(Key)
-                .compact();
-    }
-    public String generateRefreshToken(HashMap<String, Object> claims, UserDetails userDetails){
-        HashMap<String, Object> refreshClaims = new HashMap<>();  //oznaczenie jako refreshtoken
-        refreshClaims.put("isRefreshToken", true);
-        return Jwts.builder()
-                .claims(refreshClaims)
-                .subject(userDetails.getUsername())
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
                 .signWith(Key)
                 .compact();
     }

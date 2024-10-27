@@ -1,6 +1,8 @@
 package com.kamark.kamark.controller;
 
-import com.kamark.kamark.dto.ReqRes;
+import com.kamark.kamark.dto.AuthResponse;
+import com.kamark.kamark.dto.LoginRequest;
+import com.kamark.kamark.dto.RegisterRequest;
 import com.kamark.kamark.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +18,13 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<ReqRes> signUp(@RequestBody ReqRes signUpRequest){
-        return ResponseEntity.ok(authService.signUp(signUpRequest));
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponse> signUp(@RequestBody RegisterRequest registerRequest){
+        return ResponseEntity.ok(authService.signUp(registerRequest));
     }
-    @PostMapping("/signin")
-    public ResponseEntity<ReqRes> signIn(@RequestBody ReqRes signInRequest){
-        return ResponseEntity.ok(authService.signIn(signInRequest));
-    }
-    @PostMapping("/refresh")
-    public ResponseEntity<ReqRes> refreshToken(@RequestBody ReqRes refreshTokenRequest){
-        return ResponseEntity.ok(authService.refreshToken(refreshTokenRequest));
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> signIn(@RequestBody LoginRequest loginRequest){
+        return ResponseEntity.ok(authService.signIn(loginRequest));
     }
 }
