@@ -1,11 +1,13 @@
 package com.kamark.kamark.service;
 
 import com.kamark.kamark.dto.AuthResponse;
+import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.dto.LoginRequest;
 import com.kamark.kamark.dto.RegisterRequest;
 import com.kamark.kamark.entity.User;
 import com.kamark.kamark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,10 +24,8 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public AuthResponse signUp(RegisterRequest registrationRequest) {
-        AuthResponse response = new AuthResponse();
+    public ResponseEntity<?> register(RegisterRequest registrationRequest) {
         try {
-            // Tworzymy nowego użytkownika i ustawiamy jego dane
             User ourUsers = new User();
             ourUsers.setEmail(registrationRequest.getEmail());
             ourUsers.setUsername(registrationRequest.getUsername());
@@ -38,42 +38,39 @@ public class AuthService {
                 // Jeśli zapis się powiódł, generujemy token
                 String jwt = jwtUtils.generateToken(ourUserResult);
 
-                // Ustawiamy dane odpowiedzi
-               // response.setUser(ourUserResult);
+                // Tworzymy AuthResponse z tokenem
+                AuthResponse response = new AuthResponse();
                 response.setToken(jwt);
-                response.setExpirationTime("24Hr");  // lub inny czas ważności tokenu
+                response.setExpirationTime("24Hr");
                 response.setMessage("User Registered Successfully");
                 response.setStatusCode(200);
+
+                return ResponseEntity.ok(response); // Zwracamy AuthResponse przy sukcesie
+            } else {
+                return ResponseEntity.status(500).body(new ErrorResponse(500, "Failed to register user."));
             }
         } catch (Exception e) {
-            response.setStatusCode(500);
-            response.setMessage("Error during registration: " + e.getMessage());
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during registration: " + e.getMessage()));
         }
-        return response;
     }
 
-    public AuthResponse signIn(LoginRequest signinRequest) {
-        AuthResponse response = new AuthResponse();
-
+    public ResponseEntity<?> login(LoginRequest loginRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getEmail(), signinRequest.getPassword()));
-
-
-            User user = ourUserRepo.findByEmail(signinRequest.getEmail()).orElseThrow();
-
-
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
+            User user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow();
             String jwt = jwtUtils.generateToken(user);
-
-
+            AuthResponse response = new AuthResponse();
             response.setStatusCode(200);
             response.setToken(jwt);
             response.setExpirationTime("24Hr");
             response.setMessage("Successfully Signed In");
-          //  response.setUser(user);
+
+            return ResponseEntity.ok(response); // Zwracamy AuthResponse przy sukcesie
+
         } catch (Exception e) {
-            response.setStatusCode(500);
-            response.setMessage("Error during sign-in: " + e.getMessage());
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during sign-in: Bad credentials"));
         }
-        return response;
     }
 }
