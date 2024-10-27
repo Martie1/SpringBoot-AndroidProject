@@ -1,16 +1,18 @@
 package com.kamark.kamark.service;
 
-import com.kamark.kamark.dto.ReqRes;
+import com.kamark.kamark.dto.AuthResponse;
+import com.kamark.kamark.dto.ErrorResponse;
+import com.kamark.kamark.dto.LoginRequest;
+import com.kamark.kamark.dto.RegisterRequest;
 import com.kamark.kamark.entity.User;
 import com.kamark.kamark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-
 @Service
 public class AuthService {
 
@@ -23,62 +25,53 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
-    public ReqRes signUp(ReqRes registrationRequest){
-        ReqRes resp = new ReqRes();
+    public ResponseEntity<?> register(RegisterRequest registrationRequest) {
         try {
             User ourUsers = new User();
             ourUsers.setEmail(registrationRequest.getEmail());
             ourUsers.setUsername(registrationRequest.getUsername());
             ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-            ourUsers.setRole(registrationRequest.getRole());
+            ourUsers.setRole("USER");
 
             User ourUserResult = ourUserRepo.save(ourUsers);
-            if (ourUserResult != null && ourUserResult.getId()>0) {
-                resp.setUser(ourUserResult);
-                resp.setMessage("User Saved Successfully");
-                resp.setStatusCode(200);
+            if (ourUserResult != null && ourUserResult.getId() > 0) {
+                String jwt = jwtUtils.generateToken(ourUserResult);
+
+
+                AuthResponse response = new AuthResponse();
+                response.setToken(jwt);
+                response.setExpirationTime("24Hr");
+                response.setMessage("User Registered Successfully");
+                response.setStatusCode(200);
+
+                return ResponseEntity.ok(response); // Zwracamy AuthResponse przy sukcesie
+            } else {
+                return ResponseEntity.status(500).body(new ErrorResponse(500, "Failed to register user."));
             }
-        }catch (Exception e){
-            resp.setStatusCode(500);
-            resp.setError(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during registration: " + e.getMessage()));
         }
-        return resp;
     }
 
-    public ReqRes signIn(ReqRes signinRequest){
-        ReqRes response = new ReqRes();
-
+    public ResponseEntity<?> login(LoginRequest loginRequest) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(signinRequest.getEmail(),signinRequest.getPassword()));
-            var user = ourUserRepo.findByEmail(signinRequest.getEmail()).orElseThrow();
-            System.out.println("USER IS: "+ user);
-            var jwt = jwtUtils.generateToken(user);
-            var refreshToken = jwtUtils.generateRefreshToken(new HashMap<>(), user);
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
+            );
+            User user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
+                    () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
+            );
+            String jwt = jwtUtils.generateToken(user);
+            AuthResponse response = new AuthResponse();
             response.setStatusCode(200);
             response.setToken(jwt);
-            response.setRefreshToken(refreshToken);
             response.setExpirationTime("24Hr");
             response.setMessage("Successfully Signed In");
-        }catch (Exception e){
-            response.setStatusCode(500);
-            response.setError(e.getMessage());
-        }
-        return response;
-    }
 
-    public ReqRes refreshToken(ReqRes refreshTokenReqiest){
-        ReqRes response = new ReqRes();
-        String ourEmail = jwtUtils.extractUsername(refreshTokenReqiest.getToken());
-        User users = ourUserRepo.findByEmail(ourEmail).orElseThrow();
-        if (jwtUtils.isTokenValid(refreshTokenReqiest.getToken(), users)) {
-            var jwt = jwtUtils.generateToken(users);
-            response.setStatusCode(200);
-            response.setToken(jwt);
-            response.setRefreshToken(refreshTokenReqiest.getToken());
-            response.setExpirationTime("24Hr");
-            response.setMessage("Successfully Refreshed Token");
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during sign-in: Bad credentials"));
         }
-        response.setStatusCode(500);
-        return response;
     }
 }

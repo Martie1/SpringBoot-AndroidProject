@@ -14,6 +14,6 @@ public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
     public List<Room> getAllRooms() {
-        return roomRepository.findAll();  // Zwracamy bezpośrednio encje Room
+        return roomRepository.findAll();  // zwracamy bezpośrednio encje Room
     }
 }
