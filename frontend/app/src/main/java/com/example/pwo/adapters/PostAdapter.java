@@ -13,16 +13,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pwo.R;
 import com.example.pwo.classes.Post;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private static List<Post> posts;
+    private DateFormat dateFormat;
     private Context context;
     private static OnItemClickListener listener;
 
     public PostAdapter(List<Post> posts, Context context) {
         this.posts = posts;
         this.context = context;
+        this.dateFormat = new SimpleDateFormat("dd-MM-yyyy");
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
@@ -81,7 +85,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.tvUsername.setText(post.getUsername());
         holder.tvName.setText(post.getName());
         holder.tvDescription.setText(post.getDescription());
-        holder.tvCreatedAt.setText(post.getCreatedAt().toString());
+        holder.tvCreatedAt.setText(dateFormat.format(post.getCreatedAt()));
         holder.cbLike.setText(String.valueOf(post.getLikes()));
     }
 
