@@ -22,4 +22,4 @@ public class Post {
         this.room_id = room_id;
         this.user_id = user_id;
     }
-}
+
