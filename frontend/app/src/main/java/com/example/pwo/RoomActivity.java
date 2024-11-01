@@ -1,7 +1,7 @@
-package com.example.pwo.activities;
+package com.example.pwo;
 
 import android.os.Bundle;
-import android.content.Intent;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,12 +12,10 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.pwo.R;
 import com.example.pwo.adapters.RoomAdapter;
 import com.example.pwo.classes.Room;
 
 import java.util.List;
-
 
 public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnItemClickListener {
 
@@ -49,8 +47,8 @@ public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnIte
 
     @Override
     public void onItemClick(Room room) {
-        Intent intent = new Intent(RoomActivity.this, PostActivity.class);
-        intent.putExtra("roomId", room.getId());
-        startActivity(intent);
+        // Open room
+        Toast toast = Toast.makeText(this, "Opening room " + room.getName(), Toast.LENGTH_SHORT);
+        toast.show();
     }
 }

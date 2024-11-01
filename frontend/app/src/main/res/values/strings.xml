@@ -1,9 +1,4 @@
 <resources>
     <string name="app_name">pwo</string>
     <string name="see_rooms">See Rooms</string>
-    <string name="addpost">addPost</string>
-    <string name="add_post">Add Post</string>
-    <string name="title">Title</string>
-    <string name="description">Description</string>
-    <string name="post">Post</string>
 </resources>

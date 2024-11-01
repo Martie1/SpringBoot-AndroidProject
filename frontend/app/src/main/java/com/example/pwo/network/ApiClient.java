@@ -1,6 +1,4 @@
 package com.example.pwo.network;
-import static com.example.pwo.Constants.BASE_URL;
-
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -9,6 +7,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 //this retrofit instance will use the ApiClient and its routes
 public class ApiClient {
 
+    private static final String BASE_URL = "https://your-backend-url.com/api/";
     private static ApiClient instance;
     private final ApiService apiService;
 

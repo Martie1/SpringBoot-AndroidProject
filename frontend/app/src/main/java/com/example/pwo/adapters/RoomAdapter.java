@@ -12,9 +12,6 @@ import com.example.pwo.R;
 import com.example.pwo.classes.Room;
 
 import java.util.List;
-
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
@@ -37,11 +34,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     @Override
     public void onBindViewHolder(@NonNull RoomViewHolder holder, int position) {
         Room room = rooms.get(position);
-        int imageId = context.getResources().getIdentifier(room.getName(), "drawable", context.getPackageName());
-        if(imageId == 0) {
-            imageId = R.drawable.resource_default;
-        }
-        holder.roomImage.setImageResource(imageId);
+        holder.roomName.setText(room.getName());
     }
 
     @Override
@@ -57,10 +50,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
     }
 
     public static class RoomViewHolder extends RecyclerView.ViewHolder{
-        private ImageView roomImage;
+        private TextView roomName;
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
-            roomImage = itemView.findViewById(R.id.imageView);
+            roomName = itemView.findViewById(R.id.room_name);
             itemView.setOnClickListener(v -> {
                 if(listener != null) {
                     int position = getAdapterPosition();

@@ -14,8 +14,4 @@ public class User {
         this.role = role;
     }
 
-    public static String getUsername(int userId) {
-        // fetch username from the server
-        return "User " + userId;
-    }
 }

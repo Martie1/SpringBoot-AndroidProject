@@ -13,16 +13,10 @@
         android:theme="@style/Theme.Pwo"
         tools:targetApi="31">
         <activity
-            android:name=".activities.AddPostActivity"
+            android:name=".RoomActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.PostActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.RoomActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.MainActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
