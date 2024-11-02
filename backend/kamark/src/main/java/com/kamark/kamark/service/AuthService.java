@@ -44,7 +44,7 @@ public class AuthService {
                 response.setMessage("User Registered Successfully");
                 response.setStatusCode(200);
 
-                return ResponseEntity.ok(response); // Zwracamy AuthResponse przy sukcesie
+                return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.status(500).body(new ErrorResponse(500, "Failed to register user."));
             }
