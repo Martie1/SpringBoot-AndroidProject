@@ -6,10 +6,13 @@ import com.kamark.kamark.entity.User;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.repository.UserRepository;
+import com.kamark.kamark.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,81 +20,57 @@ import java.util.Optional;
 @RequestMapping("/post")
 public class PostController {
     @Autowired
-    private PostRepository postRepository;
+    private PostService postService;
 
-    @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
-    private UserRepository userRepository;
-
-    //create a post
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody PostDTO postDTO) {
-
-        Optional<User> userOptional = userRepository.findById(postDTO.getUserId());
-        if (userOptional.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);//if not exists
+    public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO) {
+        boolean isCreated = postService.createPost(postDTO);
+        if (isCreated) {
+            return new ResponseEntity<>("A post has been successfully created", HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("Failed to create post", HttpStatus.BAD_REQUEST);
         }
-
-        Optional<Room> roomOptional = roomRepository.findById(postDTO.getRoomId());
-        if (roomOptional.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST); //if not exists
-        }
-
-        Post post = new Post();
-        post.setName(postDTO.getName());
-        post.setDescription(postDTO.getDescription());
-        post.setUser(userOptional.get());
-        post.setRoom(roomOptional.get());
-
-        Post savedPost = postRepository.save(post);
-        return new ResponseEntity<>(savedPost, HttpStatus.CREATED);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return new ResponseEntity<>(posts, HttpStatus.OK);
-    }
-
-    //get, read
     @GetMapping("/{id}")
-    public ResponseEntity<Post> getPostById(@PathVariable Integer id) {
-        Optional<Post> post = postRepository.findById(id);
-        return post.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
+    public ResponseEntity<PostDTO> getPostById(@PathVariable Integer id) {
+        Optional<PostDTO> postDTO = postService.getPostById(id);
+        return postDTO.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-
-    //update
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Integer id, @RequestBody Post postDetails) {
-        Optional<Post> postOptional = postRepository.findById(id);
-
-        if (postOptional.isPresent()) {
-            Post postToUpdate = postOptional.get();
-            postToUpdate.setName(postDetails.getName());
-            postToUpdate.setDescription(postDetails.getDescription());
-            postToUpdate.setLikes(postDetails.getLikes());
-            postToUpdate.setStatus(postDetails.getStatus());
-            postToUpdate.setUser(postDetails.getUser());
-            postToUpdate.setRoom(postDetails.getRoom());
-
-            Post updatedPost = postRepository.save(postToUpdate);
-            return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+    public ResponseEntity<String> updatePost(@PathVariable Integer id, @RequestBody PostDTO postDTO) {
+        Optional<Post> updatedPost = postService.updatePost(id, postDTO);
+        if (updatedPost.isPresent()) {
+            return new ResponseEntity<>("The post has been successfully updated", HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+        }
+    }
+    @PostMapping("/{id}/like")
+    public ResponseEntity<String> likePost(@PathVariable Integer id) {
+        Optional<Post> updatedPost = postService.likePost(id);
+        if (updatedPost.isPresent()) {
+            return new ResponseEntity<>("The post has been liked successfully", HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
         }
     }
 
-    //delete
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Integer id) {
-        if (postRepository.existsById(id)) {
-            postRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<String> deletePost(@PathVariable Integer id) {
+
+            boolean isDeleted = postService.deletePost(id);
+            if (isDeleted) {
+                return new ResponseEntity<>("The post has been successfully deleted", HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
+            }
+       /* } catch (AccessDeniedException e) {
+            return new ResponseEntity<>("You are not authorized to delete this post", HttpStatus.FORBIDDEN);
+        }*/
         }
+
+
     }
-}
+
