@@ -38,6 +38,7 @@ public class JWTUtils {
 
         return Jwts.builder()
                 .subject(user.getEmail())
+                .claim("userId", user.getId())
                 .claim("roles", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
@@ -49,9 +50,16 @@ public class JWTUtils {
         return extractClaims(token, Claims::getSubject);
     }
 
+    public String extractUserIdFromToken(String token) {
+        return extractClaims(token, claims -> claims.get("userId", String.class));
+    }
+
     private <T> T extractClaims(String token, Function<Claims, T> claimsTFunction){
         return claimsTFunction.apply(Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload());
     }
+
+
+
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String email = extractEmail(token);
