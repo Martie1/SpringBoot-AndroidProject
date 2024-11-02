@@ -14,10 +14,10 @@ public class Room {
 
     public static List<Room> getAllRooms() {
         List<Room> rooms = new ArrayList<>();
-        rooms.add(new Room(1, "Room 1"));
-        rooms.add(new Room(2, "Room 2"));
-        rooms.add(new Room(3, "Room 3"));
-        rooms.add(new Room(4, "Room 4"));
+        rooms.add(new Room(1, "gardening"));
+        rooms.add(new Room(2, "cosplay"));
+        rooms.add(new Room(3, "halloween"));
+        rooms.add(new Room(4, "gaming"));
         rooms.add(new Room(5, "Room 5"));
         return rooms;
     }
@@ -37,4 +37,5 @@ public class Room {
     public void setName(String name) {
         this.name = name;
     }
+
 }

@@ -1,6 +1,7 @@
 package com.example.pwo.classes;
 
 import java.util.Date;
+import java.util.List;
 
 public class Post {
     private int id;
@@ -22,4 +23,32 @@ public class Post {
         this.room_id = room_id;
         this.user_id = user_id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public int getLikes() { return likes; }
+
+    public String  getStatus() {
+        return status;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public String getUsername() {
+        return User.getUsername(user_id);
+    }
+
+    public void setLikes(int i) {
+        likes = i;
+        // update likes in the database
+    }
+}
 
