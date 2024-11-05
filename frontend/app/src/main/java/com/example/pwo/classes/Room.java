@@ -18,7 +18,14 @@ public class Room {
         rooms.add(new Room(2, "cosplay"));
         rooms.add(new Room(3, "halloween"));
         rooms.add(new Room(4, "gaming"));
-        rooms.add(new Room(5, "Room 5"));
+        rooms.add(new Room(5, "books"));
+        rooms.add(new Room(6, "beauty"));
+        rooms.add(new Room(7, "music"));
+        rooms.add(new Room(8, "science"));
+        rooms.add(new Room(9, "sports"));
+        rooms.add(new Room(10, "wellness"));
+        rooms.add(new Room(11, "travel"));
+        rooms.add(new Room(12, "askadmin"));
         return rooms;
     }
 
@@ -32,10 +39,6 @@ public class Room {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
 }
