@@ -14,7 +14,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.pwo.R;
 
 public class MainActivity extends AppCompatActivity {
-    private Button btnRoom;
+    private Button btnLogin;
+    private Button btnRegister;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,20 +28,17 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, RoomActivity.class);
             startActivity(intent);
             finish();
-        } else {
-            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
-            startActivity(intent);
-            finish();
         }
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        btnLogin = findViewById(R.id.btnLogin);
+        btnLogin.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this,LoginActivity.class);
+            startActivity(intent);
         });
-        btnRoom = findViewById(R.id.btnLogin);
-        btnRoom.setOnClickListener(v -> {
+        btnRegister= findViewById(R.id.btnRegister);
+        btnRegister.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this,RegisterActivity.class);
             startActivity(intent);
         });

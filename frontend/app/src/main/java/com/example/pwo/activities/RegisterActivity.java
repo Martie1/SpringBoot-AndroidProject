@@ -73,6 +73,9 @@ public class RegisterActivity extends AppCompatActivity {
 
                     //roomActivity intent
                     Intent intent = new Intent(RegisterActivity.this, RoomActivity.class);
+
+                    //flags block returning back to main_activity after successfull login/register
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
 
