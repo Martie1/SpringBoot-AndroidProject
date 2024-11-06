@@ -47,15 +47,6 @@ public class PostController {
             return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
         }
     }
-    @PostMapping("/{id}/like")
-    public ResponseEntity<String> likePost(@PathVariable Integer id) {
-        Optional<Post> updatedPost = postService.likePost(id);
-        if (updatedPost.isPresent()) {
-            return new ResponseEntity<>("The post has been liked successfully", HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>("Post not found", HttpStatus.NOT_FOUND);
-        }
-    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePost(@PathVariable Integer id) {

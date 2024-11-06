@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.Set;
 
 @Data
 @Entity
@@ -21,9 +22,6 @@ public class Post {
 
     @Column(length = 255, nullable = false)
     private String description;
-
-    @Column(unique = false, nullable = true)
-    private Integer likes;
 
     @Column(nullable = false)
     private String status;
@@ -45,4 +43,7 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
     private Room room; // one room
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Like> likes; //many likes
 }

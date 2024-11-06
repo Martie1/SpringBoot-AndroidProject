@@ -106,32 +106,12 @@ public class PostService {
         return true;
     }
 
-    //like action
-    public Optional<Post> likePost(Integer postId) {
-        Optional<Post> postOptional = postRepository.findById(postId);
-        if (postOptional.isEmpty()) {
-            return Optional.empty();
-        }
-
-        Post post = postOptional.get();
-
-        if (post.getLikes() == null) {
-            post.setLikes(1);
-        } else {
-            post.setLikes(post.getLikes() + 1);
-        }
-
-        Post updatedPost = postRepository.save(post);
-        return Optional.of(updatedPost);
-    }
-
     public PostDTO convertToPostDTO(Post post) {
         PostDTO postDTO = new PostDTO();
         postDTO.setName(post.getName());
         postDTO.setDescription(post.getDescription());
         postDTO.setUserId(post.getUser().getId());
         postDTO.setRoomId(post.getRoom().getId());
-        postDTO.setLikes(post.getLikes());
         postDTO.setStatus(post.getStatus());
         return postDTO;
     }
