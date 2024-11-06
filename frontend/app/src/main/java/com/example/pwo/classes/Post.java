@@ -1,7 +1,6 @@
 package com.example.pwo.classes;
 
 import java.util.Date;
-import java.util.List;
 
 public class Post {
     private int id;

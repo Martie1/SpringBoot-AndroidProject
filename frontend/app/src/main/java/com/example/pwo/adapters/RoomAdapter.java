@@ -13,9 +13,7 @@ import com.example.pwo.classes.Room;
 
 import java.util.List;
 
-import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
     private static List<Room> rooms;

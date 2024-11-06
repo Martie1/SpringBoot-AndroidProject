@@ -27,13 +27,13 @@ public class AuthService {
 
     public ResponseEntity<?> register(RegisterRequest registrationRequest) {
         try {
-            User ourUsers = new User();
-            ourUsers.setEmail(registrationRequest.getEmail());
-            ourUsers.setUsername(registrationRequest.getUsername());
-            ourUsers.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
-            ourUsers.setRole("USER");
+            User user = new User();
+            user.setEmail(registrationRequest.getEmail());
+            user.setUsername(registrationRequest.getUsername());
+            user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+            user.setRole("USER");
 
-            User ourUserResult = ourUserRepo.save(ourUsers);
+            User ourUserResult = ourUserRepo.save(user);
             if (ourUserResult != null && ourUserResult.getId() > 0) {
                 String jwt = jwtUtils.generateToken(ourUserResult);
 
