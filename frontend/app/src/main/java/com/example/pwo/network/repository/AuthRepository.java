@@ -2,10 +2,9 @@ package com.example.pwo.network.repository;
 
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.ApiService;
-import com.example.pwo.network.model.LoginRequest;
-import com.example.pwo.network.model.RegisterRequest;
-import com.example.pwo.network.model.UserResponse;
-
+import com.example.pwo.network.models.AuthResponse;
+import com.example.pwo.network.models.LoginRequest;
+import com.example.pwo.network.models.RegisterRequest;
 
 
 import retrofit2.Call;
@@ -20,13 +19,13 @@ public class AuthRepository {
         apiService = ApiClient.getInstance().getApiService();
     }
 
-    public void registerUser(RegisterRequest registerRequest, Callback<UserResponse> callback) {
-        Call<UserResponse> call = apiService.register(registerRequest);
+    public void registerUser(RegisterRequest registerRequest, Callback<AuthResponse> callback) {
+        Call<AuthResponse> call = apiService.register(registerRequest);
         call.enqueue(callback);
     }
 
-    public void loginUser(LoginRequest loginRequest, Callback<UserResponse> callback) {
-        Call<UserResponse> call = apiService.login(loginRequest);
+    public void loginUser(LoginRequest loginRequest, Callback<AuthResponse> callback) {
+        Call<AuthResponse> call = apiService.login(loginRequest);
         call.enqueue(callback);
     }
 }

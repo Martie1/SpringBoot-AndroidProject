@@ -1,6 +1,7 @@
 package com.example.pwo.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -17,6 +18,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        String token = sharedPreferences.getString("auth_token", null);
+
+       //jwt validate feature will be added here
+        if (token != null) { //contact server for valid jwt, then proceed
+            Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+            startActivity(intent);
+            finish();
+        } else {
+            Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+            startActivity(intent);
+            finish();
+        }
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -26,8 +41,10 @@ public class MainActivity extends AppCompatActivity {
         });
         btnRoom = findViewById(R.id.btnLogin);
         btnRoom.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+            Intent intent = new Intent(MainActivity.this,RegisterActivity.class);
             startActivity(intent);
         });
+
+
     }
 }

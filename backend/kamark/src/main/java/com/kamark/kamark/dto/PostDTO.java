@@ -10,5 +10,4 @@ public class PostDTO {
     private Integer roomId;
     private Integer likes;
     private String status;
-
 }
