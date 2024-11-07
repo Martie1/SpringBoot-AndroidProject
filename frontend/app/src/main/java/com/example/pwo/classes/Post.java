@@ -11,8 +11,9 @@ public class Post {
     private String status;
     private int room_id;
     private int user_id;
+    private String username;
 
-    public Post(int id, Date createdAt, String description, String name, int likes, String status, int room_id, int user_id) {
+    public Post(int id, Date createdAt, String description, String name, int likes, String status, int room_id, int user_id, String username) {
         this.id = id;
         this.createdAt = createdAt;
         this.description = description;
@@ -21,6 +22,7 @@ public class Post {
         this.status = status;
         this.room_id = room_id;
         this.user_id = user_id;
+        this.username = username;
     }
 
     public String getName() {
@@ -42,12 +44,16 @@ public class Post {
     }
 
     public String getUsername() {
-        return User.getUsername(user_id);
+        return username;
     }
 
     public void setLikes(int i) {
         likes = i;
         // update likes in the database
+    }
+
+    public int getUser_id() {
+        return user_id;
     }
 }
 

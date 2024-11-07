@@ -2,6 +2,7 @@ package com.example.pwo.activities;
 
 import android.os.Bundle;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -42,6 +43,7 @@ public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnIte
             return insets;
         });
 
+
         ApiClient.getInstance().getApiService().getRooms().enqueue(new Callback<List<Room>>() {
             @Override
             public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
@@ -55,26 +57,15 @@ public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnIte
                     DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
                     recyclerView.addItemDecoration(dividerItemDecoration);
                 }else{
-                    Toast.makeText(RoomActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                    Log.e("RoomActivity", "onResponse: " + response.errorBody());
                 }
             }
 
             @Override
             public void onFailure(Call<List<Room>> call, Throwable t) {
-                Toast.makeText(RoomActivity.this, "Error", Toast.LENGTH_SHORT).show();
+                Log.e("RoomActivity", "onFailure: ", t);
             }
         });
-/*
-        // Get all rooms
-        rooms = Room.getAllRooms();
-        RecyclerView recyclerView = findViewById(R.id.room_recyclerview);
-        RoomAdapter adapter = new RoomAdapter(rooms, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-*/
         RoomAdapter.setOnItemClickListener(this);
     }
 
