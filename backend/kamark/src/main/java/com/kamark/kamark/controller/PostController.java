@@ -17,10 +17,16 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/post")
+@RequestMapping("/api/posts")
 public class PostController {
     @Autowired
     private PostService postService;
+
+    @GetMapping("/room/{roomId}")
+    public ResponseEntity<List<PostDTO>> getPostsByRoomId(@PathVariable Integer roomId) {
+        List<PostDTO> posts = postService.getPostsByRoomId(roomId);
+        return new ResponseEntity<>(posts, HttpStatus.OK);
+    }
 
     @PostMapping
     public ResponseEntity<String> createPost(@RequestBody PostDTO postDTO) {
