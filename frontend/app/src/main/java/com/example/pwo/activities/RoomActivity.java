@@ -2,6 +2,8 @@ package com.example.pwo.activities;
 
 import android.os.Bundle;
 import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,12 +17,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pwo.R;
 import com.example.pwo.adapters.RoomAdapter;
 import com.example.pwo.classes.Room;
+import com.example.pwo.network.ApiClient;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnItemClickListener {
 
+    private RecyclerView recyclerView;
+    private RoomAdapter adapter;
     private List<Room> rooms;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,17 +43,8 @@ public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnIte
             return insets;
         });
 
-        // Get all rooms
-        rooms = Room.getAllRooms();
-        RecyclerView recyclerView = findViewById(R.id.room_recyclerview);
-        RoomAdapter adapter = new RoomAdapter(rooms, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
-        recyclerView.addItemDecoration(dividerItemDecoration);
-
-        RoomAdapter.setOnItemClickListener(this);
+        getRooms();
     }
 
     @Override
@@ -52,5 +52,31 @@ public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnIte
         Intent intent = new Intent(RoomActivity.this, PostActivity.class);
         intent.putExtra("roomId", room.getId());
         startActivity(intent);
+    }
+
+    private void getRooms(){
+        ApiClient.getInstance().getApiService().getRooms().enqueue(new Callback<List<Room>>() {
+            @Override
+            public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    rooms = response.body();
+                    recyclerView = findViewById(R.id.room_recyclerview);
+                    adapter = new RoomAdapter(rooms, RoomActivity.this);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(RoomActivity.this));
+                    recyclerView.setAdapter(adapter);
+
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+                    recyclerView.addItemDecoration(dividerItemDecoration);
+                    RoomAdapter.setOnItemClickListener(RoomActivity.this);
+                }else{
+                    Log.e("RoomActivity", "onResponse: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Room>> call, Throwable t) {
+                Log.e("RoomActivity", "onFailure: ", t);
+            }
+        });
     }
 }
