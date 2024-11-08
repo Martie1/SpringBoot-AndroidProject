@@ -3,6 +3,7 @@ package com.example.pwo.activities;
 import android.os.Bundle;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,6 +19,7 @@ import com.example.pwo.R;
 import com.example.pwo.adapters.RoomAdapter;
 import com.example.pwo.classes.Room;
 import com.example.pwo.network.ApiClient;
+import com.google.android.material.navigation.NavigationBarMenu;
 
 import java.util.List;
 
@@ -26,7 +28,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnItemClickListener {
+public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClickListener {
 
     private RecyclerView recyclerView;
     private RoomAdapter adapter;
@@ -34,15 +36,9 @@ public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_room);
-
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.room), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        getLayoutInflater().inflate(R.layout.activity_room, findViewById(R.id.main));
         getRooms();
+        View navigationBarMenu = findViewById(R.id.bottom_navigation);
     }
 
     @Override
