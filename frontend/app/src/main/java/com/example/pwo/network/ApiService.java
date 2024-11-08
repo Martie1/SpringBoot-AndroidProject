@@ -1,6 +1,7 @@
 package com.example.pwo.network;
 import com.example.pwo.classes.Post;
 import com.example.pwo.classes.Room;
+import com.example.pwo.classes.User;
 import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.models.LoginRequest;
 import com.example.pwo.network.models.RegisterRequest;
@@ -30,4 +31,7 @@ public interface ApiService {
 
     @GET("/api/posts/{id}")
     Call<Post> getPost(@Path("id") int id);
+
+    @GET("/api/user/{token}")
+    Call<User> getUser(@Path("token") String token);
 }

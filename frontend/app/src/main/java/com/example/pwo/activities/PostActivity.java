@@ -29,7 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PostActivity extends AppCompatActivity implements PostAdapter.OnItemClickListener {
+public class PostActivity extends BaseActivity implements PostAdapter.OnItemClickListener {
     private List<Post> posts;
     private int roomId = 1;
     private Button addPostButton;
@@ -38,13 +38,7 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_post);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        getLayoutInflater().inflate(R.layout.activity_post, findViewById(R.id.main));
 
         Intent intent = getIntent();
         if(intent.hasExtra("roomId")) {
