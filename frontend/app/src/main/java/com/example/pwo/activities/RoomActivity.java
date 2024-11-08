@@ -60,8 +60,8 @@ public class RoomActivity extends AppCompatActivity implements RoomAdapter.OnIte
                     rooms = response.body();
                     recyclerView = findViewById(R.id.room_recyclerview);
                     adapter = new RoomAdapter(rooms, RoomActivity.this);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(RoomActivity.this));
                     recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(RoomActivity.this));
 
                     DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
                     recyclerView.addItemDecoration(dividerItemDecoration);

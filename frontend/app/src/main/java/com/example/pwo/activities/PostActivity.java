@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,7 +49,6 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
         Intent intent = getIntent();
         if(intent.hasExtra("roomId")) {
             int roomId = intent.getIntExtra("roomId", 1);
-            recyclerView = findViewById(R.id.recyclerView);
             fetchPosts(roomId);
         }
         else {
@@ -65,9 +65,10 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
 
     @Override
     public void onItemClick(Post post) {
-        /*Intent intent = new Intent(PostActivity.this, SinglePostActivity.class);
+        Intent intent = new Intent(PostActivity.this, SinglePostActivity.class);
         intent.putExtra("postId", post.getId());
-        startActivity(intent);*/
+        intent.putExtra("roomId", roomId);
+        startActivity(intent);
     }
 
     @Override
@@ -88,10 +89,13 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(response.isSuccessful() && response.body() != null) {
                     posts = response.body();
+                    recyclerView = findViewById(R.id.recyclerView);
 
                     adapter = new PostAdapter(posts, PostActivity.this);
                     recyclerView.setAdapter(adapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+                    recyclerView.addItemDecoration(dividerItemDecoration);
                     PostAdapter.setOnItemClickListener(PostActivity.this);
                 }else{
                     Log.e("PostActivity", "onResponse: " + response.errorBody());

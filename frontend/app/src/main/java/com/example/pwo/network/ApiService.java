@@ -22,9 +22,12 @@ public interface ApiService {
     @POST("auth/login")
     Call<AuthResponse> login(@Body LoginRequest loginRequest);
 
-    @GET("rooms")
+    @GET("api/rooms")
     Call<List<Room>> getRooms();
 
     @GET("/api/posts/room/{id}")
     Call<List<Post>> getPosts(@Path("id") int id);
+
+    @GET("/api/posts/{id}")
+    Call<Post> getPost(@Path("id") int id);
 }
