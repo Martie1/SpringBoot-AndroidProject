@@ -121,4 +121,15 @@ public class PostService {
 
         return dto;
     }
+    public boolean incrementReportCount(Integer postId) {
+        Optional<Post> postOptional = postRepository.findById(postId);
+        if (postOptional.isPresent()) {
+            Post post = postOptional.get();
+            post.setReportCount(post.getReportCount() + 1);
+            postRepository.save(post);
+            return true;
+        }
+        return false;
+    }
+
 }

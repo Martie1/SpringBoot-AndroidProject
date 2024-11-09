@@ -46,4 +46,8 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Like> likes; //many likes
+
+    @Column(name = "report_count", nullable = false)
+    private Integer reportCount = 0;
+
 }
