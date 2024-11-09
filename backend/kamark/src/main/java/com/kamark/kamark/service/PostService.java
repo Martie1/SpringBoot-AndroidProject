@@ -4,12 +4,13 @@ import com.kamark.kamark.dto.PostDTO;
 import com.kamark.kamark.entity.Post;
 import com.kamark.kamark.entity.Room;
 import com.kamark.kamark.entity.User;
+import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,11 +25,21 @@ public class PostService {
     private PostRepository postRepository;
     @Autowired
     private JWTUtils jwtUtils;
+    @Autowired
+    private LikeRepository likeRepository;
 
     //read
     public Optional<PostDTO> getPostById(Integer postId) {
-        return postRepository.findById(postId).map(this::convertToPostDTO);
+        return postRepository.findById(postId).map(this::mapToDTO);
     }
+    //
+    public List<PostDTO> getPostsByRoomId(Integer roomId) {
+        List<Post> posts = postRepository.findByRoomId(roomId);
+        return posts.stream()
+                .map(this::mapToDTO)
+                .toList();
+    }
+
     //create
     public boolean createPost(PostDTO postDTO) {
         Optional<User> userOptional = userRepository.findById(postDTO.getUserId());
@@ -106,14 +117,24 @@ public class PostService {
         return true;
     }
 
-    public PostDTO convertToPostDTO(Post post) {
-        PostDTO postDTO = new PostDTO();
-        postDTO.setName(post.getName());
-        postDTO.setDescription(post.getDescription());
-        postDTO.setUserId(post.getUser().getId());
-        postDTO.setRoomId(post.getRoom().getId());
-        postDTO.setStatus(post.getStatus());
-        return postDTO;
+    private PostDTO mapToDTO(Post post) {
+        PostDTO dto = new PostDTO();
+        dto.setId(post.getId());
+        dto.setName(post.getName());
+        dto.setDescription(post.getDescription());
+        dto.setStatus(post.getStatus());
+        dto.setCreatedAt(post.getCreatedAt());
+
+        dto.setUserId(post.getUser().getId());
+        dto.setUsername(post.getUser().getUsername());
+
+        int likeCount = likeRepository.countByPostId(post.getId());
+        dto.setLikeCount(likeCount);
+
+        if (post.getRoom() != null) {
+            dto.setRoomId(post.getRoom().getId());
+        }
+        return dto;
     }
 
 }

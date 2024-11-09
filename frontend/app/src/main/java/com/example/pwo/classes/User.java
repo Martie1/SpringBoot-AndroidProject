@@ -18,4 +18,8 @@ public class User {
         // fetch username from the server
         return "User " + userId;
     }
+
+    public static void setUsername(int userId, String name) {
+
+    }
 }

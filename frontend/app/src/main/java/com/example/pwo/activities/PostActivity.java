@@ -2,6 +2,7 @@ package com.example.pwo.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -10,16 +11,23 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pwo.R;
 import com.example.pwo.adapters.PostAdapter;
 import com.example.pwo.classes.Post;
+import com.example.pwo.classes.User;
+import com.example.pwo.network.ApiClient;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PostActivity extends AppCompatActivity implements PostAdapter.OnItemClickListener {
     private List<Post> posts;
@@ -41,21 +49,11 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
         Intent intent = getIntent();
         if(intent.hasExtra("roomId")) {
             int roomId = intent.getIntExtra("roomId", 1);
-            // fetchPosts(roomId) // fetch posts from the server
-            posts = new ArrayList<>();
-            for (int i = 0; i < 10; i++) {
-                posts.add(new Post(i, new Date(), "Description " + i, "Name " + i, i, "Status " + i, roomId, i));
-            }
+            fetchPosts(roomId);
         }
         else {
             Toast.makeText(this, "No Posts found in this room!", Toast.LENGTH_SHORT).show();
         }
-
-        recyclerView = findViewById(R.id.recyclerView);
-        adapter = new PostAdapter(posts, this);
-        recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        PostAdapter.setOnItemClickListener(this);
 
         addPostButton = findViewById(R.id.btnAddPost);
         addPostButton.setOnClickListener(v -> {
@@ -67,7 +65,10 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
 
     @Override
     public void onItemClick(Post post) {
-        Toast.makeText(this, "Post " + post.getName() + " clicked!", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(PostActivity.this, SinglePostActivity.class);
+        intent.putExtra("postId", post.getId());
+        intent.putExtra("roomId", roomId);
+        startActivity(intent);
     }
 
     @Override
@@ -75,7 +76,7 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                posts.add(new Post(posts.size(), new Date(), data.getStringExtra("title"), data.getStringExtra("description"), 0, "Status", roomId, 0));
+                posts.add(new Post(posts.size(), new Date(), data.getStringExtra("title"), data.getStringExtra("description"), 0, "Status", roomId, 0, "User"));
                 adapter.notifyDataSetChanged();
                 // fetchPosts(roomId) // fetch posts from the server
             }
@@ -83,6 +84,28 @@ public class PostActivity extends AppCompatActivity implements PostAdapter.OnIte
     }
 
     private void fetchPosts(int roomId) {
-        // fetch posts from the server
+        ApiClient.getInstance().getApiService().getPosts(roomId).enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    posts = response.body();
+                    recyclerView = findViewById(R.id.recyclerView);
+
+                    adapter = new PostAdapter(posts, PostActivity.this);
+                    recyclerView.setAdapter(adapter);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+                    recyclerView.addItemDecoration(dividerItemDecoration);
+                    PostAdapter.setOnItemClickListener(PostActivity.this);
+                }else{
+                    Log.e("PostActivity", "onResponse: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                Log.e("PostActivity", "onFailure: ", t);
+            }
+        });
     }
 }

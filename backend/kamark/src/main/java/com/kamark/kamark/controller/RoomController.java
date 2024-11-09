@@ -1,5 +1,6 @@
 package com.kamark.kamark.controller;
 
+import com.kamark.kamark.dto.RoomDTO;
 import com.kamark.kamark.entity.Room;
 import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.service.RoomService;
@@ -15,15 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/rooms")
+@RequestMapping("/api/rooms")
 public class RoomController {
 
     @Autowired
     private RoomService roomService;
 
     @GetMapping
-    public ResponseEntity<List<Room>> getAllRooms(Authentication authentication) {
-        List<Room> rooms = roomService.getAllRooms();
+    public ResponseEntity<List<RoomDTO>> getAllRooms(Authentication authentication) {
+        List<RoomDTO> rooms = roomService.getAllRooms();
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 }
