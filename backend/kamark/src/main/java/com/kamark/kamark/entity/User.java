@@ -19,17 +19,18 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Integer id;
 
-    public String getEmail() {
-        return email;
-    }
 
     @Column(unique = true, length = 255, nullable = false)
     private String email;
+
     @Column(unique = true, length = 100, nullable = false)
     private String username;
 
     @Column(nullable = false,length = 255)
     private String password;
+
+    @Column(nullable = true, length = 30)
+    private String status;
 
     @Column(length = 30)
     private String role; // "USER" "ADMIN"
@@ -76,6 +77,12 @@ public class User implements UserDetails {
         return true;
     }
 
+    @Override
+    public String getUsername() {
+        return username;
+    }
 
-    // Getters and setters
+    public String getEmail() {
+        return email;
+    }
 }

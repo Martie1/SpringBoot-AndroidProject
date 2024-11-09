@@ -1,6 +1,7 @@
 package com.kamark.kamark.service;
 
-import com.kamark.kamark.dto.PostDTO;
+import com.kamark.kamark.dto.CreatePostDTO;
+import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.entity.Post;
 import com.kamark.kamark.entity.Room;
 import com.kamark.kamark.entity.User;
@@ -10,11 +11,18 @@ import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
+
+    @Autowired
+    private PostRepository postRepository;
+
     @Autowired
     private UserRepository userRepository;
 
@@ -22,119 +30,95 @@ public class PostService {
     private RoomRepository roomRepository;
 
     @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private JWTUtils jwtUtils;
-    @Autowired
     private LikeRepository likeRepository;
 
-    //read
-    public Optional<PostDTO> getPostById(Integer postId) {
-        return postRepository.findById(postId).map(this::mapToDTO);
-    }
-    //
-    public List<PostDTO> getPostsByRoomId(Integer roomId) {
-        List<Post> posts = postRepository.findByRoomId(roomId);
-        return posts.stream()
-                .map(this::mapToDTO)
-                .toList();
-    }
-
-    //create
-    public boolean createPost(PostDTO postDTO) {
-        Optional<User> userOptional = userRepository.findById(postDTO.getUserId());
+    public boolean createPost(CreatePostDTO createPostDTO, Integer userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return false;
         }
+        User user = userOptional.get();
 
-        Optional<Room> roomOptional = roomRepository.findById(postDTO.getRoomId());
+        Optional<Room> roomOptional = roomRepository.findById(createPostDTO.getRoomId());
         if (roomOptional.isEmpty()) {
             return false;
         }
+        Room room = roomOptional.get();
 
         Post post = new Post();
-        post.setName(postDTO.getName());
-        post.setDescription(postDTO.getDescription());
-        post.setStatus("alive");
-        post.setUser(userOptional.get());
-        post.setRoom(roomOptional.get());
-
+        post.setName(createPostDTO.getName());
+        post.setDescription(createPostDTO.getDescription());
+        post.setUser(user);
+        post.setRoom(room);
+        post.setCreatedAt(new Date());
+        post.setStatus("ACTIVE");
         postRepository.save(post);
         return true;
     }
 
-    //update by user who created it
-    public Optional<Post> updatePost(Integer postId, PostDTO postDTO) {
-
-        if (postId == null) {
-            throw new IllegalArgumentException("Post ID must not be null");
-        }
-        Optional<Post> existingPostOptional = postRepository.findById(postId);
-        if (existingPostOptional.isEmpty()) {
-            return Optional.empty(); //if not exists, return null
-        }
-
-        Post existingPost = existingPostOptional.get();
-        existingPost.setName(postDTO.getName());
-        existingPost.setDescription(postDTO.getDescription());
-
-
-        //implement after token usage
-        /*
-
-        Integer userId = jwtUtils.extractUserIdFromToken();
-
-        if (!existingPost.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("User is not the owner of this post.");
-        }*/
-
-        Post updatedPost = postRepository.save(existingPost);
-        return Optional.of(updatedPost);
+    public Optional<PostResponseDTO> getPostById(Integer id) {
+        return postRepository.findById(id).map(this::mapToDTO);
     }
 
-    //delete for owner of post, or admin
-    public boolean deletePost(Integer postId) {
-        Optional<Post> existingPostOptional = postRepository.findById(postId);
-        if (existingPostOptional.isEmpty()) {
-            return false;
-        }
-
-        Post existingPost = existingPostOptional.get();
-
-        //
-        /*
-        Integer userId = jwtUtils.extractUserIdFromToken();
-
-        // is the author or is admin
-        if (!existingPost.getUser().getId().equals(userId)) {
-            throw new AccessDeniedException("User is not the owner of this post.");
-        }
-        */
-
-
-        // delete post, literally deletes from db.
-        postRepository.delete(existingPost);
-        return true;
+    public List<PostResponseDTO> getPostsByRoomId(Integer roomId) {
+        List<Post> posts = postRepository.findByRoomId(roomId);
+        return posts.stream()
+                .map(this::mapToDTO)
+                .collect(Collectors.toList());
     }
 
-    private PostDTO mapToDTO(Post post) {
-        PostDTO dto = new PostDTO();
+    public Optional<Post> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId) {
+        Optional<Post> existingPost = postRepository.findById(postId);
+        if (existingPost.isPresent()) {
+            Post post = existingPost.get();
+
+            if (!post.getUser().getId().equals(userId)) {
+                return Optional.empty(); // Brak uprawnień
+            }
+
+            post.setName(postDTO.getName());
+            post.setDescription(postDTO.getDescription());
+            post.setUpdatedAt(new Date());
+            postRepository.save(post);
+            return Optional.of(post);
+        }
+        return Optional.empty();
+    }
+
+    public boolean deletePost(Integer postId, Integer userId) {
+        Optional<Post> existingPost = postRepository.findById(postId);
+        if (existingPost.isPresent()) {
+            Post post = existingPost.get();
+
+            if (!post.getUser().getId().equals(userId)) {
+                return false;
+            }
+
+            postRepository.delete(post);
+            return true;
+        }
+        return false;
+    }
+
+    private PostResponseDTO mapToDTO(Post post) {
+        PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
         dto.setName(post.getName());
         dto.setDescription(post.getDescription());
         dto.setStatus(post.getStatus());
         dto.setCreatedAt(post.getCreatedAt());
 
-        dto.setUserId(post.getUser().getId());
-        dto.setUsername(post.getUser().getUsername());
-
-        int likeCount = likeRepository.countByPostId(post.getId());
-        dto.setLikeCount(likeCount);
+        if (post.getUser() != null) {
+            dto.setUserId(post.getUser().getId());
+            dto.setUsername(post.getUser().getUsername());
+        }
 
         if (post.getRoom() != null) {
             dto.setRoomId(post.getRoom().getId());
         }
+
+        dto.setLikeCount(likeRepository.countByPostId(post.getId()));
+
         return dto;
     }
-
 }

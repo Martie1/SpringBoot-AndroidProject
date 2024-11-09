@@ -1,13 +1,15 @@
 package com.kamark.kamark.dto;
 
-import com.kamark.kamark.entity.Room;
-import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Data
-public class PostDTO {
+@AllArgsConstructor
+@NoArgsConstructor
+public class PostResponseDTO {
     private Integer id;
     private String name;
     private String description;

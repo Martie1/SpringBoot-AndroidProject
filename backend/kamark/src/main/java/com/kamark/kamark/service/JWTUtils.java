@@ -37,8 +37,7 @@ public class JWTUtils {
                 .collect(Collectors.toList());
 
         return Jwts.builder()
-                .subject(user.getEmail())
-                .claim("userId", user.getId())
+                .subject(String.valueOf(user.getId()))
                 .claim("roles", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME))
@@ -50,26 +49,25 @@ public class JWTUtils {
         return extractClaims(token, Claims::getSubject);
     }
 
-    public String extractUserIdFromToken(String token) {
-        return extractClaims(token, claims -> claims.get("userId", String.class));
-    }
 
     private <T> T extractClaims(String token, Function<Claims, T> claimsTFunction){
         return claimsTFunction.apply(Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload());
     }
 
-
+    public Integer extractUserId(String token) {
+        return Integer.parseInt(extractClaims(token, Claims::getSubject));
+    }
 
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String email = extractEmail(token);
-        logger.info("Email from token: " + email);
-        String userEmail = ((User) userDetails).getEmail();//rzutujemy na obiekt User i używamy metody User'a
-        logger.info("Expected email: " + userEmail);
+        Integer userIdFromToken = extractUserId(token);
+        Integer userId = ((User) userDetails).getId();
+        logger.info("UserId from token: " + userIdFromToken);
+        logger.info("Expected UserId: " + userId);
         logger.info("Token expired: " + isTokenExpired(token));
-
-        return (email.equals(userEmail) && !isTokenExpired(token));
+        return (userIdFromToken.equals(userId) && !isTokenExpired(token));
     }
+
     public boolean isTokenExpired(String token){
         return extractClaims(token, Claims::getExpiration).before(new Date());
     }

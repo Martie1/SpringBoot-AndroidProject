@@ -33,8 +33,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         String requestPath = request.getServletPath();
 
         Set<String> allowedPaths = Set.of("/rooms");
-        List<String> allowedPrefixes = List.of("/post", "/rooms", "/auth","/api");
-
+        List<String> allowedPrefixes = List.of("/post", "/rooms", "/auth", "/api", "/user");
 
         boolean isAllowed = allowedPaths.contains(requestPath) || allowedPrefixes.stream().anyMatch(requestPath::startsWith);
         if (isAllowed) {
@@ -42,45 +41,41 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-
         final String authHeader = request.getHeader("Authorization");
         final String jwtToken;
-        final String email;
+        final Integer userId;
 
-        // header exists and starts with "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // get only the jwt token
         jwtToken = authHeader.substring(7);
-        email = jwtUtils.extractEmail(jwtToken);
 
-        logger.info("Extracted email from token: " + email);
+        userId = jwtUtils.extractUserId(jwtToken);
+
+        logger.info("Extracted userId from token: " + userId);
         logger.info("Current SecurityContext authentication: " + SecurityContextHolder.getContext().getAuthentication());
 
-        // email exists in jwt and context is null
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = ourUserDetailsService.loadUserByUsername(email);
+        if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            UserDetails userDetails = ourUserDetailsService.loadUserById(userId);
 
-            //is valid
             if (jwtUtils.isTokenValid(jwtToken, userDetails)) {
                 UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities()
                 );
                 authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-                //SecurityContextHolder and authenticate
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-                logger.info("Uwierzytelniony użytkownik: " + email);
+                logger.info("Uwierzytelniony użytkownik: " + userId);
                 logger.info("Role użytkownika: " + userDetails.getAuthorities());
             } else {
-                logger.info("Invalid token for user: " + email);
+                logger.info("Invalid token for user: " + userId);
             }
         }
 
         filterChain.doFilter(request, response);
     }
+
 }

@@ -25,12 +25,22 @@ public class AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    private AuthResponse createAuthResponse(String token, String message) {
+        AuthResponse response = new AuthResponse();
+        response.setToken(token);
+        response.setExpirationTime("24Hr");
+        response.setMessage(message);
+        response.setStatusCode(200);
+        return response;
+    }
+
     public ResponseEntity<?> register(RegisterRequest registrationRequest) {
         try {
             User user = new User();
             user.setEmail(registrationRequest.getEmail());
             user.setUsername(registrationRequest.getUsername());
             user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
+            user.setStatus("alive");
             user.setRole("USER");
 
             User ourUserResult = ourUserRepo.save(user);
@@ -38,12 +48,7 @@ public class AuthService {
                 String jwt = jwtUtils.generateToken(ourUserResult);
 
 
-                AuthResponse response = new AuthResponse();
-                response.setToken(jwt);
-                response.setExpirationTime("24Hr");
-                response.setMessage("User Registered Successfully");
-                response.setStatusCode(200);
-
+                AuthResponse response = createAuthResponse(jwt, "User Registered Successfully");
                 return ResponseEntity.ok(response);
             } else {
                 return ResponseEntity.status(500).body(new ErrorResponse(500, "Failed to register user."));
@@ -62,12 +67,8 @@ public class AuthService {
                     () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
             );
             String jwt = jwtUtils.generateToken(user);
-            AuthResponse response = new AuthResponse();
-            response.setStatusCode(200);
-            response.setToken(jwt);
-            response.setExpirationTime("24Hr");
-            response.setMessage("Successfully Signed In");
 
+            AuthResponse response = createAuthResponse(jwt, "Successfully Signed In");
             return ResponseEntity.ok(response);
 
         } catch (Exception e) {
