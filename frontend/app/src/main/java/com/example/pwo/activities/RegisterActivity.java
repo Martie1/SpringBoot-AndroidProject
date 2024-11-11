@@ -38,6 +38,7 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnRegister = findViewById(R.id.btnRegisterSubmit);
         btnRegister.setOnClickListener(v -> performRegistration());
+
     }
 
     private void performRegistration() {

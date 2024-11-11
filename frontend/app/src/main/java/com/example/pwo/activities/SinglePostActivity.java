@@ -21,7 +21,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SinglePostActivity extends AppCompatActivity {
+public class SinglePostActivity extends BaseActivity {
 
     private Post post;
     private TextView tvUsername;
@@ -34,13 +34,7 @@ public class SinglePostActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_single_post);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        getLayoutInflater().inflate(R.layout.activity_single_post, findViewById(R.id.main));
 
         tvUsername = findViewById(R.id.tvUsername);
         tvTitle = findViewById(R.id.tvTitle);

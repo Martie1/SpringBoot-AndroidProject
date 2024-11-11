@@ -14,12 +14,13 @@ public class User {
         this.role = role;
     }
 
-    public static String getUsername(int userId) {
-        // fetch username from the server
-        return "User " + userId;
+    public String getUsername() {
+        return username;
     }
-
-    public static void setUsername(int userId, String name) {
-
+    public String getEmail() {
+        return email;
+    }
+    public String getRole() {
+        return role;
     }
 }
