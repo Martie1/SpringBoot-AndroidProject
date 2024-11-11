@@ -31,13 +31,14 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_register, findViewById(R.id.main));
+        setContentView(R.layout.activity_register);
 
         etUsername = findViewById(R.id.etUsername);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnRegister = findViewById(R.id.btnRegisterSubmit);
         btnRegister.setOnClickListener(v -> performRegistration());
+
     }
 
     private void performRegistration() {
