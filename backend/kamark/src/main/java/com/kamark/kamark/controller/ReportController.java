@@ -10,9 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.Optional; // Dla Optional
-import com.kamark.kamark.entity.Post; // Dla encji Post
-import com.kamark.kamark.repository.PostRepository;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/posts")

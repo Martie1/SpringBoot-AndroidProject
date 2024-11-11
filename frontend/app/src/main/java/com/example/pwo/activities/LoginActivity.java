@@ -17,6 +17,7 @@ import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.models.ErrorResponse;
 import com.example.pwo.network.models.LoginRequest; // Zmiana na LoginRequest
+import com.example.pwo.utils.TokenManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -31,6 +32,8 @@ public class LoginActivity extends AppCompatActivity {
     private Button btnLogin;
     private ImageView btnBack;
     private TextView tvRegister;
+    TokenManager tokenManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,7 @@ public class LoginActivity extends AppCompatActivity {
         tvRegister = findViewById(R.id.tvSignUp);
         btnBack = findViewById(R.id.backbutton);
         btnLogin.setOnClickListener(v -> performLogin());
+        TokenManager tokenManager = new TokenManager(getApplicationContext());
         tvRegister.setOnClickListener(v -> {
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
             startActivity(intent);
@@ -70,16 +74,9 @@ public class LoginActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     AuthResponse authResponse = response.body();
 
-
-                    String token = authResponse.getToken();
-                    SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("auth_token", token);
-                    editor.apply();
-
-
-                    String savedToken = sharedPreferences.getString("auth_token", null);
-                    Log.d("LoginActivity", "Saved Token: " + savedToken);
+                    String accessToken = authResponse.getAccessToken();
+                    String refreshToken = authResponse.getRefreshToken();
+                    tokenManager.saveTokens(accessToken, refreshToken);
 
                     Toast.makeText(LoginActivity.this, authResponse.getMessage(), Toast.LENGTH_SHORT).show();
 

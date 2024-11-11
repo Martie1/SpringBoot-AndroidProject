@@ -15,8 +15,7 @@ import retrofit2.http.POST;
 import retrofit2.http.Body;
 import retrofit2.http.Path;
 
-//mapping frontend requests for backend routes
-//ApiService will be used by retrofit.
+
 public interface ApiService {
     @POST("/auth/register")
     Call<AuthResponse> register(@Body RegisterRequest registerRequest);
@@ -25,13 +24,13 @@ public interface ApiService {
     Call<AuthResponse> login(@Body LoginRequest loginRequest);
 
     @GET("/api/rooms")
-    Call<List<Room>> getRooms();
+    Call<List<Room>> getRooms(@Header("Authorization") String token);
 
     @GET("/api/posts/room/{id}")
-    Call<List<Post>> getPosts(@Path("id") int id);
+    Call<List<Post>> getPosts(@Path("id") int id,@Header("Authorization") String token);
 
     @GET("/api/posts/{id}")
-    Call<Post> getPost(@Path("id") int id);
+    Call<Post> getPost(@Path("id") int id,@Header("Authorization") String token);
 
     @GET("/api/user/profile")
     Call<User> getUser(@Header("Authorization") String token);

@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.pwo.R;
 import com.example.pwo.classes.Post;
 import com.example.pwo.network.ApiClient;
+import com.example.pwo.utils.TokenManager;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,6 +32,7 @@ public class SinglePostActivity extends BaseActivity {
     private CompoundButton tvLikes;
     private int likes = 0;
     private ImageView ivRoomImage;
+    TokenManager tokenManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,10 +45,13 @@ public class SinglePostActivity extends BaseActivity {
         tvLikes = findViewById(R.id.cbLike);
         ivRoomImage = findViewById(R.id.ivRoomImage);
 
+        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        String token =tokenManager.getAccessToken();
+
         Intent intent = getIntent();
         if(intent.hasExtra("postId")) {
             int postId = intent.getIntExtra("postId", 1);
-            fetchPost(postId);
+            fetchPost(postId,token);
         }
         tvLikes.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked) {
@@ -61,8 +66,8 @@ public class SinglePostActivity extends BaseActivity {
         });
     }
 
-    private void fetchPost(int postId) {
-        ApiClient.getInstance().getApiService().getPost(postId).enqueue(new Callback<Post>() {
+    private void fetchPost(int postId,String token) {
+        ApiClient.getInstance().getApiService().getPost(postId,"Bearer "+token).enqueue(new Callback<Post>() {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
                 if(response.isSuccessful()) {

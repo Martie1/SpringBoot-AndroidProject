@@ -7,6 +7,7 @@ import com.kamark.kamark.entity.User;
 public class AuthResponse {
     private int statusCode;
     private String message;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private String expirationTime;
 }

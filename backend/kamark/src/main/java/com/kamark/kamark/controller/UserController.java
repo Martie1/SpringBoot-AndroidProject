@@ -2,14 +2,11 @@ package com.kamark.kamark.controller;
 
 import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.dto.UserProfileDTO;
-import com.kamark.kamark.entity.User;
-import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.service.JWTUtils;
 import com.kamark.kamark.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

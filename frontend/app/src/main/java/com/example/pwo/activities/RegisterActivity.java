@@ -17,6 +17,7 @@ import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.models.ErrorResponse;
 import com.example.pwo.network.models.RegisterRequest;
+import com.example.pwo.utils.TokenManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -31,6 +32,8 @@ public class RegisterActivity extends AppCompatActivity {
     private Button btnRegister;
     private ImageView btnBack;
     private TextView tvSignIn;
+    TokenManager tokenManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +55,7 @@ public class RegisterActivity extends AppCompatActivity {
             Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
             startActivity(intent);
         });
+        tokenManager = new TokenManager(getApplicationContext());
     }
 
     private void performRegistration() {
@@ -73,15 +77,9 @@ public class RegisterActivity extends AppCompatActivity {
                     AuthResponse authResponse = response.body();
 
 //jwt token now will be stored in android device
-                    String token = authResponse.getToken();
-                    SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("auth_token", token);
-                    editor.apply();
-
-                    //check for token saved
-                    String savedToken = sharedPreferences.getString("auth_token", null);
-                    Log.d("RegisterActivity", "Saved Token: " + savedToken);
+                    String accessToken = authResponse.getAccessToken();
+                    String refreshToken = authResponse.getRefreshToken();
+                    tokenManager.saveTokens(accessToken, refreshToken);
 
                     Toast.makeText(RegisterActivity.this, authResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
