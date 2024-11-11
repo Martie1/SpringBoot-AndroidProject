@@ -1,8 +1,10 @@
 package com.example.pwo.activities;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -25,6 +27,7 @@ public class ProfileActivity extends BaseActivity {
     private User user;
     private TextView tvUsername;
     private TextView tvEmail;
+    private Button btnLogout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,7 +42,17 @@ public class ProfileActivity extends BaseActivity {
         String token = sharedPreferences.getString("auth_token", null);
         tvUsername = findViewById(R.id.tvUsername);
         tvEmail = findViewById(R.id.tvEmail);
+        btnLogout = findViewById(R.id.btnLogout);
         fetchUserDetails(token);
+        btnLogout.setOnClickListener(v -> logout());
+    }
+    private void logout(){
+        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove("auth_token");
+        editor.apply();
+        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+        startActivity(intent);
     }
     private void fetchUserDetails(String token) {
         ApiClient.getInstance().getApiService().getUser("Bearer "+token).enqueue(new Callback<User>() {
