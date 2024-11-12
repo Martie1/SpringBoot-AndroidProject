@@ -40,9 +40,9 @@ public class RegisterActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.etUsername);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
-        btnRegister = findViewById(R.id.btnRegisterSubmit);
+        btnRegister = findViewById(R.id.btnLogin);
         btnBack = findViewById(R.id.backbutton);
-        tvSignIn = findViewById(R.id.tvSignIn);
+        tvSignIn = findViewById(R.id.tvSignUp);
         btnRegister.setOnClickListener(v -> performRegistration());
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
