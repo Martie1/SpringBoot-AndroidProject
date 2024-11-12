@@ -12,6 +12,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -62,7 +63,7 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
                     recyclerView = findViewById(R.id.room_recyclerview);
                     adapter = new RoomAdapter(rooms, RoomActivity.this);
                     recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(RoomActivity.this));
+                    recyclerView.setLayoutManager(new GridLayoutManager(RoomActivity.this, 2));
 
                     DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
                     recyclerView.addItemDecoration(dividerItemDecoration);

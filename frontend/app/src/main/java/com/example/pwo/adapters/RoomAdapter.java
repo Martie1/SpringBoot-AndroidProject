@@ -14,6 +14,7 @@ import com.example.pwo.classes.Room;
 import java.util.List;
 
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder> {
     private static List<Room> rooms;
@@ -40,6 +41,7 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
             imageId = R.drawable.resource_default;
         }
         holder.roomImage.setImageResource(imageId);
+        holder.roomName.setText(room.getName());
     }
 
     @Override
@@ -56,9 +58,11 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
 
     public static class RoomViewHolder extends RecyclerView.ViewHolder{
         private ImageView roomImage;
+        private TextView roomName;
         public RoomViewHolder(@NonNull View itemView) {
             super(itemView);
             roomImage = itemView.findViewById(R.id.imageView);
+            roomName = itemView.findViewById(R.id.tvRoomName);
             itemView.setOnClickListener(v -> {
                 if(listener != null) {
                     int position = getAdapterPosition();

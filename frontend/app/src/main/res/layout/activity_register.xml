@@ -1,11 +1,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#30140B"
-    >
+    android:background="#30140B">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,6 +19,7 @@
 
         <EditText
             android:id="@+id/etUsername"
+            android:autofillHints="username"
             android:layout_width="371dp"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -30,12 +29,15 @@
             android:layout_marginTop="40dp"
             android:layout_marginEnd="25dp"
             android:background="@drawable/shape"
-            android:hint="Username"
+            android:hint="@string/username"
+            android:inputType="text"
             android:minHeight="48dp"
-            android:paddingStart="10dp" />
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp" />
 
         <EditText
             android:id="@+id/etEmail"
+            android:autofillHints="emailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/etUsername"
@@ -45,13 +47,15 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="25dp"
             android:background="@drawable/shape"
-            android:hint="Email"
+            android:hint="@string/email"
             android:inputType="textEmailAddress"
             android:minHeight="48dp"
-            android:paddingStart="10dp" />
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"/>
 
         <EditText
             android:id="@+id/etPassword"
+            android:autofillHints="password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/etEmail"
@@ -61,10 +65,11 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="25dp"
             android:background="@drawable/shape"
-            android:hint="Password"
+            android:hint="@string/password"
             android:inputType="textPassword"
             android:minHeight="48dp"
-            android:paddingStart="10dp" />
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp" />
 
         <Button
             android:id="@+id/btnLogin"
@@ -78,7 +83,7 @@
             android:layout_marginEnd="30dp"
             android:backgroundTint="#30140B"
             android:fontFamily="sans-serif-medium"
-            android:text="Sign up"
+            android:text="@string/sign_up"
             android:textAllCaps="false"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="#FDA214"
@@ -94,7 +99,7 @@
         android:layout_height="120dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="76dp"
-        android:text="Create an account"
+        android:text="@string/create_an_account"
         android:textColor="#FFFFFF"
         android:textSize="48sp"
         android:textStyle="bold"
@@ -106,7 +111,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:text="Already have an account? "
+        android:text="@string/already_have_an_account"
         android:textColor="#FFFFFF"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -116,7 +121,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:text="Sign in"
+        android:text="@string/sign_in"
         android:textColor="#F79D13"
         app:layout_constraintStart_toEndOf="@+id/textView2"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
@@ -127,6 +132,7 @@
         android:layout_height="33dp"
         android:layout_marginStart="32dp"
         android:layout_marginTop="16dp"
+        android:contentDescription="@string/backbutton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/baseline_arrow_back_24" />
