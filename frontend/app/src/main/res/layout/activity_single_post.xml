@@ -17,6 +17,7 @@
         android:layout_marginStart="50dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="50dp"
+        android:contentDescription="@string/roomimage"
         app:srcCompat="@drawable/ic_profile" />
 
     <TextView
@@ -27,7 +28,7 @@
         android:layout_alignParentEnd="true"
         android:layout_marginTop="30dp"
         android:layout_marginEnd="20dp"
-        android:text="Date"
+        android:text="@string/date"
         android:textSize="16sp" />
 
     <TextView
@@ -38,7 +39,7 @@
         android:layout_marginTop="30dp"
         android:layout_marginEnd="0dp"
         android:layout_toStartOf="@+id/tvDate"
-        android:text="Date Added:"
+        android:text="@string/date_added"
         android:textSize="16sp" />
 
     <TextView
@@ -49,7 +50,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="30dp"
         android:layout_toEndOf="@+id/cbLike"
-        android:text="Username"
+        android:text="@string/username"
         android:textSize="20sp" />
 
     <TextView
@@ -62,8 +63,9 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="60dp"
         android:layout_marginEnd="0dp"
-        android:text="Some Weird Name for single post"
-        android:textSize="28sp" />
+        android:text="@string/post_name"
+        android:textSize="28sp"
+        tools:ignore="HardcodedText" />
 
     <TextView
         android:id="@+id/tvDescription"
@@ -75,7 +77,7 @@
         android:layout_marginStart="0dp"
         android:layout_marginTop="0dp"
         android:layout_marginEnd="0dp"
-        android:text="something along the lines of a description would be, something very long. not meaningful in any way. Just a way to fully describe the post of a user"
+        android:text="@string/post_description_full"
         android:textSize="20sp" />
 
     <com.google.android.material.checkbox.MaterialCheckBox
@@ -91,7 +93,7 @@
         android:elevation="1dp"
         android:gravity="end|center"
         android:stateListAnimator="@animator/scale"
-        android:text="4"
+        android:text="@string/_4"
         android:textAlignment="viewEnd"
         android:textColor="@color/color_grey" />
     <com.google.android.material.bottomnavigation.BottomNavigationView
