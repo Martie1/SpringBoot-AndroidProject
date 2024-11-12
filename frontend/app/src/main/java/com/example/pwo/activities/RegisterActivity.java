@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.content.SharedPreferences;
 
@@ -27,6 +29,8 @@ import retrofit2.Response;
 public class RegisterActivity extends AppCompatActivity {
     private EditText etUsername, etEmail, etPassword;
     private Button btnRegister;
+    private ImageView btnBack;
+    private TextView tvSignIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +41,17 @@ public class RegisterActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnRegister = findViewById(R.id.btnRegisterSubmit);
+        btnBack = findViewById(R.id.backbutton);
+        tvSignIn = findViewById(R.id.tvSignIn);
         btnRegister.setOnClickListener(v -> performRegistration());
-
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
+            startActivity(intent);
+        });
+        tvSignIn.setOnClickListener(v -> {
+            Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void performRegistration() {
