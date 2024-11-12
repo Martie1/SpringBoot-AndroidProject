@@ -32,10 +32,10 @@ public class JWTAuthFilter extends OncePerRequestFilter {
 
         String requestPath = request.getServletPath();
 
-        Set<String> allowedPaths = Set.of("/rooms");
-        List<String> allowedPrefixes = List.of("/post", "/rooms", "/auth", "/api", "/user");
 
-        boolean isAllowed = allowedPaths.contains(requestPath) || allowedPrefixes.stream().anyMatch(requestPath::startsWith);
+        List<String> allowedPrefixes = List.of("/auth");
+
+        boolean isAllowed =allowedPrefixes.stream().anyMatch(requestPath::startsWith);
         if (isAllowed) {
             filterChain.doFilter(request, response);
             return;

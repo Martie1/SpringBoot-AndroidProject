@@ -20,6 +20,7 @@ import com.example.pwo.adapters.PostAdapter;
 import com.example.pwo.classes.Post;
 import com.example.pwo.classes.User;
 import com.example.pwo.network.ApiClient;
+import com.example.pwo.utils.TokenManager;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -35,15 +36,18 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
     private Button addPostButton;
     private PostAdapter adapter;
     private RecyclerView recyclerView;
+    TokenManager tokenManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_post, findViewById(R.id.main));
-
+        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        String token =tokenManager.getAccessToken();
         Intent intent = getIntent();
         if(intent.hasExtra("roomId")) {
             int roomId = intent.getIntExtra("roomId", 1);
-            fetchPosts(roomId);
+            fetchPosts(roomId,token);
         }
         else {
             Toast.makeText(this, "No Posts found in this room!", Toast.LENGTH_SHORT).show();
@@ -55,6 +59,7 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
             addPostIntent.putExtra("roomId", roomId);
             startActivityForResult(addPostIntent, 1);
         });
+
     }
 
     @Override
@@ -77,8 +82,8 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
         }
     }
 
-    private void fetchPosts(int roomId) {
-        ApiClient.getInstance().getApiService().getPosts(roomId).enqueue(new Callback<List<Post>>() {
+    private void fetchPosts(int roomId,String token) {
+        ApiClient.getInstance().getApiService().getPosts(roomId,"Bearer "+ token).enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(response.isSuccessful() && response.body() != null) {

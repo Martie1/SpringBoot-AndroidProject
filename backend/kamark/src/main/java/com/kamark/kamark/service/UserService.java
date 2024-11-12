@@ -5,12 +5,10 @@ import com.kamark.kamark.dto.UserProfileDTO;
 import com.kamark.kamark.entity.Like;
 import com.kamark.kamark.entity.Post;
 import com.kamark.kamark.entity.User;
-import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

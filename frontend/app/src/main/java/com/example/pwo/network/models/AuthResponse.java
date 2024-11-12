@@ -1,16 +1,18 @@
 package com.example.pwo.network.models;
 
-//returned after register/login. Register automatically logs in also.
+//returned after register/login.
 public class AuthResponse {
     private int statusCode;
     private String message;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
     private String expirationTime;
 
-    public AuthResponse(int statusCode, String message, String token, String expirationTime) {
+    public AuthResponse(int statusCode, String message, String accessToken, String refreshToken, String expirationTime) {
         this.statusCode = statusCode;
         this.message = message;
-        this.token = token;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
         this.expirationTime = expirationTime;
     }
 
@@ -22,9 +24,10 @@ public class AuthResponse {
         return message;
     }
 
-    public String getToken() {
-        return token;
+    public String getAccessToken() {
+        return accessToken;
     }
+    public String getRefreshToken() {return refreshToken;}
 
     public String getExpirationTime() {
         return expirationTime;

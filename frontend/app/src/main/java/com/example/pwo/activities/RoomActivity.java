@@ -19,6 +19,7 @@ import com.example.pwo.R;
 import com.example.pwo.adapters.RoomAdapter;
 import com.example.pwo.classes.Room;
 import com.example.pwo.network.ApiClient;
+import com.example.pwo.utils.TokenManager;
 import com.google.android.material.navigation.NavigationBarMenu;
 
 import java.util.List;
@@ -33,12 +34,16 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
     private RecyclerView recyclerView;
     private RoomAdapter adapter;
     private List<Room> rooms;
+    TokenManager tokenManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_room, findViewById(R.id.main));
-        getRooms();
+
         View navigationBarMenu = findViewById(R.id.bottom_navigation);
+        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        String token = tokenManager.getAccessToken();
+        getRooms(token);
     }
 
     @Override
@@ -48,8 +53,8 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
         startActivity(intent);
     }
 
-    private void getRooms(){
-        ApiClient.getInstance().getApiService().getRooms().enqueue(new Callback<List<Room>>() {
+    private void getRooms(String token){
+        ApiClient.getInstance().getApiService().getRooms("Bearer "+ token).enqueue(new Callback<List<Room>>() {
             @Override
             public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
                 if(response.isSuccessful() && response.body() != null) {

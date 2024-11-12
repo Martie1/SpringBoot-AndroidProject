@@ -16,6 +16,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.pwo.R;
 import com.example.pwo.classes.User;
 import com.example.pwo.network.ApiClient;
+import com.example.pwo.utils.TokenManager;
 
 import org.w3c.dom.Text;
 
@@ -28,6 +29,7 @@ public class ProfileActivity extends BaseActivity {
     private TextView tvUsername;
     private TextView tvEmail;
     private Button btnLogout;
+    TokenManager tokenManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,22 +40,21 @@ public class ProfileActivity extends BaseActivity {
             v.setPadding(insets1.left, insets1.top, insets1.right, insets1.bottom);
             return insetsCompat;
         });
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        String token = sharedPreferences.getString("auth_token", null);
         tvUsername = findViewById(R.id.tvUsername);
         tvEmail = findViewById(R.id.tvEmail);
         btnLogout = findViewById(R.id.btnLogout);
-        fetchUserDetails(token);
+
         btnLogout.setOnClickListener(v -> logout());
+        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        String token =tokenManager.getAccessToken();
+        fetchUserDetails(token);
     }
     private void logout(){
-        SharedPreferences sharedPreferences = getSharedPreferences("MyAppPrefs", MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.remove("auth_token");
-        editor.apply();
+        tokenManager.clearTokens();
         Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
         startActivity(intent);
     }
+
     private void fetchUserDetails(String token) {
         ApiClient.getInstance().getApiService().getUser("Bearer "+token).enqueue(new Callback<User>() {
             @Override
