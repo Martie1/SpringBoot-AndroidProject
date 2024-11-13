@@ -4,6 +4,8 @@ import com.example.pwo.classes.Room;
 import com.example.pwo.classes.User;
 import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.models.LoginRequest;
+import com.example.pwo.network.models.PostRequest;
+import com.example.pwo.network.models.PostResponse;
 import com.example.pwo.network.models.RegisterRequest;
 
 import java.util.List;
@@ -34,4 +36,7 @@ public interface ApiService {
 
     @GET("/api/user/profile")
     Call<User> getUser(@Header("Authorization") String token);
+
+    @POST("/api/posts")
+    Call<PostResponse> addPost(@Body PostRequest postRequest,@Header("Authorization") String token);
 }

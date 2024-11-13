@@ -21,6 +21,9 @@ import com.example.pwo.classes.Post;
 import com.example.pwo.classes.User;
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.utils.TokenManager;
+import com.example.pwo.utils.validators.LoginValidator;
+import com.example.pwo.utils.validators.PostValidatorImpl;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -38,12 +41,15 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
     private RecyclerView recyclerView;
     TokenManager tokenManager;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_post, findViewById(R.id.main));
         TokenManager tokenManager = new TokenManager(getApplicationContext());
         String token =tokenManager.getAccessToken();
+
+
         Intent intent = getIntent();
         if(intent.hasExtra("roomId")) {
             int roomId = intent.getIntExtra("roomId", 1);
@@ -53,13 +59,24 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
             Toast.makeText(this, "No Posts found in this room!", Toast.LENGTH_SHORT).show();
         }
 
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.getMenu().findItem(R.id.nav_add_post).setVisible(true);
+        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.nav_add_post) {
+                Intent addPostIntent = new Intent(PostActivity.this, AddPostActivity.class);
+                addPostIntent.putExtra("roomId", roomId);
+                startActivityForResult(addPostIntent, 1);
+                return true;
+            }
+            return false;
+        });
         addPostButton = findViewById(R.id.btnAddPost);
         addPostButton.setOnClickListener(v -> {
             Intent addPostIntent = new Intent(PostActivity.this, AddPostActivity.class);
             addPostIntent.putExtra("roomId", roomId);
             startActivityForResult(addPostIntent, 1);
         });
-
     }
 
     @Override
