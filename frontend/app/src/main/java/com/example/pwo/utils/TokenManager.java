@@ -39,5 +39,8 @@ public class TokenManager {
 
     public void clearTokens() {
         editor.clear().apply();
+        Log.d("TokenManager", "Tokens cleared");
+        Log.d("TokenManager", "Access Token: " + getAccessToken());
+        Log.d("TokenManager", "Refresh Token: " + getRefreshToken());
     }
 }

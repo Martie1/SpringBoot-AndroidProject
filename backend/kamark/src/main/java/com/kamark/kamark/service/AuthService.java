@@ -7,8 +7,10 @@ import com.kamark.kamark.dto.RegisterRequest;
 import com.kamark.kamark.entity.User;
 import com.kamark.kamark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -40,6 +42,12 @@ public class AuthService {
 
     public ResponseEntity<?> register(RegisterRequest registrationRequest) {
         try {
+            if (ourUserRepo.existsByEmail(registrationRequest.getEmail())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Email is already taken."));
+            }
+            if (ourUserRepo.existsByUsername(registrationRequest.getUsername())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Username is already taken."));
+            }
             User user = new User();
             user.setEmail(registrationRequest.getEmail());
             user.setUsername(registrationRequest.getUsername());
@@ -66,11 +74,11 @@ public class AuthService {
 
     public ResponseEntity<?> login(LoginRequest loginRequest) {
         try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
-            );
             User user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
                     () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
+            );
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
             String accessToken = jwtUtils.generateAccessToken(user);
             String refreshToken = jwtUtils.generateRefreshToken(user);
@@ -78,8 +86,12 @@ public class AuthService {
             AuthResponse response = createAuthResponse(accessToken,refreshToken, "Successfully Signed In");
             return ResponseEntity.ok(response);
 
+        } catch (UsernameNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, "Email doesn't exist"));
+        } catch (BadCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(401, "Wrong password"));
         } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during sign-in: Bad credentials"));
+            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during sign-in: " + e.getMessage()));
         }
     }
     public ResponseEntity<?> refresh(String refreshToken) {

@@ -1,8 +1,9 @@
 package com.example.pwo.activities;
-
+import com.example.pwo.utils.validators.RegisterValidator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -22,6 +23,7 @@ import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.models.ErrorResponse;
 import com.example.pwo.network.models.RegisterRequest;
 import com.example.pwo.utils.TokenManager;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -35,8 +37,9 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etUsername, etEmail, etPassword;
     private Button btnRegister;
     private ImageView btnBack;
-    private TextView tvSignIn;
+    private TextView tvSignIn, tvError;
     TokenManager tokenManager;
+    RegisterValidator registerValidator;
 
 
     @Override
@@ -56,6 +59,8 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnLogin);
         btnBack = findViewById(R.id.backbutton);
         tvSignIn = findViewById(R.id.tvSignUp);
+        tvError = findViewById(R.id.tvError);
+        registerValidator = new RegisterValidator();
         btnRegister.setOnClickListener(v -> performRegistration());
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
@@ -73,10 +78,28 @@ public class RegisterActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (username.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        String usernameError = registerValidator.validateUsername(username);
+        String emailError = registerValidator.validateEmail(email);
+        String passwordError = registerValidator.validatePassword(password, username);
+        if (usernameError != null) {
+            tvError.setText(usernameError);
+            tvError.setVisibility(View.VISIBLE);
             return;
         }
+
+        if (emailError != null) {
+            tvError.setText(emailError);
+            tvError.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        if (passwordError != null) {
+            tvError.setText(passwordError);
+            tvError.setVisibility(View.VISIBLE);
+            return;
+        }
+        tvError.setVisibility(View.GONE);
+
 
         RegisterRequest registerRequest = new RegisterRequest(username, email, password);
 
@@ -91,7 +114,6 @@ public class RegisterActivity extends AppCompatActivity {
                     String refreshToken = authResponse.getRefreshToken();
                     tokenManager.saveTokens(accessToken, refreshToken);
 
-                    Toast.makeText(RegisterActivity.this, authResponse.getMessage(), Toast.LENGTH_SHORT).show();
 
                     //roomActivity intent
                     Intent intent = new Intent(RegisterActivity.this, RoomActivity.class);
@@ -102,45 +124,55 @@ public class RegisterActivity extends AppCompatActivity {
                     finish();
 
                 } else {
-
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorJson = response.errorBody().string();
-                            Log.d("RegisterActivity", "Error JSON: " + errorJson);
-
-
-                            Gson gson = new Gson();
-                            ErrorResponse errorResponse = gson.fromJson(errorJson, ErrorResponse.class);
-
-                            if (errorResponse != null && errorResponse.getMessage() != null) {
-                                String errorMessage = errorResponse.getMessage();
-                                Toast.makeText(RegisterActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Log.e("RegisterActivity", "Parsed ErrorResponse is null or missing fields.");
-                                Toast.makeText(RegisterActivity.this, "Error: Unable to parse error message", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(RegisterActivity.this, "Unknown error occurred", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (IOException e) {
-                        Log.e("RegisterActivity", "IO Exception while parsing error response", e);
-                        Toast.makeText(RegisterActivity.this, "Network issue occurred", Toast.LENGTH_SHORT).show();
-                    } catch (JsonSyntaxException e) {
-                        Log.e("RegisterActivity", "JSON syntax error in error response", e);
-                        Toast.makeText(RegisterActivity.this, "Error in server response format", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.e("RegisterActivity", "Unexpected error", e);
-                        Toast.makeText(RegisterActivity.this, "An unexpected error occurred", Toast.LENGTH_SHORT).show();
-                    }
-
+                    handleErrorResponse(response);
                 }
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
+                tvError.setText("The server is currently unavailable. Please try again later.");
+                tvError.setVisibility(View.VISIBLE);
 
-                Toast.makeText(RegisterActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    private void handleErrorResponse(Response<AuthResponse> response) {
+        try {
+            if (response.errorBody() != null) {
+                String errorJson = response.errorBody().string();
+                Log.d("RegisterActivity", "Error JSON: " + errorJson);
+
+                Gson gson = new Gson();
+                ErrorResponse errorResponse = gson.fromJson(errorJson, ErrorResponse.class);
+
+                if (errorResponse != null && errorResponse.getMessage() != null) {
+                    String errorMessage = errorResponse.getMessage();
+                    if (response.code() == 409) {
+                        tvError.setText("Error: " + errorMessage);
+                        tvError.setVisibility(View.VISIBLE);
+                    }
+
+                } else {
+                    Log.e("RegisterActivity", "Parsed ErrorResponse is null or missing fields.");
+                    tvError.setText("The server is currently unavailable. Please try again later.");
+                    tvError.setVisibility(View.VISIBLE);
+                }
+            } else {
+                tvError.setText("The server is currently unavailable. Please try again later.");
+                tvError.setVisibility(View.VISIBLE);
+            }
+        } catch (IOException e) {
+            Log.e("RegisterActivity", "IO Exception while parsing error response", e);
+            tvError.setText("The server is currently unavailable. Please try again later.");
+            tvError.setVisibility(View.VISIBLE);
+        } catch (JsonSyntaxException e) {
+            Log.e("RegisterActivity", "JSON syntax error in error response", e);
+            tvError.setText("The server is currently unavailable. Please try again later.");
+            tvError.setVisibility(View.VISIBLE);
+        } catch (Exception e) {
+            Log.e("RegisterActivity", "Unexpected error", e);
+            tvError.setText("The server is currently unavailable. Please try again later.");
+            tvError.setVisibility(View.VISIBLE);
+        }
     }
 }

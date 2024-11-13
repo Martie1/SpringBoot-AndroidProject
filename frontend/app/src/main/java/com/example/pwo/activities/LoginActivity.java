@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -26,7 +27,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 import java.io.IOException;
-
+import com.example.pwo.utils.validators.LoginValidator;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,8 +36,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText etEmail, etPassword;
     private Button btnLogin;
     private ImageView btnBack;
-    private TextView tvRegister;
+    private TextView tvRegister, tvError;
     TokenManager tokenManager;
+    LoginValidator loginValidator;
 
 
     @Override
@@ -50,11 +52,14 @@ public class LoginActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
         tvRegister = findViewById(R.id.tvSignUp);
+        tvError = findViewById(R.id.tvError);
         btnBack = findViewById(R.id.backbutton);
+        loginValidator = new LoginValidator();
         btnLogin.setOnClickListener(v -> performLogin());
         TokenManager tokenManager = new TokenManager(getApplicationContext());
         tvRegister.setOnClickListener(v -> {
@@ -71,10 +76,23 @@ public class LoginActivity extends AppCompatActivity {
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
 
-        if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+        //validate fields
+        String emailError = loginValidator.validateEmail(email);
+        String passwordError = loginValidator.validatePassword(password);
+
+        if (emailError != null) {
+            tvError.setText(emailError);
+            tvError.setVisibility(View.VISIBLE);
             return;
         }
+
+        if (passwordError != null) {
+            tvError.setText(passwordError);
+            tvError.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        tvError.setVisibility(View.GONE);
 
         LoginRequest loginRequest = new LoginRequest(email, password);
 
@@ -88,8 +106,6 @@ public class LoginActivity extends AppCompatActivity {
                     String refreshToken = authResponse.getRefreshToken();
                     tokenManager.saveTokens(accessToken, refreshToken);
 
-                    Toast.makeText(LoginActivity.this, authResponse.getMessage(), Toast.LENGTH_SHORT).show();
-
 
                     Intent intent = new Intent(LoginActivity.this, RoomActivity.class);
                     //flags block returning back to main_activity after successfull login/register
@@ -97,44 +113,66 @@ public class LoginActivity extends AppCompatActivity {
                     startActivity(intent);
                     finish();
 
-                } else {
-
-                    try {
-                        if (response.errorBody() != null) {
-                            String errorJson = response.errorBody().string();
-                            Log.d("LoginActivity", "Error JSON: " + errorJson);
-
-                            Gson gson = new Gson();
-                            ErrorResponse errorResponse = gson.fromJson(errorJson, ErrorResponse.class);
-
-                            if (errorResponse != null && errorResponse.getMessage() != null) {
-                                String errorMessage = errorResponse.getMessage();
-                                Toast.makeText(LoginActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
-                            } else {
-                                Log.e("LoginActivity", "Parsed ErrorResponse is null or missing fields.");
-                                Toast.makeText(LoginActivity.this, "Error: Unable to parse error message", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(LoginActivity.this, "Unknown error occurred", Toast.LENGTH_SHORT).show();
-                        }
-                    } catch (IOException e) {
-                        Log.e("LoginActivity", "IO Exception while parsing error response", e);
-                        Toast.makeText(LoginActivity.this, "Network issue occurred", Toast.LENGTH_SHORT).show();
-                    } catch (JsonSyntaxException e) {
-                        Log.e("LoginActivity", "JSON syntax error in error response", e);
-                        Toast.makeText(LoginActivity.this, "Error in server response format", Toast.LENGTH_SHORT).show();
-                    } catch (Exception e) {
-                        Log.e("LoginActivity", "Unexpected error", e);
-                        Toast.makeText(LoginActivity.this, "An unexpected error occurred", Toast.LENGTH_SHORT).show();
-                    }
-
-                }
+                } else handleErrorResponse(response);
             }
 
             @Override
             public void onFailure(Call<AuthResponse> call, Throwable t) {
-                Toast.makeText(LoginActivity.this, "Network error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                tvError.setText("The server is currently unavailable. Please try again later.");
+                tvError.setVisibility(View.VISIBLE);
             }
         });
     }
+    private void handleErrorResponse(Response<AuthResponse> response) {
+        try {
+            if (response.errorBody() != null) {
+                String errorJson = response.errorBody().string();
+                Log.d("LoginActivity", "Error JSON: " + errorJson);
+
+                Gson gson = new Gson();
+                ErrorResponse errorResponse = gson.fromJson(errorJson, ErrorResponse.class);
+
+                if (errorResponse != null && errorResponse.getMessage() != null) {
+                    String errorMessage = errorResponse.getMessage();
+                    switch (response.code()) {
+                        case 404:
+                            errorMessage = "Email doesn't exist";
+                            break;
+                        case 401:
+                            errorMessage = "Wrong password";
+                            break;
+                        case 500:
+                            errorMessage = "We have problems with our servers. Please try again later.";
+                            break;
+                        default:
+
+                            break;
+                    }
+                    tvError.setText("Error: " + errorMessage);
+                    tvError.setVisibility(View.VISIBLE);
+                } else {
+                    Log.e("LoginActivity", "Parsed ErrorResponse is null or missing fields.");
+                    tvError.setText("The server is currently unavailable. Please try again later.");
+                    tvError.setVisibility(View.VISIBLE);
+                }
+            } else {
+                tvError.setText("The server is currently unavailable. Please try again later.");
+                tvError.setVisibility(View.VISIBLE);
+            }
+        } catch (IOException e) {
+            Log.e("LoginActivity", "IO Exception while parsing error response", e);
+            tvError.setText("The server is currently unavailable. Please try again later.");
+            tvError.setVisibility(View.VISIBLE);
+        } catch (JsonSyntaxException e) {
+            Log.e("LoginActivity", "JSON syntax error in error response", e);
+            tvError.setText("The server is currently unavailable. Please try again later.");
+            tvError.setVisibility(View.VISIBLE);
+        } catch (Exception e) {
+            Log.e("LoginActivity", "Unexpected error", e);
+            tvError.setText("The server is currently unavailable. Please try again later.");
+            tvError.setVisibility(View.VISIBLE);
+        }
+    }
+
+
 }

@@ -44,9 +44,11 @@ public class ProfileActivity extends BaseActivity {
         tvEmail = findViewById(R.id.tvEmail);
         btnLogout = findViewById(R.id.btnLogout);
 
-        btnLogout.setOnClickListener(v -> logout());
-        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        tokenManager = new TokenManager(getApplicationContext());
         String token =tokenManager.getAccessToken();
+
+        btnLogout.setOnClickListener(v -> logout());
+
         fetchUserDetails(token);
     }
     private void logout(){
