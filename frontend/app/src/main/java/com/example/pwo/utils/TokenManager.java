@@ -4,15 +4,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.pwo.network.ApiClient;
+import com.example.pwo.network.models.AuthResponse;
+import com.example.pwo.network.models.RefreshTokenRequest;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class TokenManager {
     private static final String PREF_NAME = "auth_prefs";
     private static final String ACCESS_TOKEN_KEY = "access_token";
     private static final String REFRESH_TOKEN_KEY = "refresh_token";
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
+    private Context context;
 
     public TokenManager(Context context) {
         if (context != null) {
+            this.context = context;
             this.sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
             this.editor = sharedPreferences.edit();
         } else {
@@ -42,5 +52,29 @@ public class TokenManager {
         Log.d("TokenManager", "Tokens cleared");
         Log.d("TokenManager", "Access Token: " + getAccessToken());
         Log.d("TokenManager", "Refresh Token: " + getRefreshToken());
+    }
+    public void refreshAccessToken(Callback<AuthResponse> callback) {
+        String refreshToken = getRefreshToken();
+        if (refreshToken != null) {
+            RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
+            ApiClient.getInstance(context).getApiService().refreshToken(request).enqueue(new Callback<AuthResponse>() {
+                @Override
+                public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                    if (response.isSuccessful() && response.body() != null) {
+                        saveTokens(response.body().getAccessToken(), response.body().getRefreshToken());
+                        callback.onResponse(call, response);
+                    } else {
+                        callback.onFailure(call, new Throwable("Failed to refresh token"));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AuthResponse> call, Throwable t) {
+                    callback.onFailure(call, t);
+                }
+            });
+        } else {
+            callback.onFailure(null, new Throwable("No refresh token available"));
+        }
     }
 }

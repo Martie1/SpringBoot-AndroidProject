@@ -85,7 +85,7 @@ public class AddPostActivity extends AppCompatActivity {
 
         PostRequest postRequest = new PostRequest(title, description, roomId);
 
-        ApiClient.getInstance().getApiService().addPost(postRequest, "Bearer " + token).enqueue(new Callback<PostResponse>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().addPost(postRequest).enqueue(new Callback<PostResponse>() {
             @Override
             public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
                 Log.d("AddPostActivity", "Response code: " + response.code());

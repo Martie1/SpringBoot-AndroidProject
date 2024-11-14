@@ -67,7 +67,7 @@ public class SinglePostActivity extends BaseActivity {
     }
 
     private void fetchPost(int postId,String token) {
-        ApiClient.getInstance().getApiService().getPost(postId,"Bearer "+token).enqueue(new Callback<Post>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().getPost(postId).enqueue(new Callback<Post>() {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {
                 if(response.isSuccessful()) {

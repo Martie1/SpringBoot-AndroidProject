@@ -103,7 +103,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         RegisterRequest registerRequest = new RegisterRequest(username, email, password);
 
-        ApiClient.getInstance().getApiService().register(registerRequest).enqueue(new Callback<AuthResponse>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().register(registerRequest).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {

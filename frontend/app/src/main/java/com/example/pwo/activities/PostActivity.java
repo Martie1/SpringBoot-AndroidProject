@@ -100,7 +100,7 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
     }
 
     private void fetchPosts(int roomId,String token) {
-        ApiClient.getInstance().getApiService().getPosts(roomId,"Bearer "+ token).enqueue(new Callback<List<Post>>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().getPosts(roomId).enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(response.isSuccessful() && response.body() != null) {

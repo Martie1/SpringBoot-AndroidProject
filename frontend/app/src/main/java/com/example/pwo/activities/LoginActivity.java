@@ -96,7 +96,7 @@ public class LoginActivity extends AppCompatActivity {
 
         LoginRequest loginRequest = new LoginRequest(email, password);
 
-        ApiClient.getInstance().getApiService().login(loginRequest).enqueue(new Callback<AuthResponse>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().login(loginRequest).enqueue(new Callback<AuthResponse>() {
             @Override
             public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
