@@ -13,11 +13,19 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pwo.R;
+import com.example.pwo.network.ApiClient;
+import com.example.pwo.network.models.AuthResponse;
+import com.example.pwo.network.models.RefreshTokenRequest;
 import com.example.pwo.utils.TokenManager;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity{
     private Button btnLogin;
     private Button btnRegister;
+    private TokenManager tokenManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,15 +39,14 @@ public class MainActivity extends AppCompatActivity{
             return insets;
         });
 
-        TokenManager tokenManager = new TokenManager(getApplicationContext());
-        String token = tokenManager.getRefreshToken();
+        tokenManager = new TokenManager(getApplicationContext()); // Initialize tokenManager here
+        String refreshToken = tokenManager.getRefreshToken();
+        Log.d("MainActivity", "refreshToken onCreate: " + refreshToken);
 
 
        //jwt validate feature will be added here
-        if (token != null) { //contact server for valid jwt, then proceed
-            Intent intent = new Intent(MainActivity.this, RoomActivity.class);
-            startActivity(intent);
-            finish();
+        if (refreshToken != null) {
+            validateRefreshToken(refreshToken);
         }
 
         btnLogin = findViewById(R.id.btnLogin);
@@ -54,5 +61,26 @@ public class MainActivity extends AppCompatActivity{
         });
 
 
+    }
+    private void validateRefreshToken(String refreshToken) {
+        RefreshTokenRequest request = new RefreshTokenRequest(refreshToken);
+        ApiClient.getInstance(getApplicationContext()).getApiService().refreshToken(request).enqueue(new Callback<AuthResponse>() {
+            @Override
+            public void onResponse(Call<AuthResponse> call, Response<AuthResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    tokenManager.saveTokens(response.body().getAccessToken(), response.body().getRefreshToken());
+                    Log.d("MainActivity", "accessToken onResponse: " + response.body().getAccessToken());
+                    Log.d("MainActivity", "refreshToken onResponse: " + response.body().getRefreshToken());
+                    Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+                    startActivity(intent);
+                    finish();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<AuthResponse> call, Throwable t) {
+                Log.d("MainActivity", "onFailure: " + t.getMessage());
+            }
+        });
     }
 }
