@@ -21,4 +21,8 @@ public class Report {
 
     @Column(nullable = false)
     private String reason;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private ReportStatus status = ReportStatus.DISMISSED;
 }
