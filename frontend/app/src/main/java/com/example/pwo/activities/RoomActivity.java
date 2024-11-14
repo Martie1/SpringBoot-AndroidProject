@@ -44,7 +44,7 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
         View navigationBarMenu = findViewById(R.id.bottom_navigation);
         TokenManager tokenManager = new TokenManager(getApplicationContext());
         String token = tokenManager.getAccessToken();
-        getRooms(token);
+        getRooms();
     }
 
     @Override
@@ -54,8 +54,8 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
         startActivity(intent);
     }
 
-    private void getRooms(String token){
-        ApiClient.getInstance().getApiService().getRooms("Bearer "+ token).enqueue(new Callback<List<Room>>() {
+    private void getRooms(){
+        ApiClient.getInstance(getApplicationContext()).getApiService().getRooms().enqueue(new Callback<List<Room>>() {
             @Override
             public void onResponse(Call<List<Room>> call, Response<List<Room>> response) {
                 if(response.isSuccessful() && response.body() != null) {

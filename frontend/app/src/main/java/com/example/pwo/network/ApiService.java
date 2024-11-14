@@ -6,6 +6,7 @@ import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.models.LoginRequest;
 import com.example.pwo.network.models.PostRequest;
 import com.example.pwo.network.models.PostResponse;
+import com.example.pwo.network.models.RefreshTokenRequest;
 import com.example.pwo.network.models.RegisterRequest;
 
 import java.util.List;
@@ -25,18 +26,21 @@ public interface ApiService {
     @POST("/auth/login")
     Call<AuthResponse> login(@Body LoginRequest loginRequest);
 
+    @POST("/auth/refresh")
+    Call<AuthResponse> refreshToken(@Body RefreshTokenRequest refreshTokenRequest);
+
     @GET("/api/rooms")
-    Call<List<Room>> getRooms(@Header("Authorization") String token);
+    Call<List<Room>> getRooms();
 
     @GET("/api/posts/room/{id}")
-    Call<List<Post>> getPosts(@Path("id") int id,@Header("Authorization") String token);
+    Call<List<Post>> getPosts(@Path("id") int id);
 
     @GET("/api/posts/{id}")
-    Call<Post> getPost(@Path("id") int id,@Header("Authorization") String token);
+    Call<Post> getPost(@Path("id") int id);
 
     @GET("/api/user/profile")
-    Call<User> getUser(@Header("Authorization") String token);
+    Call<User> getUser();
 
     @POST("/api/posts")
-    Call<PostResponse> addPost(@Body PostRequest postRequest,@Header("Authorization") String token);
+    Call<PostResponse> addPost(@Body PostRequest postRequest);
 }

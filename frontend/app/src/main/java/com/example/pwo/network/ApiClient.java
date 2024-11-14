@@ -1,27 +1,88 @@
 package com.example.pwo.network;
 import static com.example.pwo.Constants.BASE_URL;
 
+import android.content.Context;
+
+import com.example.pwo.network.models.AuthResponse;
+import com.example.pwo.utils.TokenManager;
+
+import java.io.IOException;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 public class ApiClient {
 
     private static ApiClient instance;
     private final ApiService apiService;
+    private final TokenManager tokenManager;
 
-    private ApiClient() {
+    private ApiClient(Context context) {
+        tokenManager = new TokenManager(context);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(new Interceptor() {
+                    @Override
+                    public Response intercept(Chain chain) throws IOException {
+                        Request originalRequest = chain.request();
+                        String accessToken = tokenManager.getAccessToken();
+
+                        if (accessToken == null) {
+                            return chain.proceed(originalRequest);
+                        }
+
+                        Request requestWithToken = originalRequest.newBuilder()
+                                .header("Authorization", "Bearer " + accessToken)
+                                .build();
+
+                        Response response = chain.proceed(requestWithToken);
+
+                        if (response.code() == 401) {
+                            tokenManager.refreshAccessToken(new Callback<AuthResponse>() {
+                                @Override
+                                public void onResponse(Call<AuthResponse> call, retrofit2.Response<AuthResponse> response) {
+                                    if (response.isSuccessful() && response.body() != null) {
+                                        String newAccessToken = response.body().getAccessToken();
+                                        Request newRequest = originalRequest.newBuilder()
+                                                .header("Authorization", "Bearer " + newAccessToken)
+                                                .build();
+                                        try {
+                                            chain.proceed(newRequest);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<AuthResponse> call, Throwable t) {
+                                    t.printStackTrace();
+                                }
+                            });
+                        }
+
+                        return response;
+                    }
+                })
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create()) //retrofit handles gson convert
+                .client(client)
+                .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         apiService = retrofit.create(ApiService.class);
     }
 
-    //singleton
-    public static synchronized ApiClient getInstance() {
+    public static synchronized ApiClient getInstance(Context context) {
         if (instance == null) {
-            instance = new ApiClient();
+            instance = new ApiClient(context);
         }
         return instance;
     }

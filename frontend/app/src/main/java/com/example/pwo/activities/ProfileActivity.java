@@ -58,7 +58,7 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void fetchUserDetails(String token) {
-        ApiClient.getInstance().getApiService().getUser("Bearer "+token).enqueue(new Callback<User>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().getUser().enqueue(new Callback<User>() {
             @Override
             public void onResponse(Call<User> call, Response<User> response) {
                 if (response.isSuccessful()) {
