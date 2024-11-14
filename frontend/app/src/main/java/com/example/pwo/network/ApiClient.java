@@ -31,15 +31,19 @@ public class ApiClient {
                     public Response intercept(Chain chain) throws IOException {
                         Request originalRequest = chain.request();
                         String accessToken = tokenManager.getAccessToken();
+                        String refreshToken = tokenManager.getRefreshToken();
 
-                        if (accessToken == null) {
-                            return chain.proceed(originalRequest);
+                        Request.Builder requestBuilder = originalRequest.newBuilder();
+
+                        if (accessToken != null) {
+                            requestBuilder.header("Authorization", "Bearer " + accessToken);
                         }
 
-                        Request requestWithToken = originalRequest.newBuilder()
-                                .header("Authorization", "Bearer " + accessToken)
-                                .build();
+                        if (refreshToken != null) {
+                            requestBuilder.header("Refresh", refreshToken);
+                        }
 
+                        Request requestWithToken = requestBuilder.build();
                         Response response = chain.proceed(requestWithToken);
 
                         if (response.code() == 401) {
@@ -50,6 +54,7 @@ public class ApiClient {
                                         String newAccessToken = response.body().getAccessToken();
                                         Request newRequest = originalRequest.newBuilder()
                                                 .header("Authorization", "Bearer " + newAccessToken)
+                                                .header("Refresh", refreshToken)
                                                 .build();
                                         try {
                                             chain.proceed(newRequest);
