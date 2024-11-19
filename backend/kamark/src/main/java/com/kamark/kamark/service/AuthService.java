@@ -6,6 +6,7 @@ import com.kamark.kamark.dto.LoginRequest;
 import com.kamark.kamark.dto.RegisterRequest;
 import com.kamark.kamark.entity.User;
 import com.kamark.kamark.repository.UserRepository;
+import com.kamark.kamark.service.interfaces.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AuthService {
+public class AuthService implements AuthServiceInterface {
 
     @Autowired
     private UserRepository ourUserRepo;

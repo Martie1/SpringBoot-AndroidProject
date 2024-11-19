@@ -9,6 +9,7 @@ import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.repository.UserRepository;
+import com.kamark.kamark.service.interfaces.PostServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class PostService {
+public class PostService implements PostServiceInterface {
 
     @Autowired
     private PostRepository postRepository;

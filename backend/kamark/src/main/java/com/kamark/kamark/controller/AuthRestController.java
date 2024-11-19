@@ -9,23 +9,23 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+public class AuthRestController {
 
     @Autowired
-    private AuthService authService;
+    private AuthService authServiceImpl;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        return authService.register(registerRequest);  //<AuthResponse> lub <ErrorResponse>
+        return authServiceImpl.register(registerRequest);  //<AuthResponse> lub <ErrorResponse>
     }
 
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
-        return authService.login(loginRequest); //<AuthResponse> lub <ErrorResponse>
+        return authServiceImpl.login(loginRequest); //<AuthResponse> lub <ErrorResponse>
     }
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(@RequestHeader("Refresh") String refreshToken) {
-        return authService.refresh(refreshToken);
+        return authServiceImpl.refresh(refreshToken);
     }
 }
