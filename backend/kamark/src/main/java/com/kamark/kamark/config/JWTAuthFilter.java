@@ -49,7 +49,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             return;
         }
 
-        jwtToken = authHeader.substring(7);
+        jwtToken = authHeader.substring(7).trim();
 
         userId = jwtUtils.extractUserId(jwtToken);
 

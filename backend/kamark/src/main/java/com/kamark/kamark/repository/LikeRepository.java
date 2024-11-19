@@ -6,9 +6,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Integer> {
     int countByPostId(Integer postId); // counts all likes of post
     List<Like> findByUserId(Integer userId);
+
+    Optional<Like> findByPostIdAndUserId(Integer postId, Integer userId);
 }
