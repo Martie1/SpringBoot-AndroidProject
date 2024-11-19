@@ -9,8 +9,10 @@ import com.kamark.kamark.repository.ReportRepository;
 import com.kamark.kamark.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Optional;
+import com.kamark.kamark.entity.ReportStatus;
 
 @Service
 public class ReportService {
@@ -60,5 +62,40 @@ public class ReportService {
         return postRepository.findById(postId)
                 .map(Post::getReportCount)
                 .orElse(0);
+    }
+
+    public List<ReportPostDTO> getAllReportPosts() {
+        List<Report> reports = reportRepository.findAll();
+        return reports.stream()
+                .map(report -> new ReportPostDTO(
+                        report.getPost().getId(),
+                        report.getReason(),
+                        report.getStatus()))
+                .collect(Collectors.toList());
+    }
+    public boolean updateReportStatus(Integer reportId, ReportStatus status) {
+        Optional<Report> reportOptional = reportRepository.findById(reportId);
+        if (reportOptional.isEmpty()) {
+            return false;
+        }
+        Report report = reportOptional.get();
+        report.setStatus(status);
+
+        // ststus reporta "RESOLVED", to posta na "BLOCKED"
+        if (status == ReportStatus.RESOLVED) {
+            Post post = report.getPost();
+            post.setStatus("BLOCKED");
+            postRepository.save(post);
+        }
+
+        // ststus reporta "DISMISSED", to status posta na "ACTIVE"
+        if (status == ReportStatus.DISMISSED) {
+            Post post = report.getPost();
+            post.setStatus("ACTIVE");
+            postRepository.save(post);
+        }
+
+        reportRepository.save(report);
+        return true;
     }
 }
