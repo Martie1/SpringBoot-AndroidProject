@@ -14,14 +14,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/rooms")
-public class RoomController {
+public class RoomRestController {
 
     @Autowired
-    private RoomService roomService;
+    private RoomService roomServiceImpl;
 
     @GetMapping
     public ResponseEntity<List<RoomDTO>> getAllRooms(Authentication authentication) {
-        List<RoomDTO> rooms = roomService.getAllRooms();
+        List<RoomDTO> rooms = roomServiceImpl.getAllRooms();
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 }

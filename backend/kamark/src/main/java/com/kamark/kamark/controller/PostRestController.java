@@ -14,15 +14,15 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/posts")
-public class PostController {
+public class PostRestController {
     @Autowired
-    private PostService postService;
+    private PostService postServiceImpl;
     @Autowired
     private JWTUtils jwtUtils;
 
     @GetMapping("/room/{roomId}")
     public ResponseEntity<List<PostResponseDTO>> getPostsByRoomId(@PathVariable Integer roomId) {
-        List<PostResponseDTO> posts = postService.getPostsByRoomId(roomId);
+        List<PostResponseDTO> posts = postServiceImpl.getPostsByRoomId(roomId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
@@ -37,7 +37,7 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
         }
 
-        boolean isCreated = postService.createPost(createPostDTO, userId);
+        boolean isCreated = postServiceImpl.createPost(createPostDTO, userId);
         if (isCreated) {
             return ResponseEntity.status(HttpStatus.CREATED).body("Post has been successfully created");
         } else {
@@ -47,7 +47,7 @@ public class PostController {
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Integer id) {
-        Optional<PostResponseDTO> postDTO = postService.getPostById(id);
+        Optional<PostResponseDTO> postDTO = postServiceImpl.getPostById(id);
         return postDTO.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -61,7 +61,7 @@ public class PostController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
-        Optional<Post> updatedPost = postService.updatePost(id, postResponseDTO, userId);
+        Optional<Post> updatedPost = postServiceImpl.updatePost(id, postResponseDTO, userId);
         if (updatedPost.isPresent()) {
             return ResponseEntity.ok("The post has been successfully updated");
         } else {
@@ -77,7 +77,7 @@ public class PostController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
-        boolean isDeleted = postService.deletePost(id, userId);
+        boolean isDeleted = postServiceImpl.deletePost(id, userId);
         if (isDeleted) {
             return ResponseEntity.ok("The post has been successfully deleted");
         } else {

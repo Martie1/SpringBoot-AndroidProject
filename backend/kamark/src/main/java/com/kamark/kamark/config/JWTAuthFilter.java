@@ -16,7 +16,6 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Set;
 
 @Component
 public class JWTAuthFilter extends OncePerRequestFilter {
@@ -33,7 +32,7 @@ public class JWTAuthFilter extends OncePerRequestFilter {
         String requestPath = request.getServletPath();
 
 
-        List<String> allowedPrefixes = List.of("/auth");
+        List<String> allowedPrefixes = List.of("/auth","/swagger","/v3");
 
         boolean isAllowed =allowedPrefixes.stream().anyMatch(requestPath::startsWith);
         if (isAllowed) {

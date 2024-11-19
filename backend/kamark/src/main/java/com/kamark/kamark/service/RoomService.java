@@ -3,13 +3,14 @@ package com.kamark.kamark.service;
 import com.kamark.kamark.dto.RoomDTO;
 import com.kamark.kamark.entity.Room;
 import com.kamark.kamark.repository.RoomRepository;
+import com.kamark.kamark.service.interfaces.RoomServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class RoomService {
+public class RoomService implements RoomServiceInterface {
 
     @Autowired
     private RoomRepository roomRepository;

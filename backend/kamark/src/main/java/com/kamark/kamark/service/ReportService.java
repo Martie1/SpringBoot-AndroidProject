@@ -7,15 +7,17 @@ import com.kamark.kamark.entity.User;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.ReportRepository;
 import com.kamark.kamark.repository.UserRepository;
+import com.kamark.kamark.service.interfaces.ReportServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Optional;
 import com.kamark.kamark.entity.ReportStatus;
+import java.util.Optional;
 
 @Service
-public class ReportService {
+public class ReportService implements ReportServiceInterface {
 
     @Autowired
     private ReportRepository reportRepository;
