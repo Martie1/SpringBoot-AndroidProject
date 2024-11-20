@@ -3,6 +3,7 @@ package com.kamark.kamark.service;
 import com.kamark.kamark.dto.CreatePostDTO;
 import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.entity.PostEntity;
+import com.kamark.kamark.entity.ReportStatus;
 import com.kamark.kamark.entity.RoomEntity;
 import com.kamark.kamark.entity.UserEntity;
 import com.kamark.kamark.repository.LikeRepository;
@@ -81,11 +82,14 @@ public class PostService implements PostServiceInterface {
     }
 
     public List<PostResponseDTO> getPostsByRoomId(Integer roomId) {
-        List<PostEntity> posts = postRepository.findByRoomId(roomId);
-        return posts.stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+            List<PostEntity> posts = postRepository.findByRoomId(roomId);
+            return posts.stream()
+                    .filter(post -> !"BLOCKED".equals(post.getStatus()))
+                    .map(this::mapToDTO)
+                    .collect(Collectors.toList());
     }
+
+
 
     public Optional<PostEntity> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId) {
         Optional<PostEntity> existingPost = postRepository.findById(postId);

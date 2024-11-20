@@ -27,7 +27,7 @@ public class AdminRestController {
     public ResponseEntity<String> resolveReport(@PathVariable Integer reportId) {
         boolean updated = reportService.updateReportStatus(reportId, ReportStatus.RESOLVED);
         if (updated) {
-            return ResponseEntity.ok("Report marked as resolved and post status changed to BLOCKE");
+            return ResponseEntity.ok("Report marked as resolved and post status changed to BLOCKED");
         }
         return ResponseEntity.badRequest().body("Report not found");
     }
