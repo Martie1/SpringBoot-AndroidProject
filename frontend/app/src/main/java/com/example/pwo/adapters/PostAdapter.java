@@ -20,6 +20,7 @@ import com.example.pwo.network.ApiService;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder> {
     private static List<Post> posts;
@@ -29,9 +30,14 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
 
     public PostAdapter(List<Post> posts, Context context) {
-        this.posts = posts;
+        PostAdapter.posts = posts;
         this.context = context;
-        this.dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        this.dateFormat = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+    }
+
+    public void setPosts(List<Post> posts) {
+        PostAdapter.posts = posts;
+        notifyDataSetChanged();
     }
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {

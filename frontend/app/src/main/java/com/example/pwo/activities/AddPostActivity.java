@@ -21,6 +21,7 @@ import com.example.pwo.network.models.PostRequest;
 import com.example.pwo.network.models.PostResponse;
 import com.example.pwo.utils.TokenManager;
 import com.example.pwo.utils.validators.PostValidatorImpl;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
@@ -30,7 +31,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class AddPostActivity extends AppCompatActivity {
+public class AddPostActivity extends BaseActivity {
     private Button btnAddPost;
     private EditText etPostTitle;
     private EditText etPostDescription;
@@ -42,13 +43,7 @@ public class AddPostActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_add_post);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        getLayoutInflater().inflate(R.layout.activity_add_post, findViewById(R.id.main));
         tokenManager = new TokenManager(getApplicationContext());
         String token = tokenManager.getAccessToken();
         Intent intent = getIntent();
@@ -64,6 +59,8 @@ public class AddPostActivity extends AppCompatActivity {
         etPostDescription = findViewById(R.id.PostDescription);
         btnAddPost = findViewById(R.id.btnAddPost);
         btnAddPost.setOnClickListener(v -> performAddPost(token));
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.nav_add_post);
     }
 
     private void performAddPost(String token) {

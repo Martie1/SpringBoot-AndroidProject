@@ -8,12 +8,14 @@
     android:layout_marginTop="10dp"
     android:layout_marginEnd="25dp"
     android:layout_marginBottom="10dp"
+    android:backgroundTint="#30140B"
     app:cardCornerRadius="5dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#ffffff">
+        android:background="@drawable/default_bg"
+        >
 
         <ImageView
             android:id="@+id/imageView"
@@ -24,11 +26,11 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="0dp"
-            android:layout_marginTop="0dp"
+            android:layout_marginTop="30dp"
             android:layout_marginEnd="0dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="38dp"
             android:contentDescription="@string/roomimage"
-            android:src="@drawable/askadmin" />
+            android:src="@drawable/sports" />
 
         <TextView
             android:id="@+id/tvRoomName"
@@ -39,17 +41,18 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:layout_marginStart="0dp"
-            android:layout_marginTop="218dp"
+            android:layout_marginTop="200dp"
             android:layout_marginEnd="0dp"
             android:layout_marginBottom="0dp"
+            android:fontFamily="@font/alex_brush"
             android:shadowColor="#000000"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="5"
             android:text="@string/room_name"
             android:textAlignment="center"
-            android:textColor="#E56F0D"
-            android:textSize="26sp"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
     </RelativeLayout>
