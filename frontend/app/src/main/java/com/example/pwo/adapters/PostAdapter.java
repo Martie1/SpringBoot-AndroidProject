@@ -2,12 +2,14 @@ package com.example.pwo.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -15,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pwo.R;
 import com.example.pwo.activities.ReportActivity;
 import com.example.pwo.classes.Post;
+import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.ApiService;
 
 import java.text.DateFormat;
@@ -39,6 +42,25 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         PostAdapter.posts = posts;
         notifyDataSetChanged();
     }
+
+    public void setLikedPosts(int[] likedPosts) {
+        for (int i = 0; i < posts.size(); i++) {
+            for (int likedPost : likedPosts) {
+                if (posts.get(i).getId() == likedPost) {
+                    posts.get(i).setLiked(true);
+                }
+            }
+        }
+        notifyDataSetChanged();
+    }
+
+    /*public void onSetLikedPosts(@NonNull PostViewHolder holder,int position){
+        if(posts.get(position).isLiked()){
+            holder.cbLike.setChecked(true);
+        }
+    }*/
+
+
 
     public static class PostViewHolder extends RecyclerView.ViewHolder {
         private TextView tvUsername;
@@ -71,6 +93,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         Post post = posts.get(position);
+                        createLike(post.getId());
                         post.setLikes(post.getLikes() + 1);
                         buttonView.setText(String.valueOf(post.getLikes()));
                     }
@@ -81,19 +104,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         Post post = posts.get(position);
                         post.setLikes(post.getLikes() - 1);
                         buttonView.setText(String.valueOf(post.getLikes()));
+                        deleteLike(post.getId());
                     }
                 }
             });
-//            cbLike.setOnCheckedChangeListener((buttonView, isChecked) -> {
-//                int position = getAdapterPosition();
-//                if (position != RecyclerView.NO_POSITION) {
-//                    Post post = posts.get(position);
-//                    // Uruchomienie LikeActivity
-//                    Intent intent = new Intent(itemView.getContext(), LikeActivity.class);
-//                    intent.putExtra("postId", post.getId());
-//                    itemView.getContext().startActivity(intent);
-//                }
-//            });
 
             btnReport.setOnClickListener(v -> {
                 int position = getAdapterPosition();
@@ -103,6 +117,38 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     Intent intent = new Intent(itemView.getContext(), ReportActivity.class);
                     intent.putExtra("postId", post.getId());
                     itemView.getContext().startActivity(intent);
+                }
+            });
+        }
+
+        private void deleteLike(int id) {
+            ApiClient.getInstance(itemView.getContext()).getApiService().DeleteLike(id).enqueue(new retrofit2.Callback<Void>() {
+                @Override
+                public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                    if(response.isSuccessful()) {
+                        Log.d("PostAdapter", "onResponse: Deleted like");
+                    }
+                }
+
+                @Override
+                public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                    Toast.makeText(itemView.getContext(), "Failed to delete like", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
+        private void createLike(int id) {
+            ApiClient.getInstance(itemView.getContext()).getApiService().CreateLike(id).enqueue(new retrofit2.Callback<Void>() {
+                @Override
+                public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                    if(response.isSuccessful()) {
+                        Log.d("PostAdapter", "onResponse: Liked post");
+                    }
+                }
+
+                @Override
+                public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                    Toast.makeText(itemView.getContext(), "Failed to like post", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -122,6 +168,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.tvDescription.setText(post.getDescription());
         holder.tvCreatedAt.setText(dateFormat.format(post.getCreatedAt()));
         holder.cbLike.setText(String.valueOf(post.getLikes()));
+        holder.cbLike.setChecked(post.isLiked());
     }
 
     @Override
