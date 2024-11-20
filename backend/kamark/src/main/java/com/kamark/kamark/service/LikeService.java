@@ -15,14 +15,16 @@ import java.util.Optional;
 @Service
 public class LikeService implements LikeInterface {
 
-    @Autowired
-    private LikeRepository likeRepository;
+    private final LikeRepository likeRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PostRepository postRepository;
+    public LikeService(LikeRepository likeRepository, PostRepository postRepository, UserRepository userRepository) {
+        this.likeRepository = likeRepository;
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+    }
 
-    @Autowired
-    private UserRepository userRepository;
 
     @Override
     public boolean likePost(Integer postId, Integer userId) {
@@ -59,4 +61,6 @@ public class LikeService implements LikeInterface {
         likeRepository.delete(like);
         return true;
     }
+
+
 }

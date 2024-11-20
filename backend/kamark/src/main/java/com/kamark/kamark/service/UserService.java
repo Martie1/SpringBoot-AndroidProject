@@ -20,17 +20,17 @@ import java.util.stream.Collectors;
 @Service
 public class UserService implements UserServiceInterface {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final PostRepository postRepository;
+    private final LikeRepository likeRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private LikeRepository likeRepository;
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PostRepository postRepository, LikeRepository likeRepository) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.postRepository = postRepository;
+        this.likeRepository = likeRepository;
+    }
 
 
     public UserProfileDTO getUserProfile(Integer userId) {

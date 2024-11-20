@@ -18,14 +18,15 @@ import com.kamark.kamark.entity.ReportStatus;
 @Service
 public class ReportService implements ReportServiceInterface {
 
-    @Autowired
-    private ReportRepository reportRepository;
+    private final ReportRepository reportRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    private PostRepository postRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    public ReportService(ReportRepository reportRepository, PostRepository postRepository, UserRepository userRepository) {
+        this.reportRepository = reportRepository;
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+    }
 
     public boolean reportPost(Integer postId, Integer userId, String reason) {
         Optional<PostEntity> postOptional = postRepository.findById(postId);

@@ -21,17 +21,17 @@ import java.util.stream.Collectors;
 @Service
 public class PostService implements PostServiceInterface {
 
-    @Autowired
-    private PostRepository postRepository;
+    private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final RoomRepository roomRepository;
+    private final LikeRepository likeRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoomRepository roomRepository;
-
-    @Autowired
-    private LikeRepository likeRepository;
+    public PostService(PostRepository postRepository, UserRepository userRepository, RoomRepository roomRepository, LikeRepository likeRepository) {
+        this.postRepository = postRepository;
+        this.userRepository = userRepository;
+        this.roomRepository = roomRepository;
+        this.likeRepository = likeRepository;
+    }
 
     public boolean createPost(CreatePostDTO createPostDTO, Integer userId) {
         Optional<UserEntity> userOptional = userRepository.findById(userId);
@@ -132,5 +132,8 @@ public class PostService implements PostServiceInterface {
         }
         return false;
     }
+
+
+
 
 }
