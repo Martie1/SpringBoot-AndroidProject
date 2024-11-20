@@ -57,7 +57,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
             cbLike = itemView.findViewById(R.id.cbLike);
-            btnReport = itemView.findViewById(R.id.btnReport);
+           // btnReport = itemView.findViewById(R.id.btnReport);
             if(listener != null) {
                 itemView.setOnClickListener(v -> {
                     int position = getAdapterPosition();

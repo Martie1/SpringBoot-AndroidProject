@@ -5,6 +5,8 @@ import com.example.pwo.classes.User;
 import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.models.LoginRequest;
 import com.example.pwo.network.models.PostRequest;
+import com.example.pwo.network.models.PostRequest;
+import com.example.pwo.classes.ReportRequest;
 import com.example.pwo.network.models.PostResponse;
 import com.example.pwo.network.models.RefreshTokenRequest;
 import com.example.pwo.network.models.RegisterRequest;
