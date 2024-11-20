@@ -13,6 +13,7 @@ import com.kamark.kamark.service.interfaces.ReportServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.Optional;
 import com.kamark.kamark.entity.ReportStatus;
@@ -67,8 +68,9 @@ public class ReportService implements ReportServiceInterface {
         List<PostEntity> posts = postRepository.findByRoomId(roomId);
 
         return posts.stream()
-                .filter(post -> post.getReports() != null &&
-                        post.getReports().stream().anyMatch(report -> "PENDING".equals(report.getStatus())))
+                .filter(post -> post.getReports() != null && !post.getReports().isEmpty())
+                .filter(post -> post.getReports().stream()
+                        .anyMatch(report -> report.getStatus() == ReportStatus.PENDING))
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
