@@ -1,7 +1,7 @@
 package com.kamark.kamark.repository;
 
-import com.kamark.kamark.entity.Room;
+import com.kamark.kamark.entity.RoomEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoomRepository  extends JpaRepository<Room, Integer> {
+public interface RoomRepository  extends JpaRepository<RoomEntity, Integer> {
 }

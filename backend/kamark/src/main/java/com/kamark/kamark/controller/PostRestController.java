@@ -1,7 +1,7 @@
 package com.kamark.kamark.controller;
 import com.kamark.kamark.dto.CreatePostDTO;
 import com.kamark.kamark.dto.PostResponseDTO;
-import com.kamark.kamark.entity.Post;
+import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.service.JWTUtils;
 import com.kamark.kamark.service.PostService;
 import org.slf4j.Logger;
@@ -66,7 +66,7 @@ public class PostRestController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
-        Optional<Post> updatedPost = postService.updatePost(id, postResponseDTO, userId);
+        Optional<PostEntity> updatedPost = postService.updatePost(id, postResponseDTO, userId);
         if (updatedPost.isPresent()) {
             return ResponseEntity.ok("The post has been successfully updated");
         } else {

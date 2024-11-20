@@ -1,7 +1,7 @@
 package com.kamark.kamark.service;
 
 import com.kamark.kamark.dto.RoomDTO;
-import com.kamark.kamark.entity.Room;
+import com.kamark.kamark.entity.RoomEntity;
 import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.service.interfaces.RoomServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +15,13 @@ public class RoomService implements RoomServiceInterface {
     @Autowired
     private RoomRepository roomRepository;
     public List<RoomDTO> getAllRooms() {
-        List<Room> rooms = roomRepository.findAll();
+        List<RoomEntity> rooms = roomRepository.findAll();
         return rooms.stream()
                 .map(this::mapToDTO)
                 .toList();
     }
 
-    private RoomDTO mapToDTO(Room room) {
+    private RoomDTO mapToDTO(RoomEntity room) {
         RoomDTO dto = new RoomDTO();
         dto.setId(room.getId());
         dto.setName(room.getName());

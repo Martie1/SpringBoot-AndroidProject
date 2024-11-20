@@ -2,9 +2,9 @@ package com.kamark.kamark.service;
 
 import com.kamark.kamark.dto.CreatePostDTO;
 import com.kamark.kamark.dto.PostResponseDTO;
-import com.kamark.kamark.entity.Post;
-import com.kamark.kamark.entity.Room;
-import com.kamark.kamark.entity.User;
+import com.kamark.kamark.entity.PostEntity;
+import com.kamark.kamark.entity.RoomEntity;
+import com.kamark.kamark.entity.UserEntity;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.RoomRepository;
@@ -34,19 +34,19 @@ public class PostService implements PostServiceInterface {
     private LikeRepository likeRepository;
 
     public boolean createPost(CreatePostDTO createPostDTO, Integer userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return false;
         }
-        User user = userOptional.get();
+        UserEntity user = userOptional.get();
 
-        Optional<Room> roomOptional = roomRepository.findById(createPostDTO.getRoomId());
+        Optional<RoomEntity> roomOptional = roomRepository.findById(createPostDTO.getRoomId());
         if (roomOptional.isEmpty()) {
             return false;
         }
-        Room room = roomOptional.get();
+        RoomEntity room = roomOptional.get();
 
-        Post post = new Post();
+        PostEntity post = new PostEntity();
         post.setName(createPostDTO.getName());
         post.setDescription(createPostDTO.getDescription());
         post.setUser(user);
@@ -62,16 +62,16 @@ public class PostService implements PostServiceInterface {
     }
 
     public List<PostResponseDTO> getPostsByRoomId(Integer roomId) {
-        List<Post> posts = postRepository.findByRoomId(roomId);
+        List<PostEntity> posts = postRepository.findByRoomId(roomId);
         return posts.stream()
                 .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
 
-    public Optional<Post> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId) {
-        Optional<Post> existingPost = postRepository.findById(postId);
+    public Optional<PostEntity> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId) {
+        Optional<PostEntity> existingPost = postRepository.findById(postId);
         if (existingPost.isPresent()) {
-            Post post = existingPost.get();
+            PostEntity post = existingPost.get();
 
             if (!post.getUser().getId().equals(userId)) {
                 return Optional.empty(); // Brak uprawnień
@@ -87,9 +87,9 @@ public class PostService implements PostServiceInterface {
     }
 
     public boolean deletePost(Integer postId, Integer userId) {
-        Optional<Post> existingPost = postRepository.findById(postId);
+        Optional<PostEntity> existingPost = postRepository.findById(postId);
         if (existingPost.isPresent()) {
-            Post post = existingPost.get();
+            PostEntity post = existingPost.get();
 
             if (!post.getUser().getId().equals(userId)) {
                 return false;
@@ -101,7 +101,7 @@ public class PostService implements PostServiceInterface {
         return false;
     }
 
-    private PostResponseDTO mapToDTO(Post post) {
+    private PostResponseDTO mapToDTO(PostEntity post) {
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
         dto.setName(post.getName());
@@ -123,9 +123,9 @@ public class PostService implements PostServiceInterface {
         return dto;
     }
     public boolean incrementReportCount(Integer postId) {
-        Optional<Post> postOptional = postRepository.findById(postId);
+        Optional<PostEntity> postOptional = postRepository.findById(postId);
         if (postOptional.isPresent()) {
-            Post post = postOptional.get();
+            PostEntity post = postOptional.get();
             post.setReportCount(post.getReportCount() + 1);
             postRepository.save(post);
             return true;

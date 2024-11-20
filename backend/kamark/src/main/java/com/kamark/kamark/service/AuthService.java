@@ -4,7 +4,7 @@ import com.kamark.kamark.dto.AuthResponse;
 import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.dto.LoginRequest;
 import com.kamark.kamark.dto.RegisterRequest;
-import com.kamark.kamark.entity.User;
+import com.kamark.kamark.entity.UserEntity;
 import com.kamark.kamark.repository.UserRepository;
 import com.kamark.kamark.service.interfaces.AuthServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +49,14 @@ public class AuthService implements AuthServiceInterface {
             if (ourUserRepo.existsByUsername(registrationRequest.getUsername())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Username is already taken."));
             }
-            User user = new User();
+            UserEntity user = new UserEntity();
             user.setEmail(registrationRequest.getEmail());
             user.setUsername(registrationRequest.getUsername());
             user.setPassword(passwordEncoder.encode(registrationRequest.getPassword()));
             user.setStatus("alive");
             user.setRole("USER");
 
-            User ourUserResult = ourUserRepo.save(user);
+            UserEntity ourUserResult = ourUserRepo.save(user);
             if (ourUserResult != null && ourUserResult.getId() > 0) {
 
                 String accessToken = jwtUtils.generateAccessToken(user);
@@ -75,7 +75,7 @@ public class AuthService implements AuthServiceInterface {
 
     public ResponseEntity<?> login(LoginRequest loginRequest) {
         try {
-            User user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
+            UserEntity user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
                     () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
             );
             authenticationManager.authenticate(
@@ -98,10 +98,10 @@ public class AuthService implements AuthServiceInterface {
     public ResponseEntity<?> refresh(String refreshToken) {
         try {
             Integer userIdFromToken = jwtUtils.extractUserId(refreshToken);
-            Optional<User> userOptional = ourUserRepo.findById(userIdFromToken);
+            Optional<UserEntity> userOptional = ourUserRepo.findById(userIdFromToken);
 
             if (userOptional.isPresent() && jwtUtils.isRefreshTokenValid(refreshToken, userOptional.get())) {
-                User user = userOptional.get();
+                UserEntity user = userOptional.get();
                 String newAccessToken = jwtUtils.generateAccessToken(user);
 
                 AuthResponse response = createAuthResponse(newAccessToken, refreshToken, "Access Token refreshed");
