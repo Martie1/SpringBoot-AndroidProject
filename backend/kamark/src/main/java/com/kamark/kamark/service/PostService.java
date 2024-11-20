@@ -68,7 +68,7 @@ public class PostService implements PostServiceInterface {
         responseDTO.setStatus(savedPost.getStatus());
         responseDTO.setCreatedAt(savedPost.getCreatedAt());
         responseDTO.setUsername(user.getUsername());
-        responseDTO.setLikeCount(0); // Początkowa liczba polubień
+        responseDTO.setLikeCount(0);
         responseDTO.setRoomId(savedPost.getRoom().getId());
         responseDTO.setUserId(savedPost.getUser().getId());
 
