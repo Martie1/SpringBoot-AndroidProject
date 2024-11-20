@@ -1,6 +1,5 @@
 package com.example.pwo.network;
 import com.example.pwo.classes.Post;
-import com.example.pwo.classes.ReportRequest;
 import com.example.pwo.classes.Room;
 import com.example.pwo.classes.User;
 import com.example.pwo.network.models.AuthResponse;
@@ -44,6 +43,9 @@ public interface ApiService {
 
     @POST("/api/posts")
     Call<PostResponse> addPost(@Body PostRequest postRequest);
+
+    @GET("/api/user/posts")
+    Call<List<Post>> getUserPosts();
 
     @POST("/api/reports")
     Call<Void> reportPost(@Body ReportRequest reportRequest);

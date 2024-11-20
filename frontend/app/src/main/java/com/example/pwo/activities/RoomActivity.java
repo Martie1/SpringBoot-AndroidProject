@@ -77,9 +77,6 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
                     adapter = new RoomAdapter(rooms, RoomActivity.this);
                     recyclerView.setAdapter(adapter);
                     recyclerView.setLayoutManager(new GridLayoutManager(RoomActivity.this, 2));
-
-                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
-                    recyclerView.addItemDecoration(dividerItemDecoration);
                     RoomAdapter.setOnItemClickListener(RoomActivity.this);
                 }else{
                     Log.e("RoomActivity", "onResponse: " + response.errorBody());
@@ -92,4 +89,6 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
             }
         });
     }
+
+    //connect to R.id.button and set onclick event to go to another intent
 }

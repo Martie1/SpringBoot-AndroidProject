@@ -36,7 +36,6 @@ import retrofit2.Response;
 public class PostActivity extends BaseActivity implements PostAdapter.OnItemClickListener {
     private List<Post> posts;
     private int roomId = 1;
-    private Button addPostButton;
     private PostAdapter adapter;
     private RecyclerView recyclerView;
     TokenManager tokenManager;
@@ -68,15 +67,18 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
                 addPostIntent.putExtra("roomId", roomId);
                 startActivityForResult(addPostIntent, 1);
                 return true;
+            }else if (item.getItemId() == R.id.nav_room) {
+                Intent homeIntent = new Intent(PostActivity.this, RoomActivity.class);
+                startActivity(homeIntent);
+                return true;
+            } else if(item.getItemId() == R.id.nav_profile) {
+                Intent profileIntent = new Intent(PostActivity.this, ProfileActivity.class);
+                startActivity(profileIntent);
+                return true;
             }
             return false;
         });
-        addPostButton = findViewById(R.id.btnAddPost);
-        addPostButton.setOnClickListener(v -> {
-            Intent addPostIntent = new Intent(PostActivity.this, AddPostActivity.class);
-            addPostIntent.putExtra("roomId", roomId);
-            startActivityForResult(addPostIntent, 1);
-        });
+        bottomNavigationView.setSelectedItemId(0);
     }
 
     @Override
@@ -107,11 +109,12 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
                     posts = response.body();
                     recyclerView = findViewById(R.id.recyclerView);
 
+                    Log.d("PostActivity", "onResponse: " + posts);
+
                     adapter = new PostAdapter(posts, PostActivity.this);
                     recyclerView.setAdapter(adapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
-                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
-                    recyclerView.addItemDecoration(dividerItemDecoration);
+                    Log.d("adapter", "onResponse: " + adapter);
                     PostAdapter.setOnItemClickListener(PostActivity.this);
                 }else{
                     Log.e("PostActivity", "onResponse: " + response.errorBody());

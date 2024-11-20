@@ -38,10 +38,10 @@ public class RoomAdapter extends RecyclerView.Adapter<RoomAdapter.RoomViewHolder
         Room room = rooms.get(position);
         int imageId = context.getResources().getIdentifier(room.getName(), "drawable", context.getPackageName());
         if(imageId == 0) {
-            imageId = R.drawable.resource_default;
+            imageId = R.drawable.askadmin;
         }
         holder.roomImage.setImageResource(imageId);
-        holder.roomName.setText(room.getName());
+        holder.roomName.setText(room.getName().replaceFirst("" + room.getName().charAt(0), ("" + room.getName().charAt(0)).toUpperCase()));
     }
 
     @Override
