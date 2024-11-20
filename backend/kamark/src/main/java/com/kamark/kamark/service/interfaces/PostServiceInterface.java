@@ -8,9 +8,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PostServiceInterface {
-    boolean createPost(CreatePostDTO createPostDTO, Integer userId);
+
     Optional<PostResponseDTO> getPostById(Integer id);
     List<PostResponseDTO> getPostsByRoomId(Integer roomId);
     Optional<PostEntity> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId);
+    Optional<PostResponseDTO> createPostAndReturnResponse(CreatePostDTO createPostDTO, Integer userId);
     boolean deletePost(Integer postId, Integer userId);
 }

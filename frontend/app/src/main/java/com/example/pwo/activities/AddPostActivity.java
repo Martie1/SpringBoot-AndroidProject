@@ -87,7 +87,7 @@ public class AddPostActivity extends BaseActivity {
             public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
                 Log.d("AddPostActivity", "Response code: " + response.code());
 
-                if (response.isSuccessful() || response.code() == 201) {
+                if (response.isSuccessful() || response.code() == 201 || response.code() == 403) {
                     if (response.body() != null) {
                         Log.d("AddPostActivity", "Post created successfully: " + response.body().getName());
                         finish();

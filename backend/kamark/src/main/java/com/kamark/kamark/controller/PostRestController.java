@@ -1,5 +1,6 @@
 package com.kamark.kamark.controller;
 import com.kamark.kamark.dto.CreatePostDTO;
+import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.service.JWTUtils;
@@ -32,21 +33,27 @@ public class PostRestController {
     }
 
     @PostMapping
-    public ResponseEntity<String> createPost(
+    public ResponseEntity<?> createPost(
             @RequestBody CreatePostDTO createPostDTO,
             @RequestHeader("Authorization") String authHeader) {
 
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
+
         if (userId == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Invalid token");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
+
         logger.info("User ID create: " + userId);
-        boolean isCreated = postService.createPost(createPostDTO, userId);
-        if (isCreated) {
-            return ResponseEntity.status(HttpStatus.CREATED).body("Post has been successfully created");
+
+        Optional<PostResponseDTO> createdPost = postService.createPostAndReturnResponse(createPostDTO, userId);
+
+        if (createdPost.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdPost.get());
         } else {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to create post");
+            ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Failed to create post");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
 
