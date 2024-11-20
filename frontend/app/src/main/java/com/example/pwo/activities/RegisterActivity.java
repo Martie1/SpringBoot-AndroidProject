@@ -2,7 +2,12 @@ package com.example.pwo.activities;
 import com.example.pwo.utils.TokenParser;
 import com.example.pwo.utils.UserSession;
 import com.example.pwo.utils.validators.RegisterValidator;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +20,8 @@ import android.content.SharedPreferences;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -55,6 +62,11 @@ public class RegisterActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{android.Manifest.permission.POST_NOTIFICATIONS}, 1);
+            }
+        }
         etUsername = findViewById(R.id.etUsername);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
@@ -73,7 +85,9 @@ public class RegisterActivity extends AppCompatActivity {
             startActivity(intent);
         });
         tokenManager = new TokenManager(getApplicationContext());
+
     }
+
 
     private void performRegistration() {
         String username = etUsername.getText().toString().trim();
@@ -124,6 +138,9 @@ public class RegisterActivity extends AppCompatActivity {
                         Log.e("RegisterActivity", "Failed to extract role from accessToken");
                         UserSession.getInstance().setRole("UNKNOWN");
                     }
+
+                    showWelcomeNotification();
+
                     //roomActivity intent
                     Intent intent = new Intent(RegisterActivity.this, RoomActivity.class);
 
@@ -145,6 +162,7 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
+
     private void handleErrorResponse(Response<AuthResponse> response) {
         try {
             if (response.errorBody() != null) {
@@ -184,4 +202,33 @@ public class RegisterActivity extends AppCompatActivity {
             tvError.setVisibility(View.VISIBLE);
         }
     }
+
+    private void showWelcomeNotification() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                Log.e("RegisterActivity", "Notification permission not granted");
+                return;
+            }
+        }
+
+        String channelId = "welcome_channel";
+        String channelName = "Welcome Notifications";
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            notificationManager.createNotificationChannel(channel);
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, channelId)
+                .setSmallIcon(R.drawable.ic_heart_red) // Replace if invalid
+                .setContentTitle("Welcome to Roomsy App!")
+                .setContentText("Make yourself comfy")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        notificationManager.notify(1, builder.build());
+        Log.d("RegisterActivity", "Notification displayed");
+    }
+
+
 }
