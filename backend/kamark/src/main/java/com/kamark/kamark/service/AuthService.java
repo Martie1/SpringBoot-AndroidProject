@@ -1,5 +1,6 @@
 package com.kamark.kamark.service;
 
+import com.kamark.kamark.controller.validators.RegisterValidator;
 import com.kamark.kamark.dto.AuthResponse;
 import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.dto.LoginRequest;
@@ -26,12 +27,14 @@ public class AuthService implements AuthServiceInterface {
     private final JWTUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final RegisterValidator registerValidator;
 
-    public AuthService(UserRepository ourUserRepo, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+    public AuthService(UserRepository ourUserRepo, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RegisterValidator registerValidator) {
         this.ourUserRepo = ourUserRepo;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
+        this.registerValidator = registerValidator;
     }
 
 
@@ -53,6 +56,29 @@ public class AuthService implements AuthServiceInterface {
             if (ourUserRepo.existsByUsername(registrationRequest.getUsername())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Username is already taken."));
             }
+
+            String usernameValidationResult = registerValidator.validateUsername(registrationRequest.getUsername());
+            if (usernameValidationResult != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse(400, usernameValidationResult));
+            }
+
+            String emailValidationResult = registerValidator.validateEmail(registrationRequest.getEmail());
+            if (emailValidationResult != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse(400, emailValidationResult));
+            }
+
+            String passwordValidationResult = registerValidator.validatePassword(
+                    registrationRequest.getPassword(),
+                    registrationRequest.getUsername()
+            );
+            if (passwordValidationResult != null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse(400, passwordValidationResult));
+            }
+
+
             UserEntity user = new UserEntity();
             user.setEmail(registrationRequest.getEmail());
             user.setUsername(registrationRequest.getUsername());
