@@ -33,18 +33,21 @@ public class PostService implements PostServiceInterface {
         this.likeRepository = likeRepository;
     }
 
-    public boolean createPost(CreatePostDTO createPostDTO, Integer userId) {
+    public Optional<PostResponseDTO> createPostAndReturnResponse(CreatePostDTO createPostDTO, Integer userId) {
+
         Optional<UserEntity> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
-            return false;
+            return Optional.empty();
         }
         UserEntity user = userOptional.get();
 
+
         Optional<RoomEntity> roomOptional = roomRepository.findById(createPostDTO.getRoomId());
         if (roomOptional.isEmpty()) {
-            return false;
+            return Optional.empty();
         }
         RoomEntity room = roomOptional.get();
+
 
         PostEntity post = new PostEntity();
         post.setName(createPostDTO.getName());
@@ -53,9 +56,25 @@ public class PostService implements PostServiceInterface {
         post.setRoom(room);
         post.setCreatedAt(new Date());
         post.setStatus("ACTIVE");
-        postRepository.save(post);
-        return true;
+
+
+        PostEntity savedPost = postRepository.save(post);
+
+
+        PostResponseDTO responseDTO = new PostResponseDTO();
+        responseDTO.setId(savedPost.getId());
+        responseDTO.setName(savedPost.getName());
+        responseDTO.setDescription(savedPost.getDescription());
+        responseDTO.setStatus(savedPost.getStatus());
+        responseDTO.setCreatedAt(savedPost.getCreatedAt());
+        responseDTO.setUsername(user.getUsername());
+        responseDTO.setLikeCount(0); // Początkowa liczba polubień
+        responseDTO.setRoomId(savedPost.getRoom().getId());
+        responseDTO.setUserId(savedPost.getUser().getId());
+
+        return Optional.of(responseDTO);
     }
+
 
     public Optional<PostResponseDTO> getPostById(Integer id) {
         return postRepository.findById(id).map(this::mapToDTO);
@@ -74,7 +93,7 @@ public class PostService implements PostServiceInterface {
             PostEntity post = existingPost.get();
 
             if (!post.getUser().getId().equals(userId)) {
-                return Optional.empty(); // Brak uprawnień
+                return Optional.empty();
             }
 
             post.setName(postDTO.getName());
