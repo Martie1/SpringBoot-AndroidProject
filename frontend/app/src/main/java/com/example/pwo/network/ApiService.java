@@ -13,6 +13,7 @@ import com.example.pwo.network.models.RegisterRequest;
 import java.util.List;
 
 import retrofit2.Call;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -74,6 +75,14 @@ public interface ApiService {
     @POST("posts/{postId}/dismiss")
     Call<Void> dismissReport(@Path("postId") int postId);
 
+    @POST("/api/posts/{postId}/like")
+    Call<Void> CreateLike(@Path("postId") int postId);
+
+    @DELETE("/api/posts/{postId}/like")
+    Call<Void> DeleteLike(@Path("postId") int postId);
+
+    @GET("/api/user/likes")
+    Call<List<Post>> getLikes();
 }
 
 

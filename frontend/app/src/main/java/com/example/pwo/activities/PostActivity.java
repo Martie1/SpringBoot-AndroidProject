@@ -39,6 +39,7 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
     private PostAdapter adapter;
     private RecyclerView recyclerView;
     TokenManager tokenManager;
+    private int[] likedPosts;
 
 
     @Override
@@ -51,8 +52,9 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
 
         Intent intent = getIntent();
         if(intent.hasExtra("roomId")) {
-            int roomId = intent.getIntExtra("roomId", 1);
+            roomId = intent.getIntExtra("roomId", 1);
             fetchPosts(roomId);
+            fetchLikes();
         }
         else {
             Toast.makeText(this, "No Posts found in this room!", Toast.LENGTH_SHORT).show();
@@ -99,6 +101,32 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
                 // fetchPosts(roomId) // fetch posts from the server
             }
         }
+    }
+
+    private void fetchLikes(){
+        ApiClient.getInstance(getApplicationContext()).getApiService().getLikes().enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    if(response.body().size() == 0){
+                        return;
+                    }
+                    likedPosts = new int[response.body().size()];
+                    for(int i = 0; i < response.body().size(); i++){
+                        likedPosts[i] = response.body().get(i).getId();
+                    }
+                    adapter.setLikedPosts(likedPosts);
+                    Log.d("PostActivity", "onResponse: " + likedPosts);
+                }else{
+                    Log.e("PostActivity", "onResponse: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                Log.e("PostActivity", "onFailure: ", t);
+            }
+        });
     }
 
     private void fetchPosts(int roomId) {
