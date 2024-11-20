@@ -84,10 +84,16 @@ public class MainActivity extends AppCompatActivity{
                         UserSession.getInstance().setRole("UNKNOWN");
                     }
                     Log.d("MainActivity", "refreshToken onResponse: " + response.body().getRefreshToken());
+                    if(role.equals("ADMIN")) {
+                    //    Intent intent = new Intent(MainActivity.this, AdminActivity.class);
+                    //    startActivity(intent);
+                     //   finish();
+                    }
+                    if(role.equals("USER")) {
                         Intent intent = new Intent(MainActivity.this, RoomActivity.class);
                         startActivity(intent);
                         finish();
-
+                    }
                 }
             }
 

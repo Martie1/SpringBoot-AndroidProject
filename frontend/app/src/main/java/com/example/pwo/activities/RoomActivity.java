@@ -54,17 +54,9 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
 
     @Override
     public void onItemClick(Room room) {
-        if(UserSession.getInstance().getRole().equals("ADMIN")) {
-              // Intent intent = new Intent(MainActivity.this, AdminActivity.class);
-            // startActivity(intent);
-            //
-        }
-        if(UserSession.getInstance().getRole().equals("USER")) {
             Intent intent = new Intent(RoomActivity.this, PostActivity.class);
             intent.putExtra("roomId", room.getId());
             startActivity(intent);
-        }
-
     }
 
     private void getRooms(){
