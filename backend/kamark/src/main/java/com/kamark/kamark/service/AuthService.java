@@ -22,14 +22,18 @@ import java.util.Optional;
 @Service
 public class AuthService implements AuthServiceInterface {
 
-    @Autowired
-    private UserRepository ourUserRepo;
-    @Autowired
-    private JWTUtils jwtUtils;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final UserRepository ourUserRepo;
+    private final JWTUtils jwtUtils;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
+    public AuthService(UserRepository ourUserRepo, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
+        this.ourUserRepo = ourUserRepo;
+        this.jwtUtils = jwtUtils;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+    }
+
 
     private AuthResponse createAuthResponse(String accessToken,String refreshToken, String message) {
         AuthResponse response = new AuthResponse();
@@ -113,4 +117,5 @@ public class AuthService implements AuthServiceInterface {
             return ResponseEntity.status(500).body(new ErrorResponse(500, "Error refreshing token: " + e.getMessage()));
         }
     }
+
 }

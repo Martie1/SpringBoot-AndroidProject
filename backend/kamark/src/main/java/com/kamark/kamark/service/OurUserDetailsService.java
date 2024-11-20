@@ -11,8 +11,13 @@ import org.springframework.stereotype.Service;
 @Service //for authorization purposes
 public class OurUserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public OurUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+
 
     public UserDetails loadUserById(Integer userId) {
         return userRepository.findById(userId)
@@ -24,4 +29,5 @@ public class OurUserDetailsService implements UserDetailsService {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
     }
+
 }

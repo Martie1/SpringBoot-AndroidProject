@@ -12,8 +12,11 @@ import java.util.List;
 @Service
 public class RoomService implements RoomServiceInterface {
 
-    @Autowired
-    private RoomRepository roomRepository;
+    private final RoomRepository roomRepository;
+
+    public RoomService(RoomRepository roomRepository) {
+        this.roomRepository = roomRepository;
+    }
     public List<RoomDTO> getAllRooms() {
         List<RoomEntity> rooms = roomRepository.findAll();
         return rooms.stream()
