@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pwo.R;
 import com.example.pwo.adapters.PostAdapter;
+import com.example.pwo.adapters.ReportedPostsAdapter;
 import com.example.pwo.classes.Post;
 import com.example.pwo.classes.User;
 import com.example.pwo.network.ApiClient;
@@ -33,10 +34,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class PostActivity extends BaseActivity implements PostAdapter.OnItemClickListener {
+public class AdminActivity extends BaseActivity implements ReportedPostsAdapter.OnItemClickListener {
     private List<Post> posts;
     private int roomId = 1;
-    private PostAdapter adapter;
+
+    private ReportedPostsAdapter adapter;
     private RecyclerView recyclerView;
     TokenManager tokenManager;
 
@@ -44,9 +46,9 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getLayoutInflater().inflate(R.layout.activity_post, findViewById(R.id.main));
+        getLayoutInflater().inflate(R.layout.activity_admin, findViewById(R.id.main));
         tokenManager = new TokenManager(getApplicationContext());
-        String token =tokenManager.getAccessToken();
+        String token = tokenManager.getAccessToken();
 
 
         Intent intent = getIntent();
@@ -63,27 +65,19 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
         bottomNavigationView.getMenu().findItem(R.id.nav_add_post).setVisible(true);
         bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
             if (item.getItemId() == R.id.nav_add_post) {
-                Intent addPostIntent = new Intent(PostActivity.this, AddPostActivity.class);
+                Intent addPostIntent = new Intent(AdminActivity.this, AddPostActivity.class);
                 addPostIntent.putExtra("roomId", roomId);
                 startActivityForResult(addPostIntent, 1);
-                return true;
-            }else if (item.getItemId() == R.id.nav_room) {
-                Intent homeIntent = new Intent(PostActivity.this, RoomActivity.class);
-                startActivity(homeIntent);
-                return true;
-            } else if(item.getItemId() == R.id.nav_profile) {
-                Intent profileIntent = new Intent(PostActivity.this, ProfileActivity.class);
-                startActivity(profileIntent);
                 return true;
             }
             return false;
         });
-        bottomNavigationView.setSelectedItemId(0);
+
     }
 
     @Override
     public void onItemClick(Post post) {
-        Intent intent = new Intent(PostActivity.this, SinglePostActivity.class);
+        Intent intent = new Intent(AdminActivity.this, SinglePostActivity.class);
         intent.putExtra("postId", post.getId());
         intent.putExtra("roomId", roomId);
         startActivity(intent);
@@ -96,27 +90,26 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
             if (resultCode == RESULT_OK) {
                 posts.add(new Post(posts.size(), new Date(), data.getStringExtra("title"), data.getStringExtra("description"), 0, "Status", roomId, 0, "User"));
                 adapter.notifyDataSetChanged();
-                // fetchPosts(roomId) // fetch posts from the server
+                 fetchPosts(roomId);
             }
         }
     }
 
     private void fetchPosts(int roomId) {
-        ApiClient.getInstance(getApplicationContext()).getApiService().getPosts(roomId).enqueue(new Callback<List<Post>>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().getReportedPosts(roomId).enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if(response.isSuccessful() && response.body() != null) {
+                if (response.isSuccessful() && response.body() != null) {
                     posts = response.body();
-                    recyclerView = findViewById(R.id.recyclerView);
+                    recyclerView = findViewById(R.id.room_recyclerview); // Ensure recyclerView is initialized
 
-                    Log.d("PostActivity", "onResponse: " + posts);
-
-                    adapter = new PostAdapter(posts, PostActivity.this);
+                    adapter = new ReportedPostsAdapter(posts, AdminActivity.this);
                     recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
-                    Log.d("adapter", "onResponse: " + adapter);
-                    PostAdapter.setOnItemClickListener(PostActivity.this);
-                }else{
+                    recyclerView.setLayoutManager(new LinearLayoutManager(AdminActivity.this));
+                    DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);
+                    recyclerView.addItemDecoration(dividerItemDecoration);
+                    adapter.setOnItemClickListener(AdminActivity.this);
+                } else {
                     Log.e("PostActivity", "onResponse: " + response.errorBody());
                 }
             }

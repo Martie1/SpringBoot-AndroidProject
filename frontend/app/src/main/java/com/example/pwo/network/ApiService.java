@@ -64,12 +64,17 @@ public interface ApiService {
             @Header("Authorization") String authHeader
     );
 
-//    // dla administratora
-//    @GET("/api/reports")
-//    Call<List<ReportResponse>> getAllReports();
-//
-//    //  dla administratora
-//    @PUT("/api/reports/{reportId}")
-//    Call<Void> updateReportStatus(@Path("reportId") int reportId, @Query("status") String status);
+    @GET("/api/admin/{roomId}/posts")
+    Call<List<Post>> getReportedPosts(@Path("roomId") int roomId);
+
+
+    @POST("posts/{postId}/resolve")
+    Call<Void> resolveReport(@Path("postId") int postId);
+
+
+    @POST("posts/{postId}/dismiss")
+    Call<Void> dismissReport(@Path("postId") int postId);
 
 }
+
+

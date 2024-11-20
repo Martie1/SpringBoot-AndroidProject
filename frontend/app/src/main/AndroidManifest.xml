@@ -41,6 +41,8 @@
             android:exported="true" />
         <activity android:name=".activities.ReportActivity"
             android:exported="true" />
+        <activity android:name=".activities.AdminActivity"
+            android:exported="true" />
 
 
         <activity

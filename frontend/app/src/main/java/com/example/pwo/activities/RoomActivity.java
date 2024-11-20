@@ -46,7 +46,7 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
 
         Log.d("RoomActivity", "User role: " + role);
         View navigationBarMenu = findViewById(R.id.bottom_navigation);
-        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        tokenManager = new TokenManager(getApplicationContext());
         String token = tokenManager.getAccessToken();
         getRooms();
 
@@ -55,15 +55,15 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
     @Override
     public void onItemClick(Room room) {
         if(UserSession.getInstance().getRole().equals("ADMIN")) {
-              // Intent intent = new Intent(MainActivity.this, AdminActivity.class);
-            // startActivity(intent);
-            //
-        }
+            Intent intent = new Intent(RoomActivity.this, AdminActivity.class);
+            intent.putExtra("roomId", room.getId());
+            startActivity(intent);
+        }else{
         if(UserSession.getInstance().getRole().equals("USER")) {
             Intent intent = new Intent(RoomActivity.this, PostActivity.class);
             intent.putExtra("roomId", room.getId());
             startActivity(intent);
-        }
+        }}
 
     }
 
