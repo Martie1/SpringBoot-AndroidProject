@@ -4,6 +4,8 @@ import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.entity.Post;
 import com.kamark.kamark.service.JWTUtils;
 import com.kamark.kamark.service.PostService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +17,17 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/posts")
 public class PostRestController {
+    private static final Logger logger = LoggerFactory.getLogger(PostRestController.class);
+
     @Autowired
-    private PostService postServiceImpl;
+    private PostService postService;
     @Autowired
     private JWTUtils jwtUtils;
 
     @GetMapping("/room/{roomId}")
-    public ResponseEntity<List<PostResponseDTO>> getPostsByRoomId(@PathVariable Integer roomId) {
-        List<PostResponseDTO> posts = postServiceImpl.getPostsByRoomId(roomId);
+    public ResponseEntity<List<PostResponseDTO>> getPostsByRoomId(@PathVariable Integer roomId,@RequestHeader("Authorization") String authHeader) {
+
+        List<PostResponseDTO> posts = postService.getPostsByRoomId(roomId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
@@ -36,8 +41,8 @@ public class PostRestController {
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
         }
-
-        boolean isCreated = postServiceImpl.createPost(createPostDTO, userId);
+        logger.info("User ID create: " + userId);
+        boolean isCreated = postService.createPost(createPostDTO, userId);
         if (isCreated) {
             return ResponseEntity.status(HttpStatus.CREATED).body("Post has been successfully created");
         } else {
@@ -46,8 +51,8 @@ public class PostRestController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Integer id) {
-        Optional<PostResponseDTO> postDTO = postServiceImpl.getPostById(id);
+    public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Integer id,@RequestHeader("Authorization") String authHeader) {
+        Optional<PostResponseDTO> postDTO = postService.getPostById(id);
         return postDTO.map(value -> new ResponseEntity<>(value, HttpStatus.OK))
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
@@ -61,7 +66,7 @@ public class PostRestController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
-        Optional<Post> updatedPost = postServiceImpl.updatePost(id, postResponseDTO, userId);
+        Optional<Post> updatedPost = postService.updatePost(id, postResponseDTO, userId);
         if (updatedPost.isPresent()) {
             return ResponseEntity.ok("The post has been successfully updated");
         } else {
@@ -77,7 +82,7 @@ public class PostRestController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
-        boolean isDeleted = postServiceImpl.deletePost(id, userId);
+        boolean isDeleted = postService.deletePost(id, userId);
         if (isDeleted) {
             return ResponseEntity.ok("The post has been successfully deleted");
         } else {

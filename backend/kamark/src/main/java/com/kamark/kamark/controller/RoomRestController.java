@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,11 +18,11 @@ import java.util.List;
 public class RoomRestController {
 
     @Autowired
-    private RoomService roomServiceImpl;
+    private RoomService roomService;
 
     @GetMapping
-    public ResponseEntity<List<RoomDTO>> getAllRooms(Authentication authentication) {
-        List<RoomDTO> rooms = roomServiceImpl.getAllRooms();
+    public ResponseEntity<List<RoomDTO>> getAllRooms(Authentication authentication,@RequestHeader("Authorization") String authHeader) {
+        List<RoomDTO> rooms = roomService.getAllRooms();
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 }

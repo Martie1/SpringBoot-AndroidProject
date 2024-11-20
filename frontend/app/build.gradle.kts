@@ -43,5 +43,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
     implementation ("com.google.android.material:material:1.4.0")
+    implementation ("com.auth0.android:jwtdecode:2.0.0")
+
 
 }

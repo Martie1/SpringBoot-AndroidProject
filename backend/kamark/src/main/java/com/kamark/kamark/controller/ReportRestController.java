@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReportRestController {
 
     @Autowired
-    private ReportService reportServiceImpl;
+    private ReportService reportService;
 
     @Autowired
     private JWTUtils jwtUtils;
@@ -31,7 +31,7 @@ public class ReportRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
 
-        boolean isReported = reportServiceImpl.reportPost(postId, userId, reportPostDTO.getReason());
+        boolean isReported = reportService.reportPost(postId, userId, reportPostDTO.getReason());
         if (isReported) {
             return ResponseEntity.ok("Post reported successfully");
         } else {

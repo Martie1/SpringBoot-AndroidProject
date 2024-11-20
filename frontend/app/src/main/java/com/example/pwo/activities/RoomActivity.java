@@ -21,6 +21,7 @@ import com.example.pwo.adapters.RoomAdapter;
 import com.example.pwo.classes.Room;
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.utils.TokenManager;
+import com.example.pwo.utils.UserSession;
 import com.google.android.material.navigation.NavigationBarMenu;
 
 import java.util.List;
@@ -41,17 +42,21 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
         super.onCreate(savedInstanceState);
         getLayoutInflater().inflate(R.layout.activity_room, findViewById(R.id.main));
 
+        String role = UserSession.getInstance().getRole();
+
+        Log.d("RoomActivity", "User role: " + role);
         View navigationBarMenu = findViewById(R.id.bottom_navigation);
         TokenManager tokenManager = new TokenManager(getApplicationContext());
         String token = tokenManager.getAccessToken();
         getRooms();
+
     }
 
     @Override
     public void onItemClick(Room room) {
-        Intent intent = new Intent(RoomActivity.this, PostActivity.class);
-        intent.putExtra("roomId", room.getId());
-        startActivity(intent);
+            Intent intent = new Intent(RoomActivity.this, PostActivity.class);
+            intent.putExtra("roomId", room.getId());
+            startActivity(intent);
     }
 
     private void getRooms(){
