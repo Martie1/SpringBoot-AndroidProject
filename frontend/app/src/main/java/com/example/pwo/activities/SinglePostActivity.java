@@ -45,7 +45,7 @@ public class SinglePostActivity extends BaseActivity {
         tvLikes = findViewById(R.id.cbLike);
         ivRoomImage = findViewById(R.id.ivRoomImage);
 
-        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        tokenManager = new TokenManager(getApplicationContext());
         String token =tokenManager.getAccessToken();
 
         Intent intent = getIntent();

@@ -1,5 +1,6 @@
 package com.kamark.kamark.controller;
 
+import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.dto.ReportPostDTO;
 import com.kamark.kamark.entity.ReportStatus;
 import com.kamark.kamark.service.ReportService;
@@ -16,9 +17,9 @@ public class AdminRestController {
     @Autowired
     private ReportService reportService;
 
-    @GetMapping("/reports")
-    public ResponseEntity<List<ReportPostDTO>> getAllReports() {
-        List<ReportPostDTO> reports = reportService.getAllReportPosts();
+    @GetMapping("/{roomId}/posts")
+    public ResponseEntity<List<PostResponseDTO>> getAllReportedPostsByRoom(@PathVariable Integer roomId) {
+        List<PostResponseDTO> reports = reportService.getReportedPostsByRoomId(roomId);
         return ResponseEntity.ok(reports);
     }
 

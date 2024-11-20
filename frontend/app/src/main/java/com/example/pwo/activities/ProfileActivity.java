@@ -51,16 +51,17 @@ public class ProfileActivity extends BaseActivity implements PostAdapter.OnItemC
         tvUsername = findViewById(R.id.tvUsername);
         tvEmail = findViewById(R.id.tvEmail);
         btnLogout = findViewById(R.id.btnLogout);
-        TokenManager tokenManager = new TokenManager(getApplicationContext());
+        tokenManager = new TokenManager(getApplicationContext());
 
         posts = new ArrayList<>();
         setUpRecyclerView();
 
         fetchPosts();
+        fetchUserDetails();
 
         btnLogout.setOnClickListener(v -> logout());
 
-        fetchUserDetails();
+
     }
     private void logout(){
         tokenManager.clearTokens();

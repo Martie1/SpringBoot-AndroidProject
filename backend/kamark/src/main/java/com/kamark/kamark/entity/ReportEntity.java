@@ -5,6 +5,7 @@ import lombok.Data;
 
 @Data
 @Entity
+@Table(name = "report")
 public class ReportEntity {
 
     @Id
@@ -24,5 +25,5 @@ public class ReportEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ReportStatus status = ReportStatus.DISMISSED;
+    private ReportStatus status = ReportStatus.PENDING;
 }

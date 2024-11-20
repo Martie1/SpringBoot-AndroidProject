@@ -1,7 +1,7 @@
 package com.kamark.kamark.entity;
 
 public enum ReportStatus {
-    //PENDING,
+    PENDING,
     RESOLVED,
     DISMISSED
 }

@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -47,7 +48,7 @@ public class PostEntity {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<LikeEntity> likes; //many likes
 
-    @Column(name = "report_count", nullable = false)
-    private Integer reportCount = 0;
+    @OneToMany(mappedBy = "post")
+    private List<ReportEntity> reports;
 
 }

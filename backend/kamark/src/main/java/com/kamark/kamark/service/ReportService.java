@@ -1,9 +1,11 @@
 package com.kamark.kamark.service;
 
+import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.dto.ReportPostDTO;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.entity.ReportEntity;
 import com.kamark.kamark.entity.UserEntity;
+import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.ReportRepository;
 import com.kamark.kamark.repository.UserRepository;
@@ -21,11 +23,13 @@ public class ReportService implements ReportServiceInterface {
     private final ReportRepository reportRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final LikeRepository likeRepository;
 
-    public ReportService(ReportRepository reportRepository, PostRepository postRepository, UserRepository userRepository) {
+    public ReportService(ReportRepository reportRepository, PostRepository postRepository, UserRepository userRepository,LikeRepository likeRepository){
         this.reportRepository = reportRepository;
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
     }
 
     public boolean reportPost(Integer postId, Integer userId, String reason) {
@@ -53,28 +57,24 @@ public class ReportService implements ReportServiceInterface {
         report.setReason(reason);
         reportRepository.save(report);
 
-        // zwieksz licznik zgloszen
-        post.setReportCount(post.getReportCount() + 1);
         postRepository.save(post);
 
         return true;
     }
 
-    public Integer getReportCount(Integer postId) {
-        return postRepository.findById(postId)
-                .map(PostEntity::getReportCount)
-                .orElse(0);
-    }
 
-    public List<ReportPostDTO> getAllReportPosts() {
-        List<ReportEntity> reports = reportRepository.findAll();
-        return reports.stream()
-                .map(report -> new ReportPostDTO(
-                        report.getPost().getId(),
-                        report.getReason(),
-                        report.getStatus()))
+    public List<PostResponseDTO> getReportedPostsByRoomId(Integer roomId) {
+        List<PostEntity> posts = postRepository.findByRoomId(roomId);
+
+        return posts.stream()
+                .filter(post -> post.getReports() != null &&
+                        post.getReports().stream().anyMatch(report -> "PENDING".equals(report.getStatus())))
+                .map(this::mapToDTO)
                 .collect(Collectors.toList());
     }
+
+
+
     public boolean updateReportStatus(Integer reportId, ReportStatus status) {
         Optional<ReportEntity> reportOptional = reportRepository.findById(reportId);
         if (reportOptional.isEmpty()) {
@@ -100,4 +100,26 @@ public class ReportService implements ReportServiceInterface {
         reportRepository.save(report);
         return true;
     }
+    private PostResponseDTO mapToDTO(PostEntity post) {
+        PostResponseDTO dto = new PostResponseDTO();
+        dto.setId(post.getId());
+        dto.setName(post.getName());
+        dto.setDescription(post.getDescription());
+        dto.setStatus(post.getStatus());
+        dto.setCreatedAt(post.getCreatedAt());
+
+        if (post.getUser() != null) {
+            dto.setUserId(post.getUser().getId());
+            dto.setUsername(post.getUser().getUsername());
+        }
+
+        if (post.getRoom() != null) {
+            dto.setRoomId(post.getRoom().getId());
+        }
+
+        dto.setLikeCount(likeRepository.countByPostId(post.getId()));
+
+        return dto;
+    }
+
 }

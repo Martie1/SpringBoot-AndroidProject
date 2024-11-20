@@ -13,5 +13,4 @@ public interface PostServiceInterface {
     List<PostResponseDTO> getPostsByRoomId(Integer roomId);
     Optional<PostEntity> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId);
     boolean deletePost(Integer postId, Integer userId);
-    boolean incrementReportCount(Integer postId);
 }
