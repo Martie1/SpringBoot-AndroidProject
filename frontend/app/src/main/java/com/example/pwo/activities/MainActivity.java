@@ -17,6 +17,8 @@ import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.models.RefreshTokenRequest;
 import com.example.pwo.utils.TokenManager;
+import com.example.pwo.utils.TokenParser;
+import com.example.pwo.utils.UserSession;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -39,7 +41,7 @@ public class MainActivity extends AppCompatActivity{
             return insets;
         });
 
-        tokenManager = new TokenManager(getApplicationContext()); // Initialize tokenManager here
+        tokenManager = new TokenManager(getApplicationContext());
         String refreshToken = tokenManager.getRefreshToken();
         Log.d("MainActivity", "refreshToken onCreate: " + refreshToken);
 
@@ -48,6 +50,8 @@ public class MainActivity extends AppCompatActivity{
         if (refreshToken != null) {
             validateRefreshToken(refreshToken);
         }
+
+
 
         btnLogin = findViewById(R.id.btnLogin);
         btnLogin.setOnClickListener(v -> {
@@ -70,10 +74,26 @@ public class MainActivity extends AppCompatActivity{
                 if (response.isSuccessful() && response.body() != null) {
                     tokenManager.saveTokens(response.body().getAccessToken(), response.body().getRefreshToken());
                     Log.d("MainActivity", "accessToken onResponse: " + response.body().getAccessToken());
+                    String role = TokenParser.extractRole(response.body().getAccessToken());
+
+                    if (role != null) {
+                        UserSession.getInstance().setRole(role);
+                        Log.d("MainActivity", "role onResponse: " + TokenParser.extractRole(response.body().getAccessToken()));;
+                    } else {
+                        Log.e("LoginActivity", "Failed to extract role from accessToken");
+                        UserSession.getInstance().setRole("UNKNOWN");
+                    }
                     Log.d("MainActivity", "refreshToken onResponse: " + response.body().getRefreshToken());
-                    Intent intent = new Intent(MainActivity.this, RoomActivity.class);
-                    startActivity(intent);
-                    finish();
+                    if(role.equals("ADMIN")) {
+                    //    Intent intent = new Intent(MainActivity.this, AdminActivity.class);
+                    //    startActivity(intent);
+                     //   finish();
+                    }
+                    if(role.equals("USER")) {
+                        Intent intent = new Intent(MainActivity.this, RoomActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
                 }
             }
 

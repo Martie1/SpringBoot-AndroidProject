@@ -36,6 +36,10 @@ public class LikeService implements LikeInterface {
         if (postOptional.isEmpty()) {
             return false;
         }
+        Optional<Like> existingLike = likeRepository.findByPostIdAndUserId(postId, userId);
+        if (existingLike.isPresent()) {
+            return false;
+        }
         Post post = postOptional.get();
 
         Like like = new Like();

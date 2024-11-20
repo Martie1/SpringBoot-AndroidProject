@@ -12,20 +12,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthRestController {
 
     @Autowired
-    private AuthService authServiceImpl;
+    private AuthService authService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest registerRequest) {
-        return authServiceImpl.register(registerRequest);  //<AuthResponse> lub <ErrorResponse>
+        return authService.register(registerRequest);  //<AuthResponse> lub <ErrorResponse>
     }
 
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest){
-        return authServiceImpl.login(loginRequest); //<AuthResponse> lub <ErrorResponse>
+        return authService.login(loginRequest); //<AuthResponse> lub <ErrorResponse>
     }
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshAccessToken(@RequestHeader("Refresh") String refreshToken) {
-        return authServiceImpl.refresh(refreshToken);
+        return authService.refresh(refreshToken);
     }
 }

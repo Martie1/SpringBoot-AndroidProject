@@ -1,4 +1,6 @@
 package com.example.pwo.activities;
+import com.example.pwo.utils.TokenParser;
+import com.example.pwo.utils.UserSession;
 import com.example.pwo.utils.validators.RegisterValidator;
 import android.content.Intent;
 import android.os.Bundle;
@@ -114,7 +116,14 @@ public class RegisterActivity extends AppCompatActivity {
                     String refreshToken = authResponse.getRefreshToken();
                     tokenManager.saveTokens(accessToken, refreshToken);
 
-
+                    String role = TokenParser.extractRole(accessToken);
+                    if (role != null) {
+                        UserSession.getInstance().setRole(role);
+                        Log.d("RegisterActivity", "User role: " + role);
+                    } else {
+                        Log.e("RegisterActivity", "Failed to extract role from accessToken");
+                        UserSession.getInstance().setRole("UNKNOWN");
+                    }
                     //roomActivity intent
                     Intent intent = new Intent(RegisterActivity.this, RoomActivity.class);
 

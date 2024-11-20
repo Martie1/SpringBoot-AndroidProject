@@ -18,27 +18,29 @@ public class LikeRestController {
     private JWTUtils jwtUtils;
 
     @PostMapping("/{postId}/like")
-    public ResponseEntity<String> likePost(@PathVariable Integer postId, @RequestHeader("Authorization") String token) {
+    public ResponseEntity<String> likePost(@PathVariable Integer postId, @RequestHeader("Authorization") String authHeader) {
+
+        String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
-        if (token == null || token.contains(" ")) {
-            throw new MalformedJwtException("Token contains whitespace or is invalid.");
-        }
+
         boolean result = likeService.likePost(postId, userId);
         if (result) {
             return ResponseEntity.ok("Post liked successfully");
         } else {
-            return ResponseEntity.badRequest().body("Failed to like post");
+            return ResponseEntity.badRequest().body("Failed to like post. Post already liked by user.");
         }
     }
 
     @DeleteMapping("/{postId}/like")
-    public ResponseEntity<String> unlikePost(@PathVariable Integer postId, @RequestHeader("Authorization") String token) {
-        Integer userId = jwtUtils.extractUserId(token);
+    public ResponseEntity<String> unlikePost(@PathVariable Integer postId, @RequestHeader("Authorization") String authHeader){
+    String token = authHeader.substring(7);
+    Integer userId = jwtUtils.extractUserId(token);
+
         boolean result = likeService.unlikePost(postId, userId);
         if (result) {
             return ResponseEntity.ok("Post unliked successfully");
         } else {
-            return ResponseEntity.badRequest().body("Failed to unlike post");
+            return ResponseEntity.badRequest().body("Failed to unlike post. Post not liked by user.");
         }
     }
 }

@@ -16,7 +16,7 @@ import java.util.List;
 public class UserRestController {
 
     @Autowired
-    private UserService userServiceImpl;
+    private UserService userService;
 
     @Autowired
     private JWTUtils jwtUtils;
@@ -34,7 +34,7 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
 
-        UserProfileDTO userProfile = userServiceImpl.getUserProfile(userId);
+        UserProfileDTO userProfile = userService.getUserProfile(userId);
         return ResponseEntity.ok(userProfile);
     }
     @PatchMapping("/profile")
@@ -53,7 +53,7 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
 
-        boolean isUpdated = userServiceImpl.updateUserProfile(userId, userProfileDTO);
+        boolean isUpdated = userService.updateUserProfile(userId, userProfileDTO);
         if (isUpdated) {
             return ResponseEntity.ok("Profile updated successfully");
         } else {
@@ -73,7 +73,7 @@ public class UserRestController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
 
-        boolean isDeactivated = userServiceImpl.deactivateAccount(userId);
+        boolean isDeactivated = userService.deactivateAccount(userId);
         if (isDeactivated) {
             return ResponseEntity.ok("Account deactivated successfully");
         } else {
@@ -86,7 +86,7 @@ public class UserRestController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
-        List<PostResponseDTO> userPosts = userServiceImpl.getUserPosts(userId);
+        List<PostResponseDTO> userPosts = userService.getUserPosts(userId);
         return ResponseEntity.ok(userPosts);
     }
 
@@ -95,7 +95,7 @@ public class UserRestController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
-        List<PostResponseDTO> likedPosts = userServiceImpl.getUserLikes(userId);
+        List<PostResponseDTO> likedPosts = userService.getUserLikes(userId);
         return ResponseEntity.ok(likedPosts);
     }
 }
