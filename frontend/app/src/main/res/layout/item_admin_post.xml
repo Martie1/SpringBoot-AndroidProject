@@ -2,85 +2,116 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:padding="16dp"
+    android:orientation="vertical"
+    android:background="#30140B">
 
-    <RelativeLayout
-        android:id="@+id/linearLayout"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@drawable/default_bg"
+        >
+
+        <RelativeLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="43dp">
+
+            <ImageView
+                android:id="@+id/ivUserImage"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="25dp"
+                android:layout_marginTop="20dp"
+                android:contentDescription="@string/userimage"
+                android:maxWidth="20dp"
+                android:maxHeight="20dp"
+                android:src="@drawable/user_logo" />
+
+            <TextView
+                android:id="@+id/tvUsername"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_marginStart="0dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="150dp"
+                android:layout_toStartOf="@+id/tvCreatedAt"
+                android:layout_toEndOf="@+id/ivUserImage"
+                android:text="@string/username"
+                android:textColor="#ffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvCreatedAt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="16dp"
+                android:text="@string/createdat"
+                android:textColor="#ffffff"
+                android:textDirection="rtl"
+                android:textSize="12sp" />
+
+
+        </RelativeLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnDismiss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:text="Dismiss"
+                android:textColor="#FFFFFF" />
+
+            <Button
+                android:id="@+id/btnResolve"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_toStartOf="@+id/btnDismiss"
+                android:text="Resolve"
+                android:textColor="#FFFFFF" />
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/tvUsername"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginEnd="0dp"
-            android:layout_toStartOf="@+id/tvCreatedAt"
-            android:text="@string/username"
-            android:textSize="12sp" />
+            android:layout_marginStart="25dp"
+            android:text="@string/name"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/tvCreatedAt"
-            android:layout_width="wrap_content"
+            android:id="@+id/tvDescription"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="25dp"
+            android:text="@string/post_description"
+            android:textColor="#ffffff" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
-            android:layout_marginEnd="0dp"
-            android:text="@string/createdat"
-            android:textDirection="rtl"
-            android:textSize="12sp" />
-        <Button
-            android:id="@+id/btnDismiss"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:text="Dismiss" />
-        <Button
-            android:id="@+id/btnResolve"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="16dp"
-            android:text="Resolve" />
-
-
-    </RelativeLayout>
-
-    <TextView
-        android:id="@+id/tvName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/name"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/tvDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/post_description" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <com.google.android.material.checkbox.MaterialCheckBox
-            android:id="@+id/cbLike"
-            android:layout_width="wrap_content"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_margin="0dp"
-            android:layout_marginTop="0dp"
-            android:layout_marginEnd="365dp"
-            android:button="@null"
-            android:checked="false"
-            android:drawableEnd="@drawable/heart_selector"
-            android:elevation="1dp"
-            android:gravity="end|center"
-            android:stateListAnimator="@animator/scale"
-            android:text="@string/_4"
-            android:textAlignment="viewEnd"
-            android:textColor="@color/color_grey" />
-    </RelativeLayout>
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="35dp"
+            android:layout_marginBottom="10dp"/>
+    </LinearLayout>
 
 </LinearLayout>
