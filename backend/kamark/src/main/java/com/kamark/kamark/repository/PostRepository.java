@@ -1,14 +1,14 @@
 package com.kamark.kamark.repository;
 
-import com.kamark.kamark.entity.Post;
+import com.kamark.kamark.entity.PostEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface PostRepository extends JpaRepository<Post, Integer> {
+public interface PostRepository extends JpaRepository<PostEntity, Integer> {
     @Override
-    Optional<Post> findById(Integer integer);
-    List<Post> findByUserId(Integer userId);
-    List<Post> findByRoomId(Integer roomId);
+    Optional<PostEntity> findById(Integer integer);
+    List<PostEntity> findByUserId(Integer userId);
+    List<PostEntity> findByRoomId(Integer roomId);
 }

@@ -11,7 +11,7 @@ import java.util.Set;
 @Data
 @Entity
 @Table(name="post") //Post
-public class Post {
+public class PostEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -37,15 +37,15 @@ public class Post {
     //one idea belongs to one user
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User user; //one user
+    private UserEntity user; //one user
 
     // one idea belongs to one room
     @ManyToOne
     @JoinColumn(name = "room_id", nullable = false)
-    private Room room; // one room
+    private RoomEntity room; // one room
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Like> likes; //many likes
+    private Set<LikeEntity> likes; //many likes
 
     @Column(name = "report_count", nullable = false)
     private Integer reportCount = 0;

@@ -1,8 +1,8 @@
 package com.kamark.kamark.service;
 
-import com.kamark.kamark.entity.Like;
-import com.kamark.kamark.entity.Post;
-import com.kamark.kamark.entity.User;
+import com.kamark.kamark.entity.LikeEntity;
+import com.kamark.kamark.entity.PostEntity;
+import com.kamark.kamark.entity.UserEntity;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.UserRepository;
@@ -26,23 +26,23 @@ public class LikeService implements LikeInterface {
 
     @Override
     public boolean likePost(Integer postId, Integer userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return false;
         }
-        User user = userOptional.get();
+        UserEntity user = userOptional.get();
 
-        Optional<Post> postOptional = postRepository.findById(postId);
+        Optional<PostEntity> postOptional = postRepository.findById(postId);
         if (postOptional.isEmpty()) {
             return false;
         }
-        Optional<Like> existingLike = likeRepository.findByPostIdAndUserId(postId, userId);
+        Optional<LikeEntity> existingLike = likeRepository.findByPostIdAndUserId(postId, userId);
         if (existingLike.isPresent()) {
             return false;
         }
-        Post post = postOptional.get();
+        PostEntity post = postOptional.get();
 
-        Like like = new Like();
+        LikeEntity like = new LikeEntity();
         like.setUser(user);
         like.setPost(post);
         likeRepository.save(like);
@@ -51,11 +51,11 @@ public class LikeService implements LikeInterface {
 
     @Override
     public boolean unlikePost(Integer postId, Integer userId) {
-        Optional<Like> likeOptional = likeRepository.findByPostIdAndUserId(postId, userId);
+        Optional<LikeEntity> likeOptional = likeRepository.findByPostIdAndUserId(postId, userId);
         if (likeOptional.isEmpty()) {
             return false;
         }
-        Like like = likeOptional.get();
+        LikeEntity like = likeOptional.get();
         likeRepository.delete(like);
         return true;
     }

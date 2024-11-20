@@ -13,7 +13,7 @@ import java.util.*;
 @Data
 @Entity
 @Table(name="user")
-public class User implements UserDetails {
+public class UserEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY) //do not use GenerationType.AUTO
     @Column(nullable = false)
@@ -45,10 +45,10 @@ public class User implements UserDetails {
 
     //relationships
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Post> posts;
+    private Set<PostEntity> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Set<Like> likes;
+    private Set<LikeEntity> likes;
 
 
     @Override

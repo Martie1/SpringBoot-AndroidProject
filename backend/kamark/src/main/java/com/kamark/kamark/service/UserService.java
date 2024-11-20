@@ -2,9 +2,9 @@ package com.kamark.kamark.service;
 
 import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.dto.UserProfileDTO;
-import com.kamark.kamark.entity.Like;
-import com.kamark.kamark.entity.Post;
-import com.kamark.kamark.entity.User;
+import com.kamark.kamark.entity.LikeEntity;
+import com.kamark.kamark.entity.PostEntity;
+import com.kamark.kamark.entity.UserEntity;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.UserRepository;
@@ -34,21 +34,21 @@ public class UserService implements UserServiceInterface {
 
 
     public UserProfileDTO getUserProfile(Integer userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return null;
         }
-        User user = userOptional.get();
+        UserEntity user = userOptional.get();
         return new UserProfileDTO(user.getUsername(), user.getEmail());
     }
 
 
     public boolean updateUserProfile(Integer userId, UserProfileDTO userProfileDTO) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return false;
         }
-        User user = userOptional.get();
+        UserEntity user = userOptional.get();
 
         if (userProfileDTO.getUsername() != null) {
             user.setUsername(userProfileDTO.getUsername());
@@ -66,28 +66,28 @@ public class UserService implements UserServiceInterface {
 
 
     public boolean deactivateAccount(Integer userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
+        Optional<UserEntity> userOptional = userRepository.findById(userId);
         if (userOptional.isEmpty()) {
             return false;
         }
-        User user = userOptional.get();
+        UserEntity user = userOptional.get();
         user.setStatus("deactivated");
         userRepository.save(user);
         return true;
     }
 
     public List<PostResponseDTO> getUserPosts(Integer userId) {
-        List<Post> posts = postRepository.findByUserId(userId);
+        List<PostEntity> posts = postRepository.findByUserId(userId);
         return posts.stream().map(this::mapToPostResponseDTO).collect(Collectors.toList());
     }
 
     public List<PostResponseDTO> getUserLikes(Integer userId) {
-        List<Like> likes = likeRepository.findByUserId(userId);
+        List<LikeEntity> likes = likeRepository.findByUserId(userId);
         return likes.stream()
                 .map(like -> mapToPostResponseDTO(like.getPost()))
                 .collect(Collectors.toList());
     }
-    private PostResponseDTO mapToPostResponseDTO(Post post) {
+    private PostResponseDTO mapToPostResponseDTO(PostEntity post) {
         return new PostResponseDTO(
                 post.getId(),
                 post.getName(),

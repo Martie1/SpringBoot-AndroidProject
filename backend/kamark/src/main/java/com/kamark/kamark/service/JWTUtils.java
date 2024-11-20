@@ -1,9 +1,8 @@
 package com.kamark.kamark.service;
 
 import ch.qos.logback.classic.Logger;
-import ch.qos.logback.classic.LoggerContext;
 import org.slf4j.LoggerFactory;
-import com.kamark.kamark.entity.User;
+import com.kamark.kamark.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -33,7 +32,7 @@ public class JWTUtils {
         this.key = Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateAccessToken(User user) {
+    public String generateAccessToken(UserEntity user) {
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
@@ -46,7 +45,7 @@ public class JWTUtils {
                 .signWith(key)
                 .compact();
     }
-    public String generateRefreshToken(User user) {
+    public String generateRefreshToken(UserEntity user) {
         List<String> roles = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
@@ -78,7 +77,7 @@ public class JWTUtils {
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
         Integer userIdFromToken = extractUserId(token);
-        Integer userId = ((User) userDetails).getId();
+        Integer userId = ((UserEntity) userDetails).getId();
         logger.info("UserId from token: " + userIdFromToken);
         logger.info("Expected UserId: " + userId);
         logger.info("Token expired: " + isTokenExpired(token));
@@ -86,7 +85,7 @@ public class JWTUtils {
     }
     public boolean isRefreshTokenValid(String refreshToken, UserDetails userDetails) {
         Integer userIdFromToken = extractUserId(refreshToken);
-        Integer userId = ((User) userDetails).getId();
+        Integer userId = ((UserEntity) userDetails).getId();
         return (userIdFromToken.equals(userId) && !isTokenExpired(refreshToken));
     }
 

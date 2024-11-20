@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name="room")
-public class Room {
+public class RoomEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -30,5 +30,5 @@ public class Room {
 
     // one room has many ideas
     @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Post> posts; // many ideas
+    private List<PostEntity> posts; // many ideas
 }
