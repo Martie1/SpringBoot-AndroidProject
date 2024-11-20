@@ -1,5 +1,6 @@
 package com.example.pwo.network;
 import com.example.pwo.classes.Post;
+import com.example.pwo.classes.ReportRequest;
 import com.example.pwo.classes.Room;
 import com.example.pwo.classes.User;
 import com.example.pwo.network.models.AuthResponse;
@@ -43,4 +44,28 @@ public interface ApiService {
 
     @POST("/api/posts")
     Call<PostResponse> addPost(@Body PostRequest postRequest);
+
+    @POST("/api/reports")
+    Call<Void> reportPost(@Body ReportRequest reportRequest);
+
+    @GET("posts/{id}")
+    Call<Post> getPostById(@Path("id") int postId);
+
+
+
+    @POST("/api/posts/{postId}/report")
+    Call<Void> reportPost(
+            @Path("postId") int postId,
+            @Body ReportRequest reportRequest,
+            @Header("Authorization") String authHeader
+    );
+
+//    // dla administratora
+//    @GET("/api/reports")
+//    Call<List<ReportResponse>> getAllReports();
+//
+//    //  dla administratora
+//    @PUT("/api/reports/{reportId}")
+//    Call<Void> updateReportStatus(@Path("reportId") int reportId, @Query("status") String status);
+
 }

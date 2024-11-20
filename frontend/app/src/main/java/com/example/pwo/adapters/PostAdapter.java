@@ -1,9 +1,11 @@
 package com.example.pwo.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TextView;
 
@@ -11,7 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pwo.R;
+import com.example.pwo.activities.ReportActivity;
 import com.example.pwo.classes.Post;
+import com.example.pwo.network.ApiService;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -22,6 +26,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     private DateFormat dateFormat;
     private Context context;
     private static OnItemClickListener listener;
+
 
     public PostAdapter(List<Post> posts, Context context) {
         this.posts = posts;
@@ -36,13 +41,17 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         private TextView tvLikes;
         private TextView tvCreatedAt;
         private CompoundButton cbLike;
+        private Button btnReport;
+        private ApiService apiService;
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.apiService = apiService;
             tvUsername = itemView.findViewById(R.id.tvUsername);
             tvName = itemView.findViewById(R.id.tvName);
             tvDescription = itemView.findViewById(R.id.tvDescription);
             tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
             cbLike = itemView.findViewById(R.id.cbLike);
+            btnReport = itemView.findViewById(R.id.btnReport);
             if(listener != null) {
                 itemView.setOnClickListener(v -> {
                     int position = getAdapterPosition();
@@ -69,9 +78,29 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     }
                 }
             });
+//            cbLike.setOnCheckedChangeListener((buttonView, isChecked) -> {
+//                int position = getAdapterPosition();
+//                if (position != RecyclerView.NO_POSITION) {
+//                    Post post = posts.get(position);
+//                    // Uruchomienie LikeActivity
+//                    Intent intent = new Intent(itemView.getContext(), LikeActivity.class);
+//                    intent.putExtra("postId", post.getId());
+//                    itemView.getContext().startActivity(intent);
+//                }
+//            });
+
+            btnReport.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Post post = posts.get(position);
+                    // titaj jest  intent do ReportActivity i pzheakzania postId
+                    Intent intent = new Intent(itemView.getContext(), ReportActivity.class);
+                    intent.putExtra("postId", post.getId());
+                    itemView.getContext().startActivity(intent);
+                }
+            });
         }
     }
-
     @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

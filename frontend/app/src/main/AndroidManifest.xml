@@ -17,28 +17,33 @@
         tools:targetApi="31">
         <activity
             android:name=".activities.ProfileActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.BaseActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.SinglePostActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.AddPostActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.PostActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.RoomActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.RegisterActivity"
-            android:exported="false" />
+            android:exported="true" />
         <activity
             android:name=".activities.LoginActivity"
-            android:exported="false" />
+            android:exported="true" />
+        <activity android:name=".activities.ReportActivity"
+            android:exported="true" />
+        <activity android:name=".activities.AdminActivity"
+            android:exported="true" />
+
         <activity
             android:name=".activities.MainActivity"
             android:exported="true">
