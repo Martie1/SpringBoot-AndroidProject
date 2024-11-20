@@ -94,16 +94,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     if (position != RecyclerView.NO_POSITION) {
                         Post post = posts.get(position);
                         createLike(post.getId());
-                        post.setLikes(post.getLikes() + 1);
-                        buttonView.setText(String.valueOf(post.getLikes()));
+                        post.setLikeCount(post.getLikeCount() + 1);
+                        buttonView.setText(String.valueOf(post.getLikeCount()));
                     }
                 }
                 if(!isChecked) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         Post post = posts.get(position);
-                        post.setLikes(post.getLikes() - 1);
-                        buttonView.setText(String.valueOf(post.getLikes()));
+                        post.setLikeCount(post.getLikeCount() - 1);
+                        buttonView.setText(String.valueOf(post.getLikeCount()));
                         deleteLike(post.getId());
                     }
                 }
@@ -167,7 +167,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.tvName.setText(post.getName());
         holder.tvDescription.setText(post.getDescription());
         holder.tvCreatedAt.setText(dateFormat.format(post.getCreatedAt()));
-        holder.cbLike.setText(String.valueOf(post.getLikes()));
+        holder.cbLike.setText(String.valueOf(post.getLikeCount()));
         holder.cbLike.setChecked(post.isLiked());
     }
 

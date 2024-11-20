@@ -7,22 +7,22 @@ public class Post {
     private Date createdAt;
     private String description;
     private String name;
-    private int likes;
+    private int likeCount;
     private String status;
-    private int room_id;
-    private int user_id;
+    private int roomId;
+    private int userId;
     private String username;
     private boolean liked;
 
-    public Post(int id, Date createdAt, String description, String name, int likes, String status, int room_id, int user_id, String username) {
+    public Post(int id, Date createdAt, String description, String name, int likeCount, String status, int room_id, int userId, String username) {
         this.id = id;
         this.createdAt = createdAt;
         this.description = description;
         this.name = name;
-        this.likes = likes;
+        this.likeCount = likeCount;
         this.status = status;
-        this.room_id = room_id;
-        this.user_id = user_id;
+        this.roomId = room_id;
+        this.userId = userId;
         this.username = username;
     }
 
@@ -34,7 +34,7 @@ public class Post {
         return description;
     }
 
-    public int getLikes() { return likes; }
+    public int getLikeCount() { return likeCount; }
 
     public String  getStatus() {
         return status;
@@ -48,13 +48,13 @@ public class Post {
         return username;
     }
 
-    public void setLikes(int i) {
-        likes = i;
+    public void setLikeCount(int i) {
+        likeCount = i;
         // update likes in the database
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
     public int getId() {

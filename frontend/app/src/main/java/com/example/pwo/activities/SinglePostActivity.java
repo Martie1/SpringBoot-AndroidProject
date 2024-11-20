@@ -7,12 +7,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.example.pwo.R;
 import com.example.pwo.classes.Post;
 import com.example.pwo.network.ApiClient;
@@ -56,11 +50,11 @@ public class SinglePostActivity extends BaseActivity {
         tvLikes.setOnCheckedChangeListener((buttonView, isChecked) -> {
             if(isChecked) {
                 likes += 1;
-                post.setLikes(likes);
+                post.setLikeCount(likes);
                 buttonView.setText(String.valueOf(likes));
             }else{
                 likes -= 1;
-                post.setLikes(likes);
+                post.setLikeCount(likes);
                 buttonView.setText(String.valueOf(likes));
             }
         });
@@ -77,7 +71,7 @@ public class SinglePostActivity extends BaseActivity {
                     tvTitle.setText(post.getName());
                     tvDescription.setText(post.getDescription());
                     tvCreatedAt.setText(post.getCreatedAt().toString());
-                    likes = post.getLikes();
+                    likes = post.getLikeCount();
                     tvLikes.setText(String.valueOf(likes));
                 }
                 else {
