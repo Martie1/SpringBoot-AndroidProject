@@ -12,6 +12,7 @@ public class Post {
     private int room_id;
     private int user_id;
     private String username;
+    private boolean liked;
 
     public Post(int id, Date createdAt, String description, String name, int likes, String status, int room_id, int user_id, String username) {
         this.id = id;
@@ -58,6 +59,14 @@ public class Post {
 
     public int getId() {
         return id;
+    }
+
+    public void setLiked(boolean b) {
+        liked = b;
+    }
+
+    public boolean isLiked() {
+        return liked;
     }
 }
 

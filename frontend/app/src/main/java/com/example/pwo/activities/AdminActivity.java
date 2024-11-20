@@ -59,20 +59,6 @@ public class AdminActivity extends BaseActivity implements ReportedPostsAdapter.
         else {
             Toast.makeText(this, "No Posts found in this room!", Toast.LENGTH_SHORT).show();
         }
-
-
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.getMenu().findItem(R.id.nav_add_post).setVisible(true);
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            if (item.getItemId() == R.id.nav_add_post) {
-                Intent addPostIntent = new Intent(AdminActivity.this, AddPostActivity.class);
-                addPostIntent.putExtra("roomId", roomId);
-                startActivityForResult(addPostIntent, 1);
-                return true;
-            }
-            return false;
-        });
-
     }
 
     @Override
