@@ -100,16 +100,6 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
         startActivity(intent);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            if (resultCode == RESULT_OK) {
-                fetchPosts(roomId);
-            }
-        }
-    }
-
     private void fetchLikes(){
         ApiClient.getInstance(getApplicationContext()).getApiService().getLikes().enqueue(new Callback<List<Post>>() {
             @Override
