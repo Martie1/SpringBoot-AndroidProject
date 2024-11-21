@@ -19,6 +19,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Body;
+import retrofit2.http.PUT;
 import retrofit2.http.Path;
 
 
@@ -87,6 +88,12 @@ public interface ApiService {
 
     @GET("/api/user/likes")
     Call<List<Post>> getLikes();
+
+    @PUT("/api/posts/{postId}")
+    Call<PostResponse> updatePost(@Path("postId") int postId, @Body PostRequest postRequest);
+
+    @DELETE("/api/posts/{postId}")
+    Call<Void> deletePost(@Path("postId") int postId);
 }
 
 

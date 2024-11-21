@@ -49,10 +49,11 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
         tokenManager = new TokenManager(getApplicationContext());
         String token =tokenManager.getAccessToken();
 
-
+        posts = new ArrayList<>();
         Intent intent = getIntent();
         if(intent.hasExtra("roomId")) {
             roomId = intent.getIntExtra("roomId", 1);
+            setUpRecyclerView();
             fetchPosts(roomId);
             fetchLikes();
         }
@@ -83,6 +84,14 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
         bottomNavigationView.setSelectedItemId(0);
     }
 
+    private void setUpRecyclerView() {
+        recyclerView = findViewById(R.id.recyclerView);
+        adapter = new PostAdapter(posts, PostActivity.this);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
+        PostAdapter.setOnItemClickListener(PostActivity.this);
+    }
+
     @Override
     public void onItemClick(Post post) {
         Intent intent = new Intent(PostActivity.this, SinglePostActivity.class);
@@ -96,9 +105,7 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
-                posts.add(new Post(posts.size(), new Date(), data.getStringExtra("title"), data.getStringExtra("description"), 0, "Status", roomId, 0, "User"));
-                adapter.notifyDataSetChanged();
-                // fetchPosts(roomId) // fetch posts from the server
+                fetchPosts(roomId);
             }
         }
     }
@@ -135,15 +142,8 @@ public class PostActivity extends BaseActivity implements PostAdapter.OnItemClic
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if(response.isSuccessful() && response.body() != null) {
                     posts = response.body();
-                    recyclerView = findViewById(R.id.recyclerView);
-
-                    Log.d("PostActivity", "onResponse: " + posts);
-
-                    adapter = new PostAdapter(posts, PostActivity.this);
-                    recyclerView.setAdapter(adapter);
-                    recyclerView.setLayoutManager(new LinearLayoutManager(PostActivity.this));
-                    Log.d("adapter", "onResponse: " + adapter);
-                    PostAdapter.setOnItemClickListener(PostActivity.this);
+                    adapter.setPosts(posts);
+                    adapter.notifyDataSetChanged();
                 }else{
                     Log.e("PostActivity", "onResponse: " + response.errorBody());
                 }
