@@ -8,4 +8,5 @@ import java.util.List;
 public interface ReportRepository extends JpaRepository<ReportEntity, Integer> {
     boolean existsByUserIdAndPostId(Integer userId, Integer postId);
     List<ReportEntity> findByPostRoomId(Integer roomId);
+    List<ReportEntity> findByPostId(Integer postId);
 }

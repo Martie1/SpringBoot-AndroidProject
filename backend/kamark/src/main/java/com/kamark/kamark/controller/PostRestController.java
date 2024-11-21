@@ -1,7 +1,9 @@
 package com.kamark.kamark.controller;
+import com.kamark.kamark.controller.validators.PostValidator;
 import com.kamark.kamark.dto.CreatePostDTO;
 import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.dto.PostResponseDTO;
+import com.kamark.kamark.dto.SimpleResponse;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.service.JWTUtils;
 import com.kamark.kamark.service.PostService;
@@ -44,18 +46,34 @@ public class PostRestController {
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Invalid token");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
+        PostValidator postValidator = new PostValidator();
+
+        String titleValidationMessage = postValidator.validatePostTitle(createPostDTO.getName());
+        if (titleValidationMessage != null) {
+            SimpleResponse response = new SimpleResponse(HttpStatus.BAD_REQUEST.value(), titleValidationMessage);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        String descriptionValidationMessage = postValidator.validatePostDescription(createPostDTO.getDescription());
+        if (descriptionValidationMessage != null) {
+            SimpleResponse response = new SimpleResponse(HttpStatus.BAD_REQUEST.value(), descriptionValidationMessage);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
 
         logger.info("User ID create: " + userId);
 
         Optional<PostResponseDTO> createdPost = postService.createPostAndReturnResponse(createPostDTO, userId);
 
         if (createdPost.isPresent()) {
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdPost.get());
+
+            SimpleResponse response = new SimpleResponse(HttpStatus.CREATED.value(), "Post created successfully");
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
         } else {
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Failed to create post");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
     }
+
 
     @GetMapping("/{id}")
     public ResponseEntity<PostResponseDTO> getPostById(@PathVariable Integer id,@RequestHeader("Authorization") String authHeader) {
@@ -64,25 +82,48 @@ public class PostRestController {
                 .orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
     @PutMapping("/{id}")
-    public ResponseEntity<String> updatePost(
+    public ResponseEntity<SimpleResponse> updatePost(
             @PathVariable Integer id,
             @RequestBody PostResponseDTO postResponseDTO,
             @RequestHeader("Authorization") String authHeader) {
 
-
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
+        PostValidator postValidator = new PostValidator();
+
+        String titleValidationMessage = postValidator.validatePostTitle(postResponseDTO.getName());
+        if (titleValidationMessage != null) {
+            SimpleResponse response = new SimpleResponse(HttpStatus.BAD_REQUEST.value(), titleValidationMessage);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+
+        String descriptionValidationMessage = postValidator.validatePostDescription(postResponseDTO.getDescription());
+        if (descriptionValidationMessage != null) {
+            SimpleResponse response = new SimpleResponse(HttpStatus.BAD_REQUEST.value(), descriptionValidationMessage);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
 
         Optional<PostEntity> updatedPost = postService.updatePost(id, postResponseDTO, userId);
+
         if (updatedPost.isPresent()) {
-            return ResponseEntity.ok("The post has been successfully updated");
+            SimpleResponse response = new SimpleResponse(
+                    HttpStatus.OK.value(),
+                    "The post has been successfully updated"
+            );
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found or unauthorized");
+            SimpleResponse response = new SimpleResponse(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Post not found or unauthorized"
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 
+
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deletePost(
+    public ResponseEntity<SimpleResponse> deletePost(
             @PathVariable Integer id,
             @RequestHeader("Authorization") String authHeader) {
 
@@ -90,12 +131,22 @@ public class PostRestController {
         Integer userId = jwtUtils.extractUserId(token);
 
         boolean isDeleted = postService.deletePost(id, userId);
+
         if (isDeleted) {
-            return ResponseEntity.ok("The post has been successfully deleted");
+            SimpleResponse response = new SimpleResponse(
+                    HttpStatus.OK.value(),
+                    "The post has been successfully deleted"
+            );
+            return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Post not found or unauthorized");
+            SimpleResponse response = new SimpleResponse(
+                    HttpStatus.NOT_FOUND.value(),
+                    "Post not found or unauthorized"
+            );
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
 
-    }
+
+}
 

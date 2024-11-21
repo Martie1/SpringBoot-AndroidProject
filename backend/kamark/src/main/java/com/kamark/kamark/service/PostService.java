@@ -123,6 +123,17 @@ public class PostService implements PostServiceInterface {
         }
         return false;
     }
+    public boolean updatePostStatus(Integer postId,String status) {
+        Optional<PostEntity> postOptional = postRepository.findById(postId);
+        if (postOptional.isPresent()) {
+            PostEntity post = postOptional.get();
+            post.setStatus(status);
+            postRepository.save(post);
+            return true;
+        }
+        return false;
+    }
+
 
     private PostResponseDTO mapToDTO(PostEntity post) {
         PostResponseDTO dto = new PostResponseDTO();

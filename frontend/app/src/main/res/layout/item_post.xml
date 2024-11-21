@@ -65,6 +65,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
                 android:text="Report"
+                android:background="#f01851"
                 android:textColor="#FFFFFF"
                  />
 
