@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -60,9 +61,10 @@ public class ProfileActivity extends BaseActivity implements PostAdapter.OnItemC
         fetchUserDetails();
 
         btnLogout.setOnClickListener(v -> logout());
-
-
     }
+
+
+
     private void logout(){
         tokenManager.clearTokens();
         Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
@@ -95,10 +97,20 @@ public class ProfileActivity extends BaseActivity implements PostAdapter.OnItemC
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1){
+            if(resultCode == RESULT_OK){
+                fetchPosts();
+            }
+        }
+    }
+
+    @Override
     public void onItemClick(Post post) {
-        Intent intent = new Intent(ProfileActivity.this, SinglePostActivity.class);
+        Intent intent = new Intent(ProfileActivity.this,PostEditActivity.class);
         intent.putExtra("postId", post.getId());
-        startActivity(intent);
+        startActivityForResult(intent, 1);
     }
 
     private void fetchPosts() {

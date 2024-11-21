@@ -64,10 +64,22 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
-                android:text="Report"
+                android:text="@string/report"
                 android:background="#f01851"
                 android:textColor="#FFFFFF"
                  />
+            <Button
+                android:id="@+id/btnDelete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginEnd="16dp"
+                android:visibility="gone"
+                android:layout_marginTop="8dp"
+                android:text="@string/delete"
+                android:background="#f01851"
+                android:textColor="#FFFFFF"
+                />
 
 
         </RelativeLayout>

@@ -62,7 +62,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
 
 
-    public static class PostViewHolder extends RecyclerView.ViewHolder {
+    public class PostViewHolder extends RecyclerView.ViewHolder {
         private TextView tvUsername;
         private TextView tvName;
         private TextView tvDescription;
@@ -70,6 +70,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         private TextView tvCreatedAt;
         private CompoundButton cbLike;
         private Button btnReport;
+        private Button btnDelete;
         private ApiService apiService;
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -80,6 +81,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
             tvCreatedAt = itemView.findViewById(R.id.tvCreatedAt);
             cbLike = itemView.findViewById(R.id.cbLike);
             btnReport = itemView.findViewById(R.id.btnReport);
+            btnDelete = itemView.findViewById(R.id.btnDelete);
             if(listener != null) {
                 itemView.setOnClickListener(v -> {
                     int position = getAdapterPosition();
@@ -87,6 +89,10 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                         listener.onItemClick(posts.get(position));
                     }
                 });
+            }
+            if(itemView.getContext().getClass().getSimpleName().equals("ProfileActivity")) {
+                btnDelete.setVisibility(View.VISIBLE);
+                btnReport.setVisibility(View.GONE);
             }
             cbLike.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if(isChecked) {
@@ -117,6 +123,32 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
                     Intent intent = new Intent(itemView.getContext(), ReportActivity.class);
                     intent.putExtra("postId", post.getId());
                     itemView.getContext().startActivity(intent);
+                }
+            });
+
+            btnDelete.setOnClickListener(v -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    Post post = posts.get(position);
+                    deletePost(post.getId());
+                }
+            });
+        }
+
+        private void deletePost(int postId){
+            ApiClient.getInstance(itemView.getContext()).getApiService().deletePost(postId).enqueue(new retrofit2.Callback<Void>() {
+                @Override
+                public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                    if(response.isSuccessful()) {
+                        Toast.makeText(itemView.getContext(), "Post deleted successfully", Toast.LENGTH_SHORT).show();
+                        posts.remove(getAdapterPosition());
+                        notifyItemRemoved(getAdapterPosition());
+                    }
+                }
+
+                @Override
+                public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                    Toast.makeText(itemView.getContext(), "Failed to delete post", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -173,6 +205,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     @Override
     public int getItemCount() {
+        if(posts == null) {
+            return 0;
+        }
         return posts.size();
     }
 

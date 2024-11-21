@@ -26,6 +26,8 @@ public class Post {
         this.username = username;
     }
 
+    public Post() {}
+
     public String getName() {
         return name;
     }
@@ -50,7 +52,6 @@ public class Post {
 
     public void setLikeCount(int i) {
         likeCount = i;
-        // update likes in the database
     }
 
     public int getUserId() {
@@ -67,6 +68,10 @@ public class Post {
 
     public boolean isLiked() {
         return liked;
+    }
+
+    public Integer getRoomId() {
+        return roomId;
     }
 }
 

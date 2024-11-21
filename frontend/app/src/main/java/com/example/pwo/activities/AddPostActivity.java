@@ -94,6 +94,7 @@ public class AddPostActivity extends BaseActivity {
                         SimpleResponse simpleResponse = response.body();
                         Log.d("AddPostActivity", "Message: " + simpleResponse.getMessage());
                         showSuccess(simpleResponse.getMessage());
+                        setResult(RESULT_OK);
                         finish();
                     } else {
                         Log.e("AddPostActivity", "Response body is null despite successful status code");
