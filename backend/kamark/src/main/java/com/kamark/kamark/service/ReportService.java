@@ -75,6 +75,16 @@ public class ReportService implements ReportServiceInterface {
                 .collect(Collectors.toList());
     }
 
+    public boolean updateReportsStatusByPostId(Integer postId, ReportStatus status) {
+
+        List<ReportEntity> reports = reportRepository.findByPostId(postId);
+        if (reports.isEmpty()) {
+            return false;
+        }
+        reports.forEach(report -> report.setStatus(status));
+        reportRepository.saveAll(reports);
+        return true;
+    }
 
 
     public boolean updateReportStatus(Integer reportId, ReportStatus status) {

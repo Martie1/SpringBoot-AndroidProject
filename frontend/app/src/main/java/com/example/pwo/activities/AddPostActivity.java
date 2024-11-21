@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,7 @@ import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.models.ErrorResponse;
 import com.example.pwo.network.models.PostRequest;
 import com.example.pwo.network.models.PostResponse;
+import com.example.pwo.network.models.SimpleResponse;
 import com.example.pwo.utils.TokenManager;
 import com.example.pwo.utils.validators.PostValidatorImpl;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -58,12 +60,12 @@ public class AddPostActivity extends BaseActivity {
         etPostTitle = findViewById(R.id.PostTitle);
         etPostDescription = findViewById(R.id.PostDescription);
         btnAddPost = findViewById(R.id.btnAddPost);
-        btnAddPost.setOnClickListener(v -> performAddPost(token));
+        btnAddPost.setOnClickListener(v -> performAddPost());
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.nav_add_post);
     }
 
-    private void performAddPost(String token) {
+    private void performAddPost() {
         String title = etPostTitle.getText().toString().trim();
         String description = etPostDescription.getText().toString().trim();
 
@@ -82,64 +84,47 @@ public class AddPostActivity extends BaseActivity {
 
         PostRequest postRequest = new PostRequest(title, description, roomId);
 
-        ApiClient.getInstance(getApplicationContext()).getApiService().addPost(postRequest).enqueue(new Callback<PostResponse>() {
+        ApiClient.getInstance(getApplicationContext()).getApiService().addPost(postRequest).enqueue(new Callback<SimpleResponse>() {
             @Override
-            public void onResponse(Call<PostResponse> call, Response<PostResponse> response) {
+            public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
                 Log.d("AddPostActivity", "Response code: " + response.code());
 
-                if (response.isSuccessful() || response.code() == 201 || response.code() == 403) {
+                if (response.isSuccessful() || response.code() == 201) {
                     if (response.body() != null) {
-                        Log.d("AddPostActivity", "Post created successfully: " + response.body().getName());
+                        SimpleResponse simpleResponse = response.body();
+                        Log.d("AddPostActivity", "Message: " + simpleResponse.getMessage());
+                        showSuccess(simpleResponse.getMessage());
                         finish();
                     } else {
                         Log.e("AddPostActivity", "Response body is null despite successful status code");
                         showError("Unexpected server response. Please try again.");
                     }
-                } else {
-                    handleErrorResponse(response);
+                } else if (response.code() == 403) {
+                    Log.e("AddPostActivity", "Access denied: " + response.code());
+                    showError("Access denied. Please check your permissions.");
                 }
             }
 
-
             @Override
-            public void onFailure(Call<PostResponse> call, Throwable t) {
+            public void onFailure(Call<SimpleResponse> call, Throwable t) {
                 showError("The server is currently unavailable. Please try again later.");
             }
         });
+
+
+
+
+
     }
-
-    private void handleErrorResponse(Response<PostResponse> response) {
-        try {
-            if (response.errorBody() != null) {
-                String errorJson = response.errorBody().string();
-                Log.d("AddPostActivity", "Error JSON: " + errorJson);
-
-                Gson gson = new Gson();
-                ErrorResponse errorResponse = gson.fromJson(errorJson, ErrorResponse.class);
-
-                if (errorResponse != null && errorResponse.getMessage() != null) {
-                    showError("Error: " + errorResponse.getMessage());
-                } else {
-                    Log.e("AddPostActivity", "Parsed ErrorResponse is null or missing fields.");
-                    showError("The server is currently unavailable. Please try again later.");
-                }
-            } else {
-                showError("The server is currently unavailable. Please try again later.");
-            }
-        } catch (IOException e) {
-            Log.e("AddPostActivity", "IO Exception while parsing error response", e);
-            showError("The server is currently unavailable. Please try again later.");
-        } catch (JsonSyntaxException e) {
-            Log.e("AddPostActivity", "JSON syntax error in error response", e);
-            showError("The server is currently unavailable. Please try again later.");
-        } catch (Exception e) {
-            Log.e("AddPostActivity", "Unexpected error", e);
-            showError("The server is currently unavailable. Please try again later.");
-        }
-    }
-
     private void showError(String message) {
-        tvError.setText(message);
-        tvError.setVisibility(View.VISIBLE);
+        TextView errorTextView = findViewById(R.id.tvError);
+        errorTextView.setText(message);
+        errorTextView.setVisibility(View.VISIBLE);
     }
+
+    private void showSuccess(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+    }
+
+
 }

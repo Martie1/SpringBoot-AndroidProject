@@ -1,6 +1,7 @@
 package com.example.pwo.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pwo.R;
 import com.example.pwo.classes.Post;
 import com.example.pwo.network.ApiClient;
+import com.example.pwo.network.models.SimpleResponse;
 
 import java.lang.ref.WeakReference;
 import java.text.DateFormat;
@@ -83,44 +85,51 @@ public class ReportedPostsAdapter extends RecyclerView.Adapter<ReportedPostsAdap
         private void resolveReport(int postId) {
             Context context = contextRef.get();
             if (context != null) {
-                ApiClient.getInstance(context).getApiService().resolveReport(postId).enqueue(new Callback<Void>() {
+                ApiClient.getInstance(context).getApiService().resolveReport(postId).enqueue(new Callback<SimpleResponse>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(context, "Report resolved successfully!", Toast.LENGTH_SHORT).show();
+                    public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+                        Log.d("ReportedPostsAdapter", "Resolve Response code: " + response.code());
+                        if (response.isSuccessful() && response.body() != null) {
+                            SimpleResponse simpleResponse = response.body();
+                            Toast.makeText(context, simpleResponse.getMessage(), Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(context, "Failed to resolve report.", Toast.LENGTH_SHORT).show();
+
+                            Toast.makeText(context, "Failed to resolve report. Please try again.", Toast.LENGTH_SHORT).show();
                         }
                     }
-
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<SimpleResponse> call, Throwable t) {
+
                         Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         }
+
 
         private void dismissReport(int postId) {
             Context context = contextRef.get();
             if (context != null) {
-                ApiClient.getInstance(context).getApiService().dismissReport(postId).enqueue(new Callback<Void>() {
+                ApiClient.getInstance(context).getApiService().dismissReport(postId).enqueue(new Callback<SimpleResponse>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(context, "Report dismissed successfully!", Toast.LENGTH_SHORT).show();
+                    public void onResponse(Call<SimpleResponse> call, Response<SimpleResponse> response) {
+                        Log.d("ReportedPostsAdapter", "Dimiss Response code: " + response.code());
+                        if (response.isSuccessful() && response.body() != null) {
+                            SimpleResponse simpleResponse = response.body();
+                            Toast.makeText(context, simpleResponse.getMessage(), Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(context, "Failed to dismiss report.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Failed to dismiss report. Please try again.", Toast.LENGTH_SHORT).show();
                         }
                     }
-
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<SimpleResponse> call, Throwable t) {
+
                         Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         }
+
     }
 
     @NonNull

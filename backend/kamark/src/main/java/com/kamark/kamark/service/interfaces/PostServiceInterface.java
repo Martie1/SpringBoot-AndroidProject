@@ -14,4 +14,7 @@ public interface PostServiceInterface {
     Optional<PostEntity> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId);
     Optional<PostResponseDTO> createPostAndReturnResponse(CreatePostDTO createPostDTO, Integer userId);
     boolean deletePost(Integer postId, Integer userId);
+
+    public boolean updatePostStatus(Integer postId,  String status);
+
 }

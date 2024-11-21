@@ -2,7 +2,7 @@ package com.kamark.kamark.controller.validators;
 
 public class PostValidator implements PostValidatorInterface {
     private static final int MAX_TITLE_LENGTH = 40;
-    private static final int MAX_DESCRIPTION_LENGTH = 255;
+    private static final int MAX_DESCRIPTION_LENGTH = 2000;
     @Override
     public String validatePostTitle(String title) {
         if (title == null || title.isEmpty()) {

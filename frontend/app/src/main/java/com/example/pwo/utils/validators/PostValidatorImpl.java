@@ -3,7 +3,7 @@ package com.example.pwo.utils.validators;
 public class PostValidatorImpl implements PostValidator {
 
     private static final int MAX_TITLE_LENGTH = 40;
-    private static final int MAX_DESCRIPTION_LENGTH = 255;
+    private static final int MAX_DESCRIPTION_LENGTH = 2000;
     @Override
     public String validatePostTitle(String title) {
         if (title == null || title.isEmpty()) {
@@ -21,7 +21,7 @@ public class PostValidatorImpl implements PostValidator {
             return "Post description cannot be empty.";
         }
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
-            return "Post title cannot exceed " + MAX_DESCRIPTION_LENGTH + " characters.";
+            return "Post description cannot exceed " + MAX_DESCRIPTION_LENGTH + " characters.";
         }
         return null;
     }
