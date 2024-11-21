@@ -83,18 +83,23 @@ public class ReportedPostsAdapter extends RecyclerView.Adapter<ReportedPostsAdap
         private void resolveReport(int postId) {
             Context context = contextRef.get();
             if (context != null) {
-                ApiClient.getInstance(context).getApiService().resolveReport(postId).enqueue(new Callback<Void>() {
+                ApiClient.getInstance(context).getApiService().resolveReport(postId).enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
+                    public void onResponse(Call<String> call, Response<String> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(context, "Report resolved successfully!", Toast.LENGTH_SHORT).show();
+                            String message = response.body();
+                            if (message != null) {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Unexpected response", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             Toast.makeText(context, "Failed to resolve report.", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<String> call, Throwable t) {
                         Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -104,18 +109,23 @@ public class ReportedPostsAdapter extends RecyclerView.Adapter<ReportedPostsAdap
         private void dismissReport(int postId) {
             Context context = contextRef.get();
             if (context != null) {
-                ApiClient.getInstance(context).getApiService().dismissReport(postId).enqueue(new Callback<Void>() {
+                ApiClient.getInstance(context).getApiService().dismissReport(postId).enqueue(new Callback<String>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
+                    public void onResponse(Call<String> call, Response<String> response) {
                         if (response.isSuccessful()) {
-                            Toast.makeText(context, "Report dismissed successfully!", Toast.LENGTH_SHORT).show();
+                            String message = response.body();
+                            if (message != null) {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Unexpected response", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             Toast.makeText(context, "Failed to dismiss report.", Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<String> call, Throwable t) {
                         Toast.makeText(context, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -123,7 +133,7 @@ public class ReportedPostsAdapter extends RecyclerView.Adapter<ReportedPostsAdap
         }
     }
 
-    @NonNull
+        @NonNull
     @Override
     public PostViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(contextRef.get()).inflate(R.layout.item_admin_post, parent, false);

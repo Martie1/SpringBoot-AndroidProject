@@ -52,11 +52,10 @@ public class AdminActivity extends BaseActivity implements ReportedPostsAdapter.
 
 
         Intent intent = getIntent();
-        if(intent.hasExtra("roomId")) {
+        if (intent.hasExtra("roomId")) {
             int roomId = intent.getIntExtra("roomId", 1);
             fetchPosts(roomId);
-        }
-        else {
+        } else {
             Toast.makeText(this, "No Posts found in this room!", Toast.LENGTH_SHORT).show();
         }
     }
@@ -76,7 +75,7 @@ public class AdminActivity extends BaseActivity implements ReportedPostsAdapter.
             if (resultCode == RESULT_OK) {
                 posts.add(new Post(posts.size(), new Date(), data.getStringExtra("title"), data.getStringExtra("description"), 0, "Status", roomId, 0, "User"));
                 adapter.notifyDataSetChanged();
-                 fetchPosts(roomId);
+                fetchPosts(roomId);
             }
         }
     }
@@ -86,10 +85,10 @@ public class AdminActivity extends BaseActivity implements ReportedPostsAdapter.
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    posts = response.body();
-                    recyclerView = findViewById(R.id.room_recyclerview); // Ensure recyclerView is initialized
+                    List<Post> posts = response.body();
+                    RecyclerView recyclerView = findViewById(R.id.room_recyclerview); // Ensure recyclerView is initialized
 
-                    adapter = new ReportedPostsAdapter(posts, AdminActivity.this);
+                    ReportedPostsAdapter adapter = new ReportedPostsAdapter(posts, AdminActivity.this);
                     recyclerView.setAdapter(adapter);
                     recyclerView.setLayoutManager(new LinearLayoutManager(AdminActivity.this));
                     DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recyclerView.getContext(), DividerItemDecoration.VERTICAL);

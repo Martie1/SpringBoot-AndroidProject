@@ -68,12 +68,12 @@ public interface ApiService {
     Call<List<Post>> getReportedPosts(@Path("roomId") int roomId);
 
 
-    @POST("posts/{postId}/resolve")
-    Call<Void> resolveReport(@Path("postId") int postId);
 
+        @POST("/api/admin/reports/{reportId}/resolve")
+        Call<String> resolveReport(@Path("postId") int postId);
 
-    @POST("posts/{postId}/dismiss")
-    Call<Void> dismissReport(@Path("postId") int postId);
+        @POST("/api/admin/reports/{reportId}/dismiss")
+        Call<String> dismissReport(@Path("postId") int postId);
 
     @POST("/api/posts/{postId}/like")
     Call<Void> CreateLike(@Path("postId") int postId);
