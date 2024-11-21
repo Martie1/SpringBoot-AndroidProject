@@ -88,17 +88,21 @@ public class UserService implements UserServiceInterface {
                 .collect(Collectors.toList());
     }
     private PostResponseDTO mapToPostResponseDTO(PostEntity post) {
-        return new PostResponseDTO(
+        PostResponseDTO dto = new PostResponseDTO(
                 post.getId(),
                 post.getName(),
                 post.getDescription(),
                 post.getStatus(),
                 post.getCreatedAt(),
                 post.getUser().getUsername(),
-                post.getLikes().size(),
+                0,
                 post.getRoom().getId(),
                 post.getUser().getId()
         );
+
+        dto.setLikeCount(likeRepository.countByPostId(post.getId()));
+
+        return dto;
     }
 
 

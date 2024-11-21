@@ -43,6 +43,7 @@ public class ProfileActivity extends BaseActivity implements PostAdapter.OnItemC
     private List<Post> posts;
     private PostAdapter adapter;
     private RecyclerView recyclerView;
+    private int[] likedPosts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +60,7 @@ public class ProfileActivity extends BaseActivity implements PostAdapter.OnItemC
 
         fetchPosts();
         fetchUserDetails();
+
 
         btnLogout.setOnClickListener(v -> logout());
     }
@@ -121,7 +123,34 @@ public class ProfileActivity extends BaseActivity implements PostAdapter.OnItemC
                     posts = response.body();
                     adapter.setPosts(posts);
                     adapter.notifyDataSetChanged();
+                    fetchLikes();
                 } else {
+                    Log.e("PostActivity", "onResponse: " + response.errorBody());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                Log.e("PostActivity", "onFailure: ", t);
+            }
+        });
+    }
+
+    private void fetchLikes(){
+        ApiClient.getInstance(getApplicationContext()).getApiService().getLikes().enqueue(new Callback<List<Post>>() {
+            @Override
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+                if(response.isSuccessful() && response.body() != null) {
+                    if(response.body().size() == 0){
+                        return;
+                    }
+                    likedPosts = new int[response.body().size()];
+                    for(int i = 0; i < response.body().size(); i++){
+                        likedPosts[i] = response.body().get(i).getId();
+                    }
+                    adapter.setLikedPosts(likedPosts);
+                    Log.d("PostActivity", "onResponse: " + likedPosts);
+                }else{
                     Log.e("PostActivity", "onResponse: " + response.errorBody());
                 }
             }

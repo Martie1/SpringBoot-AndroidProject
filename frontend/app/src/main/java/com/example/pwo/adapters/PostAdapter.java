@@ -54,6 +54,15 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         notifyDataSetChanged();
     }
 
+    public Post getPostById(int postId) {
+        for (Post post : posts) {
+            if (post.getId() == postId) {
+                return post;
+            }
+        }
+        return null;
+    }
+
     /*public void onSetLikedPosts(@NonNull PostViewHolder holder,int position){
         if(posts.get(position).isLiked()){
             holder.cbLike.setChecked(true);
@@ -199,6 +208,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
         holder.tvName.setText(post.getName());
         holder.tvDescription.setText(post.getDescription());
         holder.tvCreatedAt.setText(dateFormat.format(post.getCreatedAt()));
+        if(post.isLiked()){
+            post.setLikeCount(post.getLikeCount() -1);
+        }
         holder.cbLike.setText(String.valueOf(post.getLikeCount()));
         holder.cbLike.setChecked(post.isLiked());
     }
