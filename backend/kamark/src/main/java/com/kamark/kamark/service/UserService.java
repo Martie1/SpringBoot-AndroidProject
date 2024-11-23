@@ -5,6 +5,7 @@ import com.kamark.kamark.dto.UserProfileDTO;
 import com.kamark.kamark.entity.LikeEntity;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.entity.UserEntity;
+import com.kamark.kamark.exceptions.UserNotFoundException;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.UserRepository;
@@ -34,11 +35,8 @@ public class UserService implements UserServiceInterface {
 
 
     public UserProfileDTO getUserProfile(Integer userId) {
-        Optional<UserEntity> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return null;
-        }
-        UserEntity user = userOptional.get();
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
         return new UserProfileDTO(user.getUsername(), user.getEmail());
     }
 

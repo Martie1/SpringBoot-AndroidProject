@@ -1,5 +1,9 @@
 package com.kamark.kamark.controller.validators;
 
+
+import org.springframework.stereotype.Component;
+
+@Component
 public class PostValidator implements PostValidatorInterface {
     private static final int MAX_TITLE_LENGTH = 40;
     private static final int MAX_DESCRIPTION_LENGTH = 2000;
@@ -11,7 +15,7 @@ public class PostValidator implements PostValidatorInterface {
         if (title.length() > MAX_TITLE_LENGTH) {
             return "Post title cannot exceed " + MAX_TITLE_LENGTH + " characters.";
         }
-        return null;
+        return "ok";
     }
 
     @Override
@@ -22,6 +26,6 @@ public class PostValidator implements PostValidatorInterface {
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
             return "Post title cannot exceed " + MAX_DESCRIPTION_LENGTH + " characters.";
         }
-        return null;
+        return "ok";
     }
 }
