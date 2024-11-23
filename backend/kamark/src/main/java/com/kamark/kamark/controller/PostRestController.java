@@ -49,13 +49,13 @@ public class PostRestController {
         PostValidator postValidator = new PostValidator();
 
         String titleValidationMessage = postValidator.validatePostTitle(createPostDTO.getName());
-        if (titleValidationMessage != null) {
+        if (titleValidationMessage != "ok") {
             SimpleResponse response = new SimpleResponse(HttpStatus.BAD_REQUEST.value(), titleValidationMessage);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
         String descriptionValidationMessage = postValidator.validatePostDescription(createPostDTO.getDescription());
-        if (descriptionValidationMessage != null) {
+        if (descriptionValidationMessage != "ok") {
             SimpleResponse response = new SimpleResponse(HttpStatus.BAD_REQUEST.value(), descriptionValidationMessage);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
