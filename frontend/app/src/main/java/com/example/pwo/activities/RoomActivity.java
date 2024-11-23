@@ -90,5 +90,5 @@ public class RoomActivity extends BaseActivity implements RoomAdapter.OnItemClic
         });
     }
 
-    //connect to R.id.button and set onclick event to go to another intent
+
 }

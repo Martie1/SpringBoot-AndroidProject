@@ -21,7 +21,7 @@ import com.example.pwo.utils.UserSession;
 import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.models.ErrorResponse;
-import com.example.pwo.network.models.LoginRequest; // Zmiana na LoginRequest
+import com.example.pwo.network.models.LoginRequest;
 import com.example.pwo.utils.TokenManager;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -110,7 +110,7 @@ public class LoginActivity extends AppCompatActivity {
                     String role = TokenParser.extractRole(accessToken);
                     if (role != null) {
                         UserSession.getInstance().setRole(role);
-                        Log.d("LoginActivity", "User role: " + role); // Logowanie roli na terminalu
+                        Log.d("LoginActivity", "User role: " + role);
                     } else {
                         Log.e("LoginActivity", "Failed to extract role from accessToken");
                         UserSession.getInstance().setRole("UNKNOWN");

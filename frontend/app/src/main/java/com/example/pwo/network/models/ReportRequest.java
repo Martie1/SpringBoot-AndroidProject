@@ -1,4 +1,4 @@
-package com.example.pwo.classes;
+package com.example.pwo.network.models;
 
 public class ReportRequest {
     private String reason;
