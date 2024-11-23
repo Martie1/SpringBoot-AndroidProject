@@ -24,7 +24,7 @@ public class RegisterValidator implements UserValidatorInterface {
         if (username.contains(";")) {
             return "Username cannot contain semicolon.";
         }
-        return null;
+        return "ok";
     }
 
     @Override
@@ -35,7 +35,7 @@ public class RegisterValidator implements UserValidatorInterface {
         if (!pattern.matcher(email).matches()) {
             return "Invalid email format";
         }
-        return null;
+        return "ok";
     }
 
     @Override
@@ -61,7 +61,7 @@ public class RegisterValidator implements UserValidatorInterface {
         if (hasOnlyOneCharacter(password)) {
             return "Password cannot consist of one character.";
         }
-        return null;
+        return "ok";
     }
 
     @Override

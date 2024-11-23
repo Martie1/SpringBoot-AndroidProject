@@ -1,8 +1,11 @@
 package com.kamark.kamark.controller.validators;
 
 
+import org.springframework.stereotype.Component;
+
 import java.util.regex.Pattern;
 
+@Component
 public class LoginValidator implements UserValidatorInterface {
 
     private static final String EMAIL_PATTERN =
@@ -18,7 +21,7 @@ public class LoginValidator implements UserValidatorInterface {
         if (!pattern.matcher(email).matches()) {
             return "Invalid email format.";
         }
-        return null;
+        return "ok";
     }
 
     @Override
@@ -26,15 +29,15 @@ public class LoginValidator implements UserValidatorInterface {
         if (password == null || password.isEmpty()) {
             return "Password cannot be empty.";
         }
-        return null;
+        return "ok";
     }
 
     public String validateUsername(String username){
-        return null;
+        return "ok";
     }
     @Override
     public String validatePassword(String password,String username) {
         validatePassword(password);
-        return null;
+        return "ok";
     }
 }

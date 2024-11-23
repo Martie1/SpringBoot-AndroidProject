@@ -1,5 +1,6 @@
 package com.kamark.kamark.service;
 
+import com.kamark.kamark.controller.validators.LoginValidator;
 import com.kamark.kamark.controller.validators.RegisterValidator;
 import com.kamark.kamark.dto.AuthResponse;
 import com.kamark.kamark.dto.ErrorResponse;
@@ -28,13 +29,15 @@ public class AuthService implements AuthServiceInterface {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final RegisterValidator registerValidator;
+    private final LoginValidator loginValidator;
 
-    public AuthService(UserRepository ourUserRepo, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RegisterValidator registerValidator) {
+    public AuthService(UserRepository ourUserRepo, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RegisterValidator registerValidator, LoginValidator loginValidator) {
         this.ourUserRepo = ourUserRepo;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.registerValidator = registerValidator;
+        this.loginValidator = loginValidator;
     }
 
 
@@ -50,21 +53,14 @@ public class AuthService implements AuthServiceInterface {
 
     public ResponseEntity<?> register(RegisterRequest registrationRequest) {
         try {
-            if (ourUserRepo.existsByEmail(registrationRequest.getEmail())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Email is already taken."));
-            }
-            if (ourUserRepo.existsByUsername(registrationRequest.getUsername())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Username is already taken."));
-            }
-
             String usernameValidationResult = registerValidator.validateUsername(registrationRequest.getUsername());
-            if (usernameValidationResult != null) {
+            if (usernameValidationResult != "ok") {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ErrorResponse(400, usernameValidationResult));
             }
 
             String emailValidationResult = registerValidator.validateEmail(registrationRequest.getEmail());
-            if (emailValidationResult != null) {
+            if (emailValidationResult != "ok") {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ErrorResponse(400, emailValidationResult));
             }
@@ -73,10 +69,19 @@ public class AuthService implements AuthServiceInterface {
                     registrationRequest.getPassword(),
                     registrationRequest.getUsername()
             );
-            if (passwordValidationResult != null) {
+
+            if (passwordValidationResult != "ok") {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(new ErrorResponse(400, passwordValidationResult));
             }
+            if (ourUserRepo.existsByEmail(registrationRequest.getEmail())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Email is already taken."));
+            }
+            if (ourUserRepo.existsByUsername(registrationRequest.getUsername())) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Username is already taken."));
+            }
+
+
 
 
             UserEntity user = new UserEntity();
@@ -105,6 +110,18 @@ public class AuthService implements AuthServiceInterface {
 
     public ResponseEntity<?> login(LoginRequest loginRequest) {
         try {
+            String emailValidationResult = loginValidator.validateEmail(loginRequest.getEmail());
+            if (emailValidationResult != "ok") {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse(400, emailValidationResult));
+            }
+            String passwordValidationResult = loginValidator.validatePassword(loginRequest.getPassword());
+            if (passwordValidationResult != "ok") {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(new ErrorResponse(400, passwordValidationResult));
+            }
+
+
             UserEntity user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
                     () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
             );
