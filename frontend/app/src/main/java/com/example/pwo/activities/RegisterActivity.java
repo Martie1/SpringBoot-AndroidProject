@@ -125,8 +125,8 @@ public class RegisterActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     AuthResponse authResponse = response.body();
 
-//jwt token now will be stored in android device
                     String accessToken = authResponse.getAccessToken();
+                    //first accessToken after refister/login is always saved on the device.
                     String refreshToken = authResponse.getRefreshToken();
                     tokenManager.saveTokens(accessToken, refreshToken);
 

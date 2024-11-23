@@ -42,7 +42,7 @@ public class AuthService implements AuthServiceInterface {
         AuthResponse response = new AuthResponse();
         response.setAccessToken(accessToken);
         response.setRefreshToken(refreshToken);
-        response.setExpirationTime("24Hr");
+        response.setExpirationTime("Access Token expires in 1 hour (for Swagger purposes) (), Refresh Token expires in 7 days");
         response.setMessage(message);
         response.setStatusCode(200);
         return response;

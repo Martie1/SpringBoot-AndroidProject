@@ -70,6 +70,7 @@ public class ProfileActivity extends BaseActivity implements PostAdapter.OnItemC
     private void logout(){
         tokenManager.clearTokens();
         Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
     private void setUpRecyclerView() {

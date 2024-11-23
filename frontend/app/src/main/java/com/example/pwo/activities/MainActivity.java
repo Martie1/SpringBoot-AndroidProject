@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity{
         Log.d("MainActivity", "refreshToken onCreate: " + refreshToken);
 
 
-       //jwt validate feature will be added here
+
         if (refreshToken != null) {
             validateRefreshToken(refreshToken);
         }

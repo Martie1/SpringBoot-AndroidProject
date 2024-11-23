@@ -23,7 +23,9 @@ public class JWTUtils {
     private static final Logger logger =
             (Logger) LoggerFactory.getLogger(JWTUtils.class);
     private final SecretKey key;
-    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 86400000; // 24 h
+
+    //
+    private static final long ACCESS_TOKEN_EXPIRATION_TIME = 3600000; // 1 h
     private static final long REFRESH_TOKEN_EXPIRATION_TIME = 604800000; // 7 days
 
     private static final String SECRET = "843567893696976453275974432697R634976R738467TR678T34865R6834R8763T478378637664538745673865783678548735687R3";
@@ -46,13 +48,9 @@ public class JWTUtils {
                 .compact();
     }
     public String generateRefreshToken(UserEntity user) {
-        List<String> roles = user.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList());
 
         return Jwts.builder()
                 .subject(String.valueOf(user.getId()))
-                .claim("roles", roles)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_TIME))
                 .signWith(key)

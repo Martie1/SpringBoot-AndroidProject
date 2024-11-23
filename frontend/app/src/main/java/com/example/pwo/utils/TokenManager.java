@@ -1,9 +1,12 @@
 package com.example.pwo.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.example.pwo.activities.MainActivity;
+import com.example.pwo.activities.ProfileActivity;
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.models.RefreshTokenRequest;
@@ -28,6 +31,12 @@ public class TokenManager {
         } else {
             throw new IllegalArgumentException("Context cannot be null");
         }
+    }
+    public void logout(Context context) {
+        clearTokens();
+        Intent intent = new Intent(context, MainActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        context.startActivity(intent);
     }
 
     public void saveTokens(String accessToken, String refreshToken) {
@@ -64,12 +73,14 @@ public class TokenManager {
                         saveTokens(response.body().getAccessToken(), response.body().getRefreshToken());
                         callback.onResponse(call, response);
                     } else {
+                        logout(context);
                         callback.onFailure(call, new Throwable("Failed to refresh token"));
                     }
                 }
 
                 @Override
                 public void onFailure(Call<AuthResponse> call, Throwable t) {
+                    logout(context);
                     callback.onFailure(call, t);
                 }
             });
@@ -77,4 +88,6 @@ public class TokenManager {
             callback.onFailure(null, new Throwable("No refresh token available"));
         }
     }
+
+
 }

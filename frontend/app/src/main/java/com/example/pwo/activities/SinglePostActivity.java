@@ -47,12 +47,11 @@ public class SinglePostActivity extends BaseActivity {
         tvLikes = findViewById(R.id.cbLike);
         ivRoomImage = findViewById(R.id.ivRoomImage);
         tokenManager = new TokenManager(getApplicationContext());
-        String token =tokenManager.getAccessToken();
 
         Intent intent = getIntent();
         if(intent.hasExtra("postId")) {
             int postId = intent.getIntExtra("postId", 1);
-            fetchPost(postId,token);
+            fetchPost(postId);
             fetchLikes();
         }
         tvLikes.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -127,7 +126,7 @@ public class SinglePostActivity extends BaseActivity {
         });
     }
 
-    private void fetchPost(int postId,String token) {
+    private void fetchPost(int postId) {
         ApiClient.getInstance(getApplicationContext()).getApiService().getPost(postId).enqueue(new Callback<Post>() {
             @Override
             public void onResponse(Call<Post> call, Response<Post> response) {

@@ -9,7 +9,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.pwo.R;
-import com.example.pwo.classes.ReportRequest;
+import com.example.pwo.network.models.ReportRequest;
 import com.example.pwo.network.ApiClient;
 import com.example.pwo.network.ApiService;
 import com.example.pwo.utils.TokenManager;

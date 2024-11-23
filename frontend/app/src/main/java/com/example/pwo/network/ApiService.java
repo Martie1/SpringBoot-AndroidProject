@@ -5,7 +5,7 @@ import com.example.pwo.classes.User;
 import com.example.pwo.network.models.AuthResponse;
 import com.example.pwo.network.models.LoginRequest;
 import com.example.pwo.network.models.PostRequest;
-import com.example.pwo.classes.ReportRequest;
+import com.example.pwo.network.models.ReportRequest;
 import com.example.pwo.network.models.PostResponse;
 import com.example.pwo.network.models.RefreshTokenRequest;
 import com.example.pwo.network.models.RegisterRequest;
@@ -51,14 +51,6 @@ public interface ApiService {
     @GET("/api/user/posts")
     Call<List<Post>> getUserPosts();
 
-    @POST("/api/reports")
-    Call<Void> reportPost(@Body ReportRequest reportRequest);
-
-    @GET("posts/{id}")
-    Call<Post> getPostById(@Path("id") int postId);
-
-
-
     @POST("/api/posts/{postId}/report")
     Call<Void> reportPost(
             @Path("postId") int postId,
@@ -69,15 +61,11 @@ public interface ApiService {
     @GET("/api/admin/{roomId}/posts")
     Call<List<Post>> getReportedPosts(@Path("roomId") int roomId);
 
-
-
     @POST("/api/admin/{postId}/resolve")
     Call<SimpleResponse> resolveReport(@Path("postId") int postId);
 
     @POST("/api/admin/{postId}/dismiss")
     Call<SimpleResponse> dismissReport(@Path("postId") int postId);
-
-
 
 
     @POST("/api/posts/{postId}/like")
