@@ -121,10 +121,14 @@ public class AuthService implements AuthServiceInterface {
                         .body(new ErrorResponse(400, passwordValidationResult));
             }
 
-
             UserEntity user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
                     () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
             );
+            if ("deactivated".equalsIgnoreCase(user.getStatus())) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        .body(new ErrorResponse(403, "Account is deactivated. Please contact support."));
+            }
+
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword())
             );
