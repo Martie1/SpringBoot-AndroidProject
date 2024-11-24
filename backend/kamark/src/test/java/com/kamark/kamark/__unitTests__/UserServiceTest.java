@@ -69,18 +69,7 @@
 //        verify(userRepository, times(1)).findById(1);
 //    }
 //
-//    @Test
-//    void testGetUserProfile_WhenUserDoesNotExist() {
-//        // Arrange
-//        when(userRepository.findById(1)).thenReturn(Optional.empty());
 //
-//        // Act
-//        UserProfileDTO result = userService.getUserProfile(1);
-//
-//        // Assert
-//        assertNull(result);
-//        verify(userRepository, times(1)).findById(1);
-//    }
 //
 //    @Test
 //    void testUpdateUserProfile_WhenUserExists() {
