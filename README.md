@@ -10,7 +10,7 @@ Roomsy App allows users to enter Rooms, share, edit, delete their posts. They ca
 ## Deploy backend
 
 Database with ready data:
-
+Create empty database with name "android".
 Import database android.sql to your localhost phpMyAdmin on port 3306(prefferably) with ready data. (Rooms and default admin + user accounts)
 
 You can change application.properties to match your db port and location in line:
@@ -48,29 +48,24 @@ Because of the issue linked to using Swagger with Spring Security - please follo
 
 Note: AccessToken stores roles. For Admin routes(admin-rest-controller) you will need an AccessToken from an Admin account.
 
+## Postman
+
+To use Postman remember to add header "Authorization" with value "Bearer <token>" for every request.
+
 ## Ready Accounts
 
 1. ready USER role accounts:
 
 {
-    e-mail: "",
-    password: ""
-}
-
-{
-    e-mail: "",
-    password: ""
+    "email":"user@gmail.com",
+"username": "user",
+   "password": "Qwerty12345!"
 }
 
 2. ready ADMIN role accounts:
 
 {
-    e-mail: "",
-    password: ""
+    "email":"admin@gmail.com",
+"username": "admin",
+   "password": "Qwerty12345!"
 }
-
-{
-    e-mail: "",
-    password: ""
-}
-
