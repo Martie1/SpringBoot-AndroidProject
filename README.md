@@ -17,7 +17,7 @@ You can change application.properties to match your db port and location in line
 spring.datasource.url=jdbc:mysql://localhost:3306/android
 
 
-To run this project enter backend folder and run
+To run this project enter backend/kamark folder and run
 
 mvn install
 
