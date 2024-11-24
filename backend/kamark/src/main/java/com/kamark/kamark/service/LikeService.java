@@ -7,6 +7,7 @@ import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.UserRepository;
 import com.kamark.kamark.service.interfaces.LikeInterface;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -61,6 +62,14 @@ public class LikeService implements LikeInterface {
         likeRepository.delete(like);
         return true;
     }
+    @Override
+    @Transactional
+    public boolean deleteLikesByPostId(Integer postId) {
+        int deletedCount = likeRepository.deleteByPostId(postId);
+        return deletedCount > 0;
+    }
+
+
 
 
 }

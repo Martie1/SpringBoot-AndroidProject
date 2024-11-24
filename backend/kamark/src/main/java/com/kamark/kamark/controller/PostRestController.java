@@ -6,6 +6,7 @@ import com.kamark.kamark.dto.PostResponseDTO;
 import com.kamark.kamark.dto.SimpleResponse;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.service.JWTUtils;
+import com.kamark.kamark.service.LikeService;
 import com.kamark.kamark.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +27,9 @@ public class PostRestController {
     private PostService postService;
     @Autowired
     private JWTUtils jwtUtils;
+
+    @Autowired
+    private LikeService likeService;
 
     @GetMapping("/room/{roomId}")
     public ResponseEntity<List<PostResponseDTO>> getPostsByRoomId(@PathVariable Integer roomId,@RequestHeader("Authorization") String authHeader) {
@@ -130,9 +134,10 @@ public class PostRestController {
         String token = authHeader.substring(7);
         Integer userId = jwtUtils.extractUserId(token);
 
+        boolean likesDeleted = likeService.deleteLikesByPostId(id);
         boolean isDeleted = postService.deletePost(id, userId);
 
-        if (isDeleted) {
+        if (likesDeleted &&isDeleted ){
             SimpleResponse response = new SimpleResponse(
                     HttpStatus.OK.value(),
                     "The post has been successfully deleted"
