@@ -50,7 +50,7 @@ Note: AccessToken stores roles. For Admin routes(admin-rest-controller) you will
 
 ## Postman
 
-To use Postman remember to add header "Authorization" with value "Bearer <token>" for every request.
+To use Postman remember to add header "Authorization" with value "Bearer [access-token]" for every request.
 
 ## Ready Accounts
 
