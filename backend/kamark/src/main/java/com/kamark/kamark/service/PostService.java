@@ -6,14 +6,19 @@ import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.entity.ReportStatus;
 import com.kamark.kamark.entity.RoomEntity;
 import com.kamark.kamark.entity.UserEntity;
+import com.kamark.kamark.exceptions.UserAccessDeniedException;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.repository.UserRepository;
 import com.kamark.kamark.service.interfaces.PostServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
+import java.nio.file.AccessDeniedException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -34,21 +39,15 @@ public class PostService implements PostServiceInterface {
         this.likeRepository = likeRepository;
     }
 
-    public Optional<PostResponseDTO> createPostAndReturnResponse(CreatePostDTO createPostDTO, Integer userId) {
+    public PostResponseDTO createPostAndReturnResponse(CreatePostDTO createPostDTO, Integer userId) {
 
-        Optional<UserEntity> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return Optional.empty();
-        }
-        UserEntity user = userOptional.get();
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with id: " + userId)
+        );
 
-
-        Optional<RoomEntity> roomOptional = roomRepository.findById(createPostDTO.getRoomId());
-        if (roomOptional.isEmpty()) {
-            return Optional.empty();
-        }
-        RoomEntity room = roomOptional.get();
-
+        RoomEntity room = roomRepository.findById(createPostDTO.getRoomId()).orElseThrow(
+                () -> new NotFoundException("Room not found with id: " + createPostDTO.getRoomId())
+        );
 
         PostEntity post = new PostEntity();
         post.setName(createPostDTO.getName());
@@ -58,27 +57,17 @@ public class PostService implements PostServiceInterface {
         post.setCreatedAt(new Date());
         post.setStatus("ACTIVE");
 
-
         PostEntity savedPost = postRepository.save(post);
 
-
-        PostResponseDTO responseDTO = new PostResponseDTO();
-        responseDTO.setId(savedPost.getId());
-        responseDTO.setName(savedPost.getName());
-        responseDTO.setDescription(savedPost.getDescription());
-        responseDTO.setStatus(savedPost.getStatus());
-        responseDTO.setCreatedAt(savedPost.getCreatedAt());
-        responseDTO.setUsername(user.getUsername());
-        responseDTO.setLikeCount(0);
-        responseDTO.setRoomId(savedPost.getRoom().getId());
-        responseDTO.setUserId(savedPost.getUser().getId());
-
-        return Optional.of(responseDTO);
+        PostResponseDTO responseDTO = mapToDTO(savedPost);
+        return responseDTO;
     }
 
 
-    public Optional<PostResponseDTO> getPostById(Integer id) {
-        return postRepository.findById(id).map(this::mapToDTO);
+    public PostResponseDTO getPostById(Integer id) {
+        PostEntity post = postRepository.findById(id).orElseThrow(
+               () -> new NotFoundException("Post not found with id "+ id));
+        return mapToDTO(post);
     }
 
     public List<PostResponseDTO> getPostsByRoomId(Integer roomId) {
@@ -91,50 +80,46 @@ public class PostService implements PostServiceInterface {
 
 
 
-    public Optional<PostEntity> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId) {
-        Optional<PostEntity> existingPost = postRepository.findById(postId);
-        if (existingPost.isPresent()) {
-            PostEntity post = existingPost.get();
-
-            if (!post.getUser().getId().equals(userId)) {
-                return Optional.empty();
-            }
+    public PostEntity updatePost(Integer postId, PostResponseDTO postDTO, Integer userId) {
+        PostEntity post = postRepository.findById(postId).orElseThrow(
+                () -> new NotFoundException("Post not found with id: " + postId)
+        );
+        if (!post.getUser().getId().equals(userId)) {
+                throw new UserAccessDeniedException("Post doesn't belong to this user.");
+        }
 
             post.setName(postDTO.getName());
             post.setDescription(postDTO.getDescription());
             post.setUpdatedAt(new Date());
             postRepository.save(post);
-            return Optional.of(post);
-        }
-        return Optional.empty();
+            return post;
     }
+
+
 
     public boolean deletePost(Integer postId, Integer userId) {
-        Optional<PostEntity> existingPost = postRepository.findById(postId);
-        if (existingPost.isPresent()) {
-            PostEntity post = existingPost.get();
+        PostEntity post = postRepository.findById(postId).orElseThrow(
+                () -> new NotFoundException("Post not found with id: " + postId)
+        );
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with id: " + userId)
+        );
 
-            if (!post.getUser().getId().equals(userId)) {
-                return false;
-            }
-
-            postRepository.delete(post);
-            return true;
+        if (!post.getUser().getId().equals(userId)) {
+             throw new UserAccessDeniedException("Post doesn't belong to this user.");
         }
-        return false;
+        postRepository.delete(post);
+        return true;
     }
     public boolean updatePostStatus(Integer postId,String status) {
-        Optional<PostEntity> postOptional = postRepository.findById(postId);
-        if (postOptional.isPresent()) {
-            PostEntity post = postOptional.get();
-            post.setStatus(status);
-            postRepository.save(post);
-            return true;
-        }
-        return false;
+        PostEntity post = postRepository.findById(postId).orElseThrow(
+                () -> new NotFoundException("Post not found with id: " + postId)
+        );
+        post.setStatus(status);
+        postRepository.save(post);
+        return true;
+
     }
-
-
     private PostResponseDTO mapToDTO(PostEntity post) {
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
@@ -142,16 +127,9 @@ public class PostService implements PostServiceInterface {
         dto.setDescription(post.getDescription());
         dto.setStatus(post.getStatus());
         dto.setCreatedAt(post.getCreatedAt());
-
-        if (post.getUser() != null) {
-            dto.setUserId(post.getUser().getId());
-            dto.setUsername(post.getUser().getUsername());
-        }
-
-        if (post.getRoom() != null) {
-            dto.setRoomId(post.getRoom().getId());
-        }
-
+        dto.setUserId(post.getUser().getId());
+        dto.setUsername(post.getUser().getUsername());
+        dto.setRoomId(post.getRoom().getId());
         dto.setLikeCount(likeRepository.countByPostId(post.getId()));
 
         return dto;

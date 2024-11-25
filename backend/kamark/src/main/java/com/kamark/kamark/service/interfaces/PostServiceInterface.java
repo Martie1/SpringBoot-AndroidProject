@@ -9,10 +9,10 @@ import java.util.Optional;
 
 public interface PostServiceInterface {
 
-    Optional<PostResponseDTO> getPostById(Integer id);
+    PostResponseDTO getPostById(Integer id);
     List<PostResponseDTO> getPostsByRoomId(Integer roomId);
-    Optional<PostEntity> updatePost(Integer postId, PostResponseDTO postDTO, Integer userId);
-    Optional<PostResponseDTO> createPostAndReturnResponse(CreatePostDTO createPostDTO, Integer userId);
+    PostEntity updatePost(Integer postId, PostResponseDTO postDTO, Integer userId);
+    PostResponseDTO createPostAndReturnResponse(CreatePostDTO createPostDTO, Integer userId);
     boolean deletePost(Integer postId, Integer userId);
 
     public boolean updatePostStatus(Integer postId,  String status);

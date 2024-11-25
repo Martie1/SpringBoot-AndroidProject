@@ -16,13 +16,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rooms")
 public class RoomRestController {
-
     @Autowired
     private RoomService roomService;
 
     @GetMapping
     public ResponseEntity<List<RoomDTO>> getAllRooms(Authentication authentication,@RequestHeader("Authorization") String authHeader) {
-        List<RoomDTO> rooms = roomService.getAllRooms();
-        return new ResponseEntity<>(rooms, HttpStatus.OK);
+        return new ResponseEntity<>(roomService.getAllRooms(), HttpStatus.OK);
     }
 }

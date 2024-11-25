@@ -23,12 +23,7 @@ public class UserRestController {
 
     @GetMapping("/profile")
     public ResponseEntity<UserProfileDTO> getUserProfile(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
-        String token = authHeader.substring(7);
-        Integer userId = jwtUtils.extractUserId(token);
+        Integer userId = jwtUtils.extractUserIdFromAuthorizationHeader(authHeader);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -42,12 +37,7 @@ public class UserRestController {
             @RequestBody UserProfileDTO userProfileDTO,
             @RequestHeader("Authorization") String authHeader) {
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing or invalid Authorization header");
-        }
-
-        String token = authHeader.substring(7);
-        Integer userId = jwtUtils.extractUserId(token);
+        Integer userId = jwtUtils.extractUserIdFromAuthorizationHeader(authHeader);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
@@ -62,12 +52,8 @@ public class UserRestController {
     }
     @DeleteMapping("/deactivate")
     public ResponseEntity<String> deactivateAccount(@RequestHeader("Authorization") String authHeader) {
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Missing or invalid Authorization header");
-        }
 
-        String token = authHeader.substring(7);
-        Integer userId = jwtUtils.extractUserId(token);
+        Integer userId = jwtUtils.extractUserIdFromAuthorizationHeader(authHeader);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
@@ -83,8 +69,7 @@ public class UserRestController {
 
     @GetMapping("/posts")
     public ResponseEntity<List<PostResponseDTO>> getUserPosts(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        Integer userId = jwtUtils.extractUserId(token);
+        Integer userId = jwtUtils.extractUserIdFromAuthorizationHeader(authHeader);
 
         List<PostResponseDTO> userPosts = userService.getUserPosts(userId);
         return ResponseEntity.ok(userPosts);
@@ -92,8 +77,7 @@ public class UserRestController {
 
     @GetMapping("/likes")
     public ResponseEntity<List<PostResponseDTO>> getUserLikes(@RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        Integer userId = jwtUtils.extractUserId(token);
+        Integer userId = jwtUtils.extractUserIdFromAuthorizationHeader(authHeader);
 
         List<PostResponseDTO> likedPosts = userService.getUserLikes(userId);
         return ResponseEntity.ok(likedPosts);

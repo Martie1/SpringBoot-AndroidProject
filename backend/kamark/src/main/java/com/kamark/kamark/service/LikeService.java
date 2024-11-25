@@ -3,13 +3,16 @@ package com.kamark.kamark.service;
 import com.kamark.kamark.entity.LikeEntity;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.entity.UserEntity;
+import com.kamark.kamark.exceptions.AlreadyExistsException;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.UserRepository;
 import com.kamark.kamark.service.interfaces.LikeInterface;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.util.Optional;
 
@@ -29,22 +32,18 @@ public class LikeService implements LikeInterface {
 
     @Override
     public boolean likePost(Integer postId, Integer userId) {
-        Optional<UserEntity> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return false;
-        }
-        UserEntity user = userOptional.get();
 
-        Optional<PostEntity> postOptional = postRepository.findById(postId);
-        if (postOptional.isEmpty()) {
-            return false;
-        }
-        Optional<LikeEntity> existingLike = likeRepository.findByPostIdAndUserId(postId, userId);
-        if (existingLike.isPresent()) {
-            return false;
-        }
-        PostEntity post = postOptional.get();
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with id: " + userId)
+        );
 
+        PostEntity post = postRepository.findById(userId).orElseThrow(
+                () -> new NotFoundException("Post not found with id: " + postId)
+        );
+
+        LikeEntity existingLike = likeRepository.findByPostIdAndUserId(postId, userId).orElseThrow(
+                () -> new AlreadyExistsException("You already liked this post")
+        );
         LikeEntity like = new LikeEntity();
         like.setUser(user);
         like.setPost(post);
@@ -54,22 +53,16 @@ public class LikeService implements LikeInterface {
 
     @Override
     public boolean unlikePost(Integer postId, Integer userId) {
-        Optional<LikeEntity> likeOptional = likeRepository.findByPostIdAndUserId(postId, userId);
-        if (likeOptional.isEmpty()) {
-            return false;
-        }
-        LikeEntity like = likeOptional.get();
-        likeRepository.delete(like);
+        LikeEntity existingLike = likeRepository.findByPostIdAndUserId(postId, userId).orElseThrow(
+                () -> new NotFoundException("You have not liked this post yet to be able to unlike it")
+        );
+        likeRepository.delete(existingLike);
         return true;
     }
     @Override
-    @Transactional
+    @Transactional //delete all records or nothing
     public boolean deleteLikesByPostId(Integer postId) {
         int deletedCount = likeRepository.deleteByPostId(postId);
         return deletedCount > 0;
     }
-
-
-
-
 }

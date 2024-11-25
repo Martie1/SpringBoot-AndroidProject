@@ -5,18 +5,21 @@ import com.kamark.kamark.dto.ReportPostDTO;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.entity.ReportEntity;
 import com.kamark.kamark.entity.UserEntity;
+import com.kamark.kamark.exceptions.AlreadyExistsException;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.ReportRepository;
 import com.kamark.kamark.repository.UserRepository;
 import com.kamark.kamark.service.interfaces.ReportServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.Optional;
 import com.kamark.kamark.entity.ReportStatus;
+import org.webjars.NotFoundException;
 
 @Service
 public class ReportService implements ReportServiceInterface {
@@ -34,38 +37,34 @@ public class ReportService implements ReportServiceInterface {
     }
 
     public boolean reportPost(Integer postId, Integer userId, String reason) {
-        Optional<PostEntity> postOptional = postRepository.findById(postId);
-        if (postOptional.isEmpty()) {
-            return false;
-        }
-        PostEntity post = postOptional.get();
+        PostEntity post = postRepository.findById(postId).orElseThrow(
+                () -> new NotFoundException("Post not found with id: " + postId)
+        );
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with id: " + userId)
+        );
 
         boolean alreadyReported = reportRepository.existsByUserIdAndPostId(userId, postId);
         if (alreadyReported) {
-            return false;
+            throw new AlreadyExistsException("You already have reported this post");
         }
 
-        Optional<UserEntity> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return false;
-        }
-        UserEntity user = userOptional.get();
-
-        // nowe zglosznie
+        // new report
         ReportEntity report = new ReportEntity();
         report.setUser(user);
         report.setPost(post);
         report.setReason(reason);
         reportRepository.save(report);
-
         postRepository.save(post);
-
         return true;
     }
 
 
     public List<PostResponseDTO> getReportedPostsByRoomId(Integer roomId) {
         List<PostEntity> posts = postRepository.findByRoomId(roomId);
+        if(posts.isEmpty()){
+            throw new NotFoundException("No posts found in room with id: " + roomId);
+        }
 
         return posts.stream()
                 .filter(post -> post.getReports() != null && !post.getReports().isEmpty())
@@ -76,10 +75,9 @@ public class ReportService implements ReportServiceInterface {
     }
 
     public boolean updateReportsStatusByPostId(Integer postId, ReportStatus status) {
-
         List<ReportEntity> reports = reportRepository.findByPostId(postId);
         if (reports.isEmpty()) {
-            return false;
+            throw new NotFoundException("No reports found for post with id: " + postId);
         }
         reports.forEach(report -> report.setStatus(status));
         reportRepository.saveAll(reports);
@@ -88,27 +86,25 @@ public class ReportService implements ReportServiceInterface {
 
 
     public boolean updateReportStatus(Integer reportId, ReportStatus status) {
-        Optional<ReportEntity> reportOptional = reportRepository.findById(reportId);
-        if (reportOptional.isEmpty()) {
-            return false;
-        }
-        ReportEntity report = reportOptional.get();
+
+        ReportEntity report = reportRepository.findById(reportId).orElseThrow(
+                () -> new NotFoundException("Report not found with id: " + reportId)
+        );
         report.setStatus(status);
 
-        // ststus reporta "RESOLVED", to posta na "BLOCKED"
+        // report is "RESOLVED" then post is  "BLOCKED"
         if (status == ReportStatus.RESOLVED) {
             PostEntity post = report.getPost();
             post.setStatus("BLOCKED");
             postRepository.save(post);
         }
 
-        // ststus reporta "DISMISSED", to status posta na "ACTIVE"
+        //  report is "DISMISSED" then post is "ACTIVE"
         if (status == ReportStatus.DISMISSED) {
             PostEntity post = report.getPost();
             post.setStatus("ACTIVE");
             postRepository.save(post);
         }
-
         reportRepository.save(report);
         return true;
     }
@@ -119,16 +115,9 @@ public class ReportService implements ReportServiceInterface {
         dto.setDescription(post.getDescription());
         dto.setStatus(post.getStatus());
         dto.setCreatedAt(post.getCreatedAt());
-
-        if (post.getUser() != null) {
-            dto.setUserId(post.getUser().getId());
-            dto.setUsername(post.getUser().getUsername());
-        }
-
-        if (post.getRoom() != null) {
-            dto.setRoomId(post.getRoom().getId());
-        }
-
+        dto.setUserId(post.getUser().getId());
+        dto.setUsername(post.getUser().getUsername());
+        dto.setRoomId(post.getRoom().getId());
         dto.setLikeCount(likeRepository.countByPostId(post.getId()));
 
         return dto;
