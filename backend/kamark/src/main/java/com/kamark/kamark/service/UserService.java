@@ -5,14 +5,13 @@ import com.kamark.kamark.dto.UserProfileDTO;
 import com.kamark.kamark.entity.LikeEntity;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.entity.UserEntity;
-import com.kamark.kamark.exceptions.UserNotFoundException;
 import com.kamark.kamark.repository.LikeRepository;
 import com.kamark.kamark.repository.PostRepository;
 import com.kamark.kamark.repository.UserRepository;
 import com.kamark.kamark.service.interfaces.UserServiceInterface;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -36,17 +35,14 @@ public class UserService implements UserServiceInterface {
 
     public UserProfileDTO getUserProfile(Integer userId) {
         UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User with ID " + userId + " not found"));
+                .orElseThrow(() -> new NotFoundException("User with ID " + userId + " not found"));
         return new UserProfileDTO(user.getUsername(), user.getEmail());
     }
 
 
     public boolean updateUserProfile(Integer userId, UserProfileDTO userProfileDTO) {
-        Optional<UserEntity> userOptional = userRepository.findById(userId);
-        if (userOptional.isEmpty()) {
-            return false;
-        }
-        UserEntity user = userOptional.get();
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("User with ID " + userId + " not found"));
 
         if (userProfileDTO.getUsername() != null) {
             user.setUsername(userProfileDTO.getUsername());
@@ -74,6 +70,8 @@ public class UserService implements UserServiceInterface {
         return true;
     }
 
+
+
     public List<PostResponseDTO> getUserPosts(Integer userId) {
         List<PostEntity> posts = postRepository.findByUserId(userId);
         return posts.stream().map(this::mapToPostResponseDTO).collect(Collectors.toList());
@@ -85,6 +83,7 @@ public class UserService implements UserServiceInterface {
                 .map(like -> mapToPostResponseDTO(like.getPost()))
                 .collect(Collectors.toList());
     }
+
     private PostResponseDTO mapToPostResponseDTO(PostEntity post) {
         PostResponseDTO dto = new PostResponseDTO(
                 post.getId(),

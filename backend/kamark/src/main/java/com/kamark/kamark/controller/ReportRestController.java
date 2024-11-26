@@ -3,6 +3,7 @@ package com.kamark.kamark.controller;
 import com.kamark.kamark.dto.ReportPostDTO;
 import com.kamark.kamark.service.JWTUtils;
 import com.kamark.kamark.service.ReportService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +22,10 @@ public class ReportRestController {
     @PostMapping("/{postId}/report")
     public ResponseEntity<String> reportPost(
             @PathVariable Integer postId,
-            @RequestBody ReportPostDTO reportPostDTO,
+            @RequestBody @Valid ReportPostDTO reportPostDTO,
             @RequestHeader("Authorization") String authHeader) {
 
-        String token = authHeader.substring(7);
-        Integer userId = jwtUtils.extractUserId(token);
+        Integer userId = jwtUtils.extractUserIdFromAuthorizationHeader(authHeader);
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");

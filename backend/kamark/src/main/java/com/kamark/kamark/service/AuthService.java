@@ -1,25 +1,18 @@
 package com.kamark.kamark.service;
 
-import com.kamark.kamark.controller.validators.LoginValidator;
-import com.kamark.kamark.controller.validators.RegisterValidator;
 import com.kamark.kamark.dto.AuthResponse;
-import com.kamark.kamark.dto.ErrorResponse;
 import com.kamark.kamark.dto.LoginRequest;
 import com.kamark.kamark.dto.RegisterRequest;
 import com.kamark.kamark.entity.UserEntity;
+import com.kamark.kamark.exceptions.UserAlreadyExistsException;
 import com.kamark.kamark.repository.UserRepository;
 import com.kamark.kamark.service.interfaces.AuthServiceInterface;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import org.webjars.NotFoundException;
 
 @Service
 public class AuthService implements AuthServiceInterface {
@@ -28,16 +21,13 @@ public class AuthService implements AuthServiceInterface {
     private final JWTUtils jwtUtils;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final RegisterValidator registerValidator;
-    private final LoginValidator loginValidator;
 
-    public AuthService(UserRepository ourUserRepo, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, RegisterValidator registerValidator, LoginValidator loginValidator) {
+
+    public AuthService(UserRepository ourUserRepo, JWTUtils jwtUtils, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager) {
         this.ourUserRepo = ourUserRepo;
         this.jwtUtils = jwtUtils;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
-        this.registerValidator = registerValidator;
-        this.loginValidator = loginValidator;
     }
 
 
@@ -51,38 +41,12 @@ public class AuthService implements AuthServiceInterface {
         return response;
     }
 
-    public ResponseEntity<?> register(RegisterRequest registrationRequest) {
-        try {
-            String usernameValidationResult = registerValidator.validateUsername(registrationRequest.getUsername());
-            if (usernameValidationResult != "ok") {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(400, usernameValidationResult));
-            }
-
-            String emailValidationResult = registerValidator.validateEmail(registrationRequest.getEmail());
-            if (emailValidationResult != "ok") {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(400, emailValidationResult));
-            }
-
-            String passwordValidationResult = registerValidator.validatePassword(
-                    registrationRequest.getPassword(),
-                    registrationRequest.getUsername()
-            );
-
-            if (passwordValidationResult != "ok") {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(400, passwordValidationResult));
-            }
+    public AuthResponse register(RegisterRequest registrationRequest) {
             if (ourUserRepo.existsByEmail(registrationRequest.getEmail())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Email is already taken."));
+                throw new UserAlreadyExistsException("Email already taken");
             }
             if (ourUserRepo.existsByUsername(registrationRequest.getUsername())) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body(new ErrorResponse(409, "Username is already taken."));
-            }
-
-
-
+                throw new UserAlreadyExistsException("Username already taken");  }
 
             UserEntity user = new UserEntity();
             user.setEmail(registrationRequest.getEmail());
@@ -99,34 +63,19 @@ public class AuthService implements AuthServiceInterface {
 
 
                 AuthResponse response = createAuthResponse(accessToken,refreshToken, "User Registered Successfully");
-                return ResponseEntity.ok(response);
+                return response;
             } else {
-                return ResponseEntity.status(500).body(new ErrorResponse(500, "Failed to register user."));
+                throw new RuntimeException("Registration failed");
             }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during registration: " + e.getMessage()));
-        }
     }
 
-    public ResponseEntity<?> login(LoginRequest loginRequest) {
-        try {
-            String emailValidationResult = loginValidator.validateEmail(loginRequest.getEmail());
-            if (emailValidationResult != "ok") {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(400, emailValidationResult));
-            }
-            String passwordValidationResult = loginValidator.validatePassword(loginRequest.getPassword());
-            if (passwordValidationResult != "ok") {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(new ErrorResponse(400, passwordValidationResult));
-            }
+    public AuthResponse login(LoginRequest loginRequest) {
 
             UserEntity user = ourUserRepo.findByEmail(loginRequest.getEmail()).orElseThrow(
                     () -> new UsernameNotFoundException("User not found with email: " + loginRequest.getEmail())
             );
             if ("deactivated".equalsIgnoreCase(user.getStatus())) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                        .body(new ErrorResponse(403, "Account is deactivated. Please contact support."));
+                    throw new UsernameNotFoundException("This account has been deactivated");
             }
 
             authenticationManager.authenticate(
@@ -136,33 +85,17 @@ public class AuthService implements AuthServiceInterface {
             String refreshToken = jwtUtils.generateRefreshToken(user);
 
             AuthResponse response = createAuthResponse(accessToken,refreshToken, "Successfully Signed In");
-            return ResponseEntity.ok(response);
-
-        } catch (UsernameNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorResponse(404, "Email doesn't exist"));
-        } catch (BadCredentialsException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse(401, "Wrong password"));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error during sign-in: " + e.getMessage()));
-        }
+            return response;
     }
-    public ResponseEntity<?> refresh(String refreshToken) {
-        try {
-            Integer userIdFromToken = jwtUtils.extractUserId(refreshToken);
-            Optional<UserEntity> userOptional = ourUserRepo.findById(userIdFromToken);
+    public AuthResponse refresh(String refreshToken) {
+            Integer userIdFromToken = jwtUtils.extractUserIdFromRefreshToken(refreshToken);
 
-            if (userOptional.isPresent() && jwtUtils.isRefreshTokenValid(refreshToken, userOptional.get())) {
-                UserEntity user = userOptional.get();
-                String newAccessToken = jwtUtils.generateAccessToken(user);
-
-                AuthResponse response = createAuthResponse(newAccessToken, refreshToken, "Access Token refreshed");
-                return ResponseEntity.ok(response);
-            } else {
-                return ResponseEntity.status(401).body(new ErrorResponse(401, "Invalid or expired refresh token"));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(new ErrorResponse(500, "Error refreshing token: " + e.getMessage()));
-        }
+            UserEntity user = ourUserRepo.findById(userIdFromToken).orElseThrow(
+                    () -> new NotFoundException("User not found with id: " + userIdFromToken)
+            );
+            String newAccessToken = jwtUtils.generateAccessToken(user);
+            AuthResponse response = createAuthResponse(newAccessToken, refreshToken, "Access Token refreshed");
+            return response;
     }
 
 }
