@@ -32,7 +32,6 @@ public class PostRestController {
 
     @GetMapping("/room/{roomId}")
     public ResponseEntity<List<PostResponseDTO>> getPostsByRoomId(@PathVariable Integer roomId,@RequestHeader("Authorization") String authHeader) {
-
         List<PostResponseDTO> posts = postService.getPostsByRoomId(roomId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
@@ -94,20 +93,14 @@ public class PostRestController {
         boolean likesDeleted = likeService.deleteLikesByPostId(id);
         boolean isDeleted = postService.deletePost(id, userId);
 
-        if (likesDeleted &&isDeleted ){
-            SimpleResponse response = new SimpleResponse(
+        SimpleResponse response = new SimpleResponse(
                     HttpStatus.OK.value(),
                     "The post has been successfully deleted"
             );
             return ResponseEntity.ok(response);
-        } else {
-            SimpleResponse response = new SimpleResponse(
-                    HttpStatus.NOT_FOUND.value(),
-                    "Post not found or unauthorized"
-            );
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
-    }
+
+
 
 
 }
