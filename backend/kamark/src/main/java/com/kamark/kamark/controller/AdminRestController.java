@@ -23,6 +23,9 @@ public class AdminRestController {
     @Autowired
     private PostService postService;
 
+    //add getAllReportsfromRoom
+
+
 
     @GetMapping("/{roomId}/posts")
     public ResponseEntity<List<PostResponseDTO>> getAllReportedPostsByRoom(@PathVariable Integer roomId) {

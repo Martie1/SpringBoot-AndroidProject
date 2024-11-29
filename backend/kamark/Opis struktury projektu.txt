@@ -1,4 +1,9 @@
+------ENGLISH:
+
+
+------POLSKI:
 folder: src/main/java/com.kamark.kamark
+
 
 config
 	tu znajdują się konfiguracje SpringSecurity, Cors, Swagger, Filtr tokenów JWT
@@ -9,7 +14,7 @@ controller
 
 dto
 	dto to są modele zwracanych obiektów. (service zwracają obiekty dto)
-	DTO (tylko te wejściowe) zostały opatrzone automatyczną walidacją pól dzięki jakarta.validation.constraints.
+	DTO (tylko te wejściowe) zostały opatrzone automatyczną walidacją pól dzięki 	jakarta.validation.constraints.
 	Klient dostanie w Postmanie odpowiedzi, jeśli format danych nie będzie zgodny z walidacją.
 
 service
@@ -35,7 +40,3 @@ repository
 	Repository jeśli ma zwrócić pojedzynczy zasób z bazy danych zwraca ZAWSZE Optional - bo w bazie
 	może być rekord lub NIE. Chyba, że zliczamy lub mamy własne zdefiniowane metody typu boolean, 	Integer, to zwróci te typy.
 	List<Zasób> może być po prostu pusta, zatem nie potrzebujemy Optional.
-
-folder resources
-    messages.properties to plik, w którym są globalnie określone wiadomości błędów walidacji konkretnych DTO dla jakarta.validation.constraints.
-    application.properties to plik, w którym są globalne ustawienia aplikacji, np. port, baza danych, itp.
