@@ -37,13 +37,13 @@ public class LikeService implements LikeInterface {
                 () -> new UsernameNotFoundException("User not found with id: " + userId)
         );
 
-        PostEntity post = postRepository.findById(userId).orElseThrow(
+        PostEntity post = postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException("Post not found with id: " + postId)
         );
+        if (likeRepository.findByPostIdAndUserId(postId, userId).isPresent()) {
+            throw new AlreadyExistsException("You already liked this post");
+        }
 
-        LikeEntity existingLike = likeRepository.findByPostIdAndUserId(postId, userId).orElseThrow(
-                () -> new AlreadyExistsException("You already liked this post")
-        );
         LikeEntity like = new LikeEntity();
         like.setUser(user);
         like.setPost(post);

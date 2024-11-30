@@ -71,7 +71,13 @@ public class PostService implements PostServiceInterface {
     }
 
     public List<PostResponseDTO> getPostsByRoomId(Integer roomId) {
+            RoomEntity room = roomRepository.findById(roomId).orElseThrow(
+                    () -> new NotFoundException("Room not found with id: " + roomId)
+            );
             List<PostEntity> posts = postRepository.findByRoomId(roomId);
+            if(posts.isEmpty()){
+                throw new NotFoundException("No posts found for room with id: " + roomId);
+            }
             return posts.stream()
                     .filter(post -> !"BLOCKED".equals(post.getStatus()))
                     .map(this::mapToDTO)
@@ -81,9 +87,13 @@ public class PostService implements PostServiceInterface {
 
 
     public PostEntity updatePost(Integer postId, PostResponseDTO postDTO, Integer userId) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(
+                () -> new UsernameNotFoundException("User not found with id: " + userId)
+        );
         PostEntity post = postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException("Post not found with id: " + postId)
         );
+
         if (!post.getUser().getId().equals(userId)) {
                 throw new UserAccessDeniedException("Post doesn't belong to this user.");
         }
