@@ -1,5 +1,6 @@
 package com.kamark.kamark.service;
 
+import com.kamark.kamark.dto.CreateRoomDTO;
 import com.kamark.kamark.dto.RoomDTO;
 import com.kamark.kamark.entity.RoomEntity;
 import com.kamark.kamark.repository.RoomRepository;
@@ -22,6 +23,14 @@ public class RoomService implements RoomServiceInterface {
         return rooms.stream()
                 .map(this::mapToDTO)
                 .toList();
+    }
+    public RoomEntity createRoom(CreateRoomDTO roomDTO) {
+        if(roomRepository.existsByName(roomDTO.getName())) {
+            throw new IllegalArgumentException("Room with name " + roomDTO.getName() + " already exists");
+        }
+        RoomEntity room = new RoomEntity();
+        room.setName(roomDTO.getName());
+        return roomRepository.save(room);
     }
 
     private RoomDTO mapToDTO(RoomEntity room) {

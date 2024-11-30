@@ -30,7 +30,7 @@ public class PostRestController {
     @Autowired
     private LikeService likeService;
 
-    @GetMapping("/room/{roomId}")
+    @GetMapping("/room/{roomId}") //get active posts
     public ResponseEntity<List<PostResponseDTO>> getPostsByRoomId(@PathVariable Integer roomId,@RequestHeader("Authorization") String authHeader) {
         List<PostResponseDTO> posts = postService.getPostsByRoomId(roomId);
         return new ResponseEntity<>(posts, HttpStatus.OK);
@@ -47,7 +47,6 @@ public class PostRestController {
             ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Invalid token");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
-
 
         logger.info("User ID create: " + userId);
 

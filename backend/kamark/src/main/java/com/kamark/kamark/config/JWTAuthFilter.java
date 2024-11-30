@@ -19,6 +19,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.List;
 
@@ -81,7 +82,8 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
             //filter catching exceptions here, because GlobalExceptionHandler as @ControllerAdvice doesn't detect filter exceptions
-        } catch (ExpiredJwtException ex) {
+        }
+        catch (ExpiredJwtException ex) {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             response.setContentType("application/json");
             response.getWriter().write(
@@ -96,6 +98,14 @@ public class JWTAuthFilter extends OncePerRequestFilter {
                             new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "Invalid JWT signature: " + ex.getMessage())
                     )
             );
+        }
+        catch (EOFException ex) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setContentType("application/json");
+            response.getWriter().write(
+                    new ObjectMapper().writeValueAsString(
+                            new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Please include Authorization header")
+                    ));
         }
 
     }
