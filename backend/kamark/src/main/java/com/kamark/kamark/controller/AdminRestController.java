@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.kamark.kamark.entity.ReportEntity;
 
 import java.util.List;
 
@@ -30,6 +31,12 @@ public class AdminRestController {
     @GetMapping("/{roomId}/posts")
     public ResponseEntity<List<PostResponseDTO>> getAllReportedPostsByRoom(@PathVariable Integer roomId) {
         List<PostResponseDTO> reports = reportService.getReportedPostsByRoomId(roomId);
+        return ResponseEntity.ok(reports);
+    }
+
+    @GetMapping("/{postId}/reports")
+    public ResponseEntity<List<ReportEntity>> getAllReportsByPost(@PathVariable Integer postId) {
+        List<ReportEntity> reports = reportService.getReportsByPostId(postId);
         return ResponseEntity.ok(reports);
     }
 

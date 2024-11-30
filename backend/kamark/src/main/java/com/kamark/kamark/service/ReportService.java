@@ -36,6 +36,14 @@ public class ReportService implements ReportServiceInterface {
         this.likeRepository = likeRepository;
     }
 
+    public List<ReportEntity> getReportsByPostId(Integer postId) {
+        List<ReportEntity> reports = reportRepository.findByPostId(postId);
+        if(reports.isEmpty()){
+            throw new NotFoundException("No reports found for post with id: " + postId);
+        }
+        return reports;
+    }
+
     public boolean reportPost(Integer postId, Integer userId, String reason) {
         PostEntity post = postRepository.findById(postId).orElseThrow(
                 () -> new NotFoundException("Post not found with id: " + postId)
