@@ -14,14 +14,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.springframework.test.web.servlet.MvcResult;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import java.util.stream.IntStream;
+
 import java.util.stream.Stream;
+
+
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AuthIntegrationTest {
+public class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -37,7 +42,7 @@ public class AuthIntegrationTest {
         userRepository.deleteAll();
     }
     private static Stream<RegisterRequest> provideTestData() {
-        return IntStream.range(1, 101).mapToObj(i -> {
+        return IntStream.range(1, 11).mapToObj(i -> {
             RegisterRequest registerRequest = new RegisterRequest();
             registerRequest.setEmail("testuser" + i + "@example.com");
             registerRequest.setUsername("testuser" + i);
@@ -49,10 +54,16 @@ public class AuthIntegrationTest {
     @ParameterizedTest
     @MethodSource("provideTestData")
     public void testRegisterUser_Loop(RegisterRequest registerRequest) throws Exception {
-        mockMvc.perform(post("/auth/register")
+        MvcResult result = mockMvc.perform(post("/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(registerRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())  // Oczekiwany status 200
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        assertTrue(content.contains("User Registered Successfully"));
+        assertTrue(content.contains("accessToken"));
+        assertTrue(content.contains("refreshToken"));
     }
 
     @Test

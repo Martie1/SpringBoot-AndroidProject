@@ -7,6 +7,7 @@ import com.kamark.kamark.repository.RoomRepository;
 import com.kamark.kamark.service.interfaces.RoomServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.webjars.NotFoundException;
 
 import java.util.List;
 
