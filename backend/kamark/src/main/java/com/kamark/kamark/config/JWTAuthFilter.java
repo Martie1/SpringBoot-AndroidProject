@@ -84,11 +84,11 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             //filter catching exceptions here, because GlobalExceptionHandler as @ControllerAdvice doesn't detect filter exceptions
         }
         catch (ExpiredJwtException ex) {
-            response.setStatus(HttpStatus.FORBIDDEN.value());
+            response.setStatus(HttpStatus.UNAUTHORIZED.value());
             response.setContentType("application/json");
             response.getWriter().write(
                     new ObjectMapper().writeValueAsString(
-                            new ErrorResponse(HttpStatus.FORBIDDEN.value(), "JWT expired: " + ex.getMessage())
+                            new ErrorResponse(HttpStatus.UNAUTHORIZED.value(), "JWT expired: " + ex.getMessage())
                     ));
         } catch (SignatureException ex) {
             response.setStatus(HttpStatus.UNAUTHORIZED.value());
@@ -100,11 +100,11 @@ public class JWTAuthFilter extends OncePerRequestFilter {
             );
         }
         catch (EOFException ex) {
-            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            response.setStatus(HttpStatus.FORBIDDEN.value());
             response.setContentType("application/json");
             response.getWriter().write(
                     new ObjectMapper().writeValueAsString(
-                            new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Please include Authorization header")
+                            new ErrorResponse(HttpStatus.FORBIDDEN.value(), "Please include Authorization header")
                     ));
         }
 
