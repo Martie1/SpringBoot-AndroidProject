@@ -1,6 +1,7 @@
 package com.kamark.kamark.service;
 
 import com.kamark.kamark.dto.PostResponseDTO;
+import com.kamark.kamark.dto.ReportDTO;
 import com.kamark.kamark.dto.ReportPostDTO;
 import com.kamark.kamark.entity.PostEntity;
 import com.kamark.kamark.entity.ReportEntity;
@@ -36,13 +37,14 @@ public class ReportService implements ReportServiceInterface {
         this.likeRepository = likeRepository;
     }
 
-    public List<ReportEntity> getReportsByPostId(Integer postId) {
+    public List<ReportDTO> getReportsByPostId(Integer postId) {
         List<ReportEntity> reports = reportRepository.findByPostId(postId);
-        if(reports.isEmpty()){
+        if (reports.isEmpty()) {
             throw new NotFoundException("No reports found for post with id: " + postId);
         }
-        return reports;
+        return reports.stream().map(ReportDTO::new).collect(Collectors.toList());
     }
+
 
     public boolean reportPost(Integer postId, Integer userId, String reason) {
         PostEntity post = postRepository.findById(postId).orElseThrow(

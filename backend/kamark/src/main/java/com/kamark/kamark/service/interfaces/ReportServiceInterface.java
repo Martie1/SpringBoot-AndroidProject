@@ -1,6 +1,7 @@
 package com.kamark.kamark.service.interfaces;
 
 import com.kamark.kamark.dto.PostResponseDTO;
+import com.kamark.kamark.dto.ReportDTO;
 import com.kamark.kamark.entity.ReportStatus;
 import com.kamark.kamark.entity.ReportEntity;
 
@@ -12,6 +13,6 @@ public interface ReportServiceInterface {
     List<PostResponseDTO> getReportedPostsByRoomId(Integer roomId);
     public boolean updateReportsStatusByPostId(Integer postId, ReportStatus status);
 
-    public List<ReportEntity> getReportsByPostId(Integer postId);
+    public List<ReportDTO> getReportsByPostId(Integer postId);
 
 }

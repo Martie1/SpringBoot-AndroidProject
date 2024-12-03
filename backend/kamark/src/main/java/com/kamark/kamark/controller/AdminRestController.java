@@ -1,6 +1,7 @@
 package com.kamark.kamark.controller;
 
 import com.kamark.kamark.dto.PostResponseDTO;
+import com.kamark.kamark.dto.ReportDTO;
 import com.kamark.kamark.dto.ReportPostDTO;
 import com.kamark.kamark.dto.SimpleResponse;
 import com.kamark.kamark.entity.ReportStatus;
@@ -35,8 +36,8 @@ public class AdminRestController {
     }
 
     @GetMapping("/{postId}/reports")
-    public ResponseEntity<List<ReportEntity>> getAllReportsByPost(@PathVariable Integer postId) {
-        List<ReportEntity> reports = reportService.getReportsByPostId(postId);
+    public ResponseEntity<List<ReportDTO>> getAllReportsByPost(@PathVariable Integer postId) {
+        List<ReportDTO> reports = reportService.getReportsByPostId(postId);
         return ResponseEntity.ok(reports);
     }
 
